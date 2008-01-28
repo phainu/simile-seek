@@ -1,0 +1,5 @@
+<!ENTITY keeperfinder.label "Your localized menuitem">
+<!ENTITY keeperfinderContext.label "Your Menuitem">
+<!ENTITY keeperfinderContext.accesskey "Y">
+<!ENTITY keeperfinderToolbar.label "Your Toolbar Button">
+<!ENTITY keeperfinderToolbar.tooltip "This is your toolbar button!">
