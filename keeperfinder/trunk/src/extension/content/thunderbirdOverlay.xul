@@ -19,6 +19,21 @@
 <!DOCTYPE overlay SYSTEM "chrome://keeperfinder/locale/keeperfinder.dtd">
 <overlay id="keeperfinder-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script src="scripts/overlay.js"/>
+    <script src="scripts/indexer.js"/>
+    
+    <script src="scripts/util/set.js"/>
+    <script src="scripts/util/listener-queue.js"/>
+    <script src="scripts/util/string.js"/>
+    
+    <script src="scripts/data/expression-parser.js"/>
+    <script src="scripts/data/expression.js"/>
+    <script src="scripts/data/function.js"/>
+    <script src="scripts/data/database.js"/>
+    <script src="scripts/data/database-l10n.js"/>
+    <script src="scripts/data/collection.js"/>
+    
+    <script src="scripts/ui/facet-util.js"/>
+    <script src="scripts/ui/list-facet.js"/>
     
     <stringbundleset id="stringbundleset">
         <stringbundle id="keeperfinder-strings" src="chrome://keeperfinder/locale/keeperfinder.properties"/>
@@ -47,4 +62,64 @@
             class="toolbarbutton-1 chromeclass-toolbar-additional"
             />
     </toolbarpalette>
+    
+    <vbox id="threadPaneBox">
+        <deck id="keeperFinderPane-deck" insertbefore="threadTree" flex="1">
+            <hbox id="keeperFinderPane-noSupportLayer">
+                <spacer flex="1" />
+                <vbox style="width: 20em;">
+                    <spacer flex="1" />
+                    <description>Sorry, KeeperFinder is not supported on this folder.</description>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="keeperFinderPane-startIndexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 25em;">
+                    <spacer flex="1" />
+                    <description>To use KeeperFinder on this folder, we need to index the folder first. This may take a few minutes.</description>
+                    <hbox>
+                        <button label="Start Indexing" oncommand="KeeperFinder.onStartIndexingFolder();" />
+                        <spacer flex="1" />
+                    </hbox>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="keeperFinderPane-indexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 15em;">
+                    <spacer flex="1" />
+                    <label value="Indexing folder..." />
+                    <progressmeter id="keeperFinderPane-indexingLayer-progress" mode="determined" value="0%" />
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="keeperFinderPane-browsingLayer">
+                <hbox flex="1" style="overflow: auto;" id="keeperFinderPane-browsingLayer-facetContainer">
+                </hbox>
+                <vbox>
+                    <groupbox>
+                        <caption label="Also Include" />
+                        <checkbox label="Whole threads" />
+                        <checkbox label="New messages" />
+                    </groupbox>
+                    <spacer flex="1" />
+                    <button label="Re-Index" oncommand="KeeperFinder.onStartIndexingFolder();" />
+                </vbox>
+            </hbox>
+            <box hidden="true">
+                <tree id="keeperFinder-facet-valuesContainer" class="keeperfinder-facet-valuesContainer" flex="1">
+                    <treecols>
+                        <treecol id="value-column" label="value" flex="1" />
+                        <treecol id="count-column" label="#" flex="0" style="width: 4em; text-align: right;" />
+                    </treecols>
+                    <treechildren />
+                </tree>
+            </box>
+        </deck>
+        <splitter insertbefore="threadTree" />
+    </vbox>
 </overlay>

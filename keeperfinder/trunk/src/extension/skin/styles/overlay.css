@@ -20,3 +20,9 @@
 {
   -moz-image-region: rect(24px 40px 40px 24px);
 }
+
+
+listbox.keeperfinder-facet-valuesContainer {
+    margin: 0;
+    border: none;
+}

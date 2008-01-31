@@ -1,0 +1,12 @@
+var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                     .getService(Components.interfaces.nsIProperties)
+                     .get("ProfD", Components.interfaces.nsIFile);
+file.append("foo.sqlite");
+
+var storageService = Components.classes["@mozilla.org/storage/service;1"]
+                        .getService(Components.interfaces.mozIStorageService);
+var mDBConn = storageService.openDatabase(file);
+KeeperFinder.log(mDBConn);
+
+
+
