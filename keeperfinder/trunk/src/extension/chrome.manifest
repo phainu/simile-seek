@@ -1,5 +1,5 @@
 content	keeperfinder	content/
 locale	keeperfinder	en-US	locale/en-US/
-skin	keeperfinder	classic/1.0	skin/
+skin	keeperfinder	classic/1.0	skin/classic/
 overlay	chrome://messenger/content/messenger.xul	chrome://keeperfinder/content/thunderbirdOverlay.xul
 style	chrome://global/content/customizeToolbar.xul	chrome://keeperfinder/skin/styles/overlay.css

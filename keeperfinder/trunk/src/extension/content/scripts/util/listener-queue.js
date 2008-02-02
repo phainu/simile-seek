@@ -30,14 +30,14 @@ KeeperFinder.ListenerQueue.prototype.fire = function(handlerName, args) {
             try {
                 listener[handlerName].apply(listener, args);
             } catch (e) {
-                KeeperFinder.Debug.exception("Error firing event of name " + handlerName, e);
+                KeeperFinder.exception(e);
             }
         } else if (this._wildcardHandlerName != null &&
             this._wildcardHandlerName in listener) {
             try {
                 listener[this._wildcardHandlerName].apply(listener, [ handlerName ]);
             } catch (e) {
-                KeeperFinder.Debug.exception("Error firing event of name " + handlerName + " to wildcard handler", e);
+                KeeperFinder.exception(e);
             }
         }
     }

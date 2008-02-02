@@ -15,11 +15,17 @@
   - OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   - -->
 
-<?xml-stylesheet href="chrome://keeperfinder/skin/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://keeperfinder/skin/styles/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://keeperfinder/skin/styles/overlay-html.css" type="text/css"?>
+
 <!DOCTYPE overlay SYSTEM "chrome://keeperfinder/locale/keeperfinder.dtd">
-<overlay id="keeperfinder-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="keeperfinder-overlay" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    
     <script src="scripts/overlay.js"/>
     <script src="scripts/indexer.js"/>
+    <script src="scripts/facet-adapters.js"/>
     
     <script src="scripts/util/set.js"/>
     <script src="scripts/util/listener-queue.js"/>
@@ -63,8 +69,12 @@
             />
     </toolbarpalette>
     
+    <!--
     <vbox id="threadPaneBox">
         <deck id="keeperFinderPane-deck" insertbefore="threadTree" flex="1">
+    -->
+    <window id="messengerWindow">
+        <deck id="keeperFinderPane-deck" insertbefore="mailContentWrapper" flex="1">
             <hbox id="keeperFinderPane-noSupportLayer">
                 <spacer flex="1" />
                 <vbox style="width: 20em;">
@@ -111,7 +121,11 @@
                 </vbox>
             </hbox>
             <box hidden="true">
-                <tree id="keeperFinder-facet-valuesContainer" class="keeperfinder-facet-valuesContainer" flex="1">
+                <hbox id="keeperFinder-facet-header">
+                    <label value="" flex="1" />
+                    <html:div style="display: none;"><html:a href="javascript:{}">reset</html:a></html:div>
+                </hbox>
+                <tree id="keeperFinder-facet-valuesContainer" class="keeperfinder-facet-valuesContainer" flex="1" seltype="multiple">
                     <treecols>
                         <treecol id="value-column" label="value" flex="1" />
                         <treecol id="count-column" label="#" flex="0" style="width: 4em; text-align: right;" />
@@ -120,6 +134,6 @@
                 </tree>
             </box>
         </deck>
-        <splitter insertbefore="threadTree" />
-    </vbox>
+        <splitter insertbefore="mailContentWrapper" id="keeperFinder-mainSplitter" />
+    </window>
 </overlay>

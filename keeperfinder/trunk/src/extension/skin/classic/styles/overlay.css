@@ -1,3 +1,5 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
 /* This is just an example.  You shouldn't do this. */
 #keeperfinder-hello
 {
@@ -21,8 +23,24 @@
   -moz-image-region: rect(24px 40px 40px 24px);
 }
 
+#keeperFinderPane-deck {
+    padding-left: 5px;
+    padding-top: 5px;
+}
+#keeperFinder-mainSplitter {
+    border-top: none;
+}
 
-listbox.keeperfinder-facet-valuesContainer {
+tree.keeperfinder-facet-valuesContainer {
     margin: 0;
-    border: none;
+    padding: 0;
+    border-top-style: none;
+    border-bottom-style: none;
+    border-left-style: none;
+    border-right-style: none;
+}
+
+splitter.keeperfinder-facetContainer-splitter {
+    border-left: none;
+    border-right: none;
 }

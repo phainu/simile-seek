@@ -166,12 +166,13 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
         this._box,
         this._settings.facetLabel,
-        function(elmt, evt, target) { self._clearSelections(); }
+        function(elmt, evt, target) { self.clearAllRestrictions(); }
     );
     this._dom.valuesContainer.onselect = function() {
         if (!self._updating) {
             self._onSelectionChange(self._dom.valuesContainer.treeBoxObject.view.wrappedJSObject);
         }
+        return true;
     };
 };
 

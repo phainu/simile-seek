@@ -182,7 +182,7 @@ KeeperFinder.Indexer._onFinishIndexingJob = function() {
         var entity = entityMap[emailAddress];
         var at = emailAddress.indexOf("@");
         if (at > 0) {
-            entity.domain = emailAddress.substr(at + 1).toLowerCase();
+            entity.domain = emailAddress.substr(at).toLowerCase();
             
             var dot = entity.domain.lastIndexOf(".");
             if (dot > 0) {

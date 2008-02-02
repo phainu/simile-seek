@@ -95,6 +95,10 @@ KeeperFinder.Collection.prototype.removeListener = function(listener) {
     this._listeners.remove(listener);
 };
 
+KeeperFinder.Collection.prototype.getFacets = function() {
+    return [].concat(this._facets);
+};
+
 KeeperFinder.Collection.prototype.addFacet = function(facet) {
     this._facets.push(facet);
     

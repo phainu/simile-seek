@@ -7,16 +7,21 @@
 KeeperFinder.FacetUtilities = new Object();
 
 KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, onClearAllSelections) {
-    var label = document.createElement("label");
-    parentVbox.appendChild(label);
-    label.value = facetLabel;
+    var header = document.getElementById("keeperFinder-facet-header").cloneNode(true);
+    header.id = "";
+    parentVbox.appendChild(header);
+    header.childNodes[0].value = facetLabel;
+    header.childNodes[1].onclick = onClearAllSelections;
     
     var valuesContainer = document.getElementById("keeperFinder-facet-valuesContainer").cloneNode(true);
+    valuesContainer.id = "";
     parentVbox.appendChild(valuesContainer);
     
     return {
         valuesContainer: valuesContainer,
-        setSelectionCount: function(count) {}
+        setSelectionCount: function(count) {
+            header.childNodes[1].style.display = (count > 0) ? "block" : "none";
+        }
     };
 };
 

@@ -121,9 +121,7 @@ KeeperFinder._onFinishIndexingJob = function() {
     KeeperFinder._collection = KeeperFinder.Collection.createTypeBasedCollection(
         "default", KeeperFinder._database, [ "Message" ]);
     KeeperFinder._collection.addListener({
-        onItemsChanged: function() {
-            KeeperFinder.log(KeeperFinder._collection.countRestrictedItems());
-        }
+        onItemsChanged: KeeperFinder._onCollectionItemsChanged
     });
     
     var facetContainer = document.getElementById("keeperFinderPane-browsingLayer-facetContainer");
@@ -131,59 +129,29 @@ KeeperFinder._onFinishIndexingJob = function() {
         facetContainer.removeChild(facetContainer.firstChild);
     }
     
-    var appendFacet = function(settings) {
+    var appendFacet = function(name) {
         var vbox = document.createElement("vbox");
         vbox.style.width = "17em";
         facetContainer.appendChild(vbox);
         
-        var facet = new KeeperFinder.ListFacet(
-            KeeperFinder._database, 
-            KeeperFinder._collection, 
-            vbox, 
-            settings
+        var facet = KeeperFinder.FacetAdapters[name](
+            KeeperFinder._database,
+            KeeperFinder._collection,
+            vbox
         );
         
         var splitter = document.createElement("splitter");
         splitter.resizebefore = "closest";
+        splitter.className = "keeperfinder-facetContainer-splitter";
         facetContainer.appendChild(splitter);
+        
+        return facet;
     }
-    
-    appendFacet({
-        facetLabel:     "To/CC",
-        expression:     ".recipient",
-        sortMode:       "value",
-        sortDirection:  "forward",
-        showMissing:    true,
-        missingLabel:   "(No recipient)"
-    });
-    
-    appendFacet({
-        facetLabel:     "To/CC domain",
-        expression:     ".recipient.domain",
-        sortMode:       "value",
-        sortDirection:  "forward",
-        showMissing:    true,
-        missingLabel:   "(No domain)"
-    });
-    
-    appendFacet({
-        facetLabel:     "From",
-        expression:     ".author",
-        sortMode:       "value",
-        sortDirection:  "forward",
-        showMissing:    true,
-        missingLabel:   "(No sender)"
-    });
-    
-    appendFacet({
-        facetLabel:     "From domain",
-        expression:     ".author.domain",
-        sortMode:       "value",
-        sortDirection:  "forward",
-        showMissing:    true,
-        missingLabel:   "(No domain)"
-    });
-    
+    appendFacet("from domain");
+    appendFacet("from");
+    appendFacet("to/cc domain");
+    appendFacet("to/cc");
+    /*
     appendFacet({
         facetLabel:     "Tag",
         expression:     ".tag",
@@ -192,8 +160,55 @@ KeeperFinder._onFinishIndexingJob = function() {
         showMissing:    true,
         missingLabel:   "(No tag)"
     }, true);
+    */
     
     var spacer = document.createElement("spacer");
     spacer.style.width = "20px";
     facetContainer.appendChild(spacer);
 };
+
+KeeperFinder._onCollectionItemsChanged = function() {
+    var collection = KeeperFinder._collection;
+    var items = KeeperFinder._collection.getRestrictedItems()
+    KeeperFinder.log(items.size());
+    
+    try {    
+        RerootThreadPane();
+        initializeSearchBar();
+        
+        gSearchSession.clearScopes();
+        
+        var searchTerms = gSearchSession.searchTerms;
+        var searchTermsArray = searchTerms.QueryInterface(Components.interfaces.nsISupportsArray);
+        searchTermsArray.Clear();
+        
+        var termsArray = Components.classes["@mozilla.org/supports-array;1"].
+            createInstance(Components.interfaces.nsISupportsArray);
+            
+        var facets = collection.getFacets();
+        for (var i = 0; i < facets.length; i++) {
+            var facet = facets[i];
+            if ("getSearchTerm" in facet) {
+                termsArray.AppendElement(facet.getSearchTerm());
+            }
+        }
+            
+        var ioService = Components.classes["@mozilla.org/network/io-service;1"].
+            getService(Components.interfaces.nsIIOService);
+            
+        gSearchSession.addScopeTerm(
+            getScopeToUse(termsArray, KeeperFinder._selectedFolder, ioService.offline), 
+            KeeperFinder._selectedFolder
+        );
+        
+        for (var i = 0; i < termsArray.Count(); i++) {
+            gSearchSession.appendTerm(termsArray.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgSearchTerm));
+        }
+    
+        gDBView.searchSession = gSearchSession;
+        gSearchSession.search(msgWindow);
+    } catch (e) {
+        alert(e);
+    }
+};
+
