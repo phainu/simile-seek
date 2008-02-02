@@ -183,9 +183,10 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
     
     var tree = this._dom.valuesContainer;
     var treeView = new KeeperFinder.StaticListTreeView();
+    treeView._entries = entries;
     treeView.rowCount = entries.length;
     treeView.getCellText = function(row, column) {
-        var entry = entries[row];
+        var entry = this._entries[row];
         switch (column.id) {
         case "count-column":
             return entry.count;
@@ -195,7 +196,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
         return null;
     };
     treeView.getValue = function(row) {
-        return entries[row].value;
+        return this._entries[row].value;
     };
     tree.treeBoxObject.view = treeView;
     
@@ -259,6 +260,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
 KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     var restrictions = { selection: [], selectMissing: false };
     
+    var entries = view.wrappedJSObject._entries;
     var selection = view.selection;
     var rowCount = view.rowCount;
     for (var i = 0; i < rowCount; i++) {
@@ -269,6 +271,9 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
             } else {
                 restrictions.selection.push(value);
             }
+            entries[i].selected = true;
+        } else {
+            entries[i].selected = false;
         }
     }
     

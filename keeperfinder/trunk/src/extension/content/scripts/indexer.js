@@ -63,11 +63,12 @@ KeeperFinder.Indexer._performIndexingJob = function() {
 };
 
 KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
+    var messageID = "urn:message:" + msgHdr.messageKey;
     var item = {
         type:       "Message",
         label:      msgHdr.subject || "",
-        id:         msgHdr.messageId,
-        uri:        "urn:message:" + msgHdr.messageId
+        id:         messageID,
+        uri:        messageID
     };
     if (!msgHdr.isRead) {
         item.isNew = true;
@@ -204,7 +205,7 @@ KeeperFinder.Indexer._onFinishIndexingJob = function() {
     database.loadItems(entities, "");
     database.loadData({
         properties: {
-            "recipient": { valueType: "item" },
+            //"recipient": { valueType: "item" },
             "to": { valueType: "item" },
             "cc": { valueType: "item" },
             "author": { valueType: "item" }
