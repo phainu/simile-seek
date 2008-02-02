@@ -118,7 +118,9 @@ KeeperFinder.ListFacet.prototype.restrict = function(items) {
 };
 
 KeeperFinder.ListFacet.prototype.update = function(items) {
-    this._constructBody(this._computeFacet(items));
+    if (!this._changingSelection) {
+        this._constructBody(this._computeFacet(items));
+    }
 };
 
 KeeperFinder.ListFacet.prototype._computeFacet = function(items) {
@@ -169,7 +171,7 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
         function(elmt, evt, target) { self.clearAllRestrictions(); }
     );
     this._dom.valuesContainer.onselect = function() {
-        if (!self._updating) {
+        if (!self._constructingBody) {
             self._onSelectionChange(self._dom.valuesContainer.treeBoxObject.view.wrappedJSObject);
         }
         return true;
@@ -177,7 +179,7 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
 };
 
 KeeperFinder.ListFacet.prototype._constructBody = function(entries) {   
-    this._updating = true;
+    this._constructingBody = true;
     
     var tree = this._dom.valuesContainer;
     var treeView = new KeeperFinder.StaticListTreeView();
@@ -251,7 +253,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
     
     this._dom.setSelectionCount(this._valueSet.size() + (this._selectMissing ? 1 : 0));
     
-    this._updating = false;
+    this._constructingBody = false;
 };
 
 KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
@@ -269,7 +271,10 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
             }
         }
     }
+    
+    this._changingSelection = true;
     this.applyRestrictions(restrictions);
+    this._changingSelection = false;
 };
 
 KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {

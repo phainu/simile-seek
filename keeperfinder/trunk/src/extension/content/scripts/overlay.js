@@ -163,9 +163,9 @@ KeeperFinder._onCollectionItemsChanged = function() {
     var items = KeeperFinder._collection.getRestrictedItems()
     KeeperFinder.log(items.size());
     
-    try {    
-        RerootThreadPane();
+    try {
         initializeSearchBar();
+        RerootThreadPane();
         
         gSearchSession.clearScopes();
         
