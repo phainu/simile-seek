@@ -151,19 +151,10 @@ KeeperFinder._onFinishIndexingJob = function() {
     appendFacet("from");
     appendFacet("to/cc domain");
     appendFacet("to/cc");
-    /*
-    appendFacet({
-        facetLabel:     "Tag",
-        expression:     ".tag",
-        sortMode:       "value",
-        sortDirection:  "forward",
-        showMissing:    true,
-        missingLabel:   "(No tag)"
-    }, true);
-    */
+    appendFacet("tag");
     
     var spacer = document.createElement("spacer");
-    spacer.style.width = "20px";
+    spacer.style.width = "100px";
     facetContainer.appendChild(spacer);
 };
 

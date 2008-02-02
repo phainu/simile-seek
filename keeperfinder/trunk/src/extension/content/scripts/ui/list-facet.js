@@ -273,7 +273,14 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
 };
 
 KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
-    var sortValueFunction = function(a, b) { return a.selectionLabel.localeCompare(b.selectionLabel); };
+    var sortValueFunction = function(a, b) {
+        try {
+            return a.selectionLabel.localeCompare(b.selectionLabel)
+        } catch(e) {
+            KeeperFinder.log(a.value + " " + (typeof a.selectionLabel) + " " + a.selectionLabel);
+            return a.value.localeCompare(b.value); 
+        }
+    };
     if ("_orderMap" in this) {
         var orderMap = this._orderMap;
         

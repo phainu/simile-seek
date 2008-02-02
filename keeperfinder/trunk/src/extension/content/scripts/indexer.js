@@ -115,7 +115,7 @@ KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
             start = i + 1;
         }
     }
-    entityStrings.push(value.substring(start));
+    entityStrings.push(value.substr(start));
     
     for (var i = 0; i < entityStrings.length; i++) {
         var entityString = entityStrings[i].trim();
@@ -162,7 +162,12 @@ KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
 KeeperFinder.Indexer._appendValue = function(item, name, value) {
     if (name in item) {
         var a = item[name];
-        if (typeof a == "array") {
+        if (typeof a == "array" || (typeof a == "object" && "concat" in a)) {
+            for (var i = 0; i < a.length; i++) {
+                if (a[i] == value) {
+                    return;
+                }
+            }
             a.push(value);
         } else if (a != value) {
             item[name] = [ a, value ];
@@ -197,6 +202,14 @@ KeeperFinder.Indexer._onFinishIndexingJob = function() {
         entities.push(entity);
     }
     database.loadItems(entities, "");
+    database.loadData({
+        properties: {
+            "recipient": { valueType: "item" },
+            "to": { valueType: "item" },
+            "cc": { valueType: "item" },
+            "author": { valueType: "item" }
+        }
+    }, "");
     
     KeeperFinder.Indexer._indexingJob = null;
     

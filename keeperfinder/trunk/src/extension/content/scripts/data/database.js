@@ -381,12 +381,14 @@ KeeperFinder.Database._Impl.prototype._loadItem = function(itemEntry, indexFunct
             this._ensurePropertyExists(p, baseURI)._onNewData();
             
             var v = itemEntry[p];
-            if (v instanceof Array) {
-                for (var j = 0; j < v.length; j++) {
-                    indexFunction(id, p, v[j]);
+            if (v != undefined && v != null) {
+                if (typeof v == "array" || (typeof v == "object" && "concat" in v)) {
+                    for (var j = 0; j < v.length; j++) {
+                        indexFunction(id, p, v[j]);
+                    }
+                } else {
+                    indexFunction(id, p, v);
                 }
-            } else if (v != undefined && v != null) {
-                indexFunction(id, p, v);
             }
         }
     }
