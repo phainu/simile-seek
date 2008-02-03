@@ -3,3 +3,14 @@ a {
     text-decoration: underline;
     cursor: pointer;
 }
+
+div.keeperfinder-facet-quickFilter {
+    padding:    2px;
+    margin:     2px 0px;
+    background: white;
+}
+.keeperfinder-facet-quickFilter input {
+    border:     none;
+    font-size:  8pt;
+    width:      100%;
+}

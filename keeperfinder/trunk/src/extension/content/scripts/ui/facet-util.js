@@ -13,6 +13,10 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     header.childNodes[0].value = facetLabel;
     header.childNodes[1].onclick = onClearAllSelections;
     
+    var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
+    textbox.id = "";
+    parentVbox.appendChild(textbox);
+    
     var valuesContainer = document.getElementById("keeperFinder-facet-valuesContainer").cloneNode(true);
     valuesContainer.id = "";
     parentVbox.appendChild(valuesContainer);

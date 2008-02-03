@@ -265,7 +265,7 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     var rowCount = view.rowCount;
     for (var i = 0; i < rowCount; i++) {
         if (selection.isSelected(i)) {
-            var value = view.getValue(i);
+            var value = entries[i].value;
             if (value == null) {
                 restrictions.selectMissing = true;
             } else {
@@ -285,12 +285,7 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
 
 KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
     var sortValueFunction = function(a, b) {
-        try {
-            return a.selectionLabel.localeCompare(b.selectionLabel)
-        } catch(e) {
-            KeeperFinder.log(a.value + " " + (typeof a.selectionLabel) + " " + a.selectionLabel);
-            return a.value.localeCompare(b.value); 
-        }
+        return a.selectionLabel.localeCompare(b.selectionLabel)
     };
     if ("_orderMap" in this) {
         var orderMap = this._orderMap;

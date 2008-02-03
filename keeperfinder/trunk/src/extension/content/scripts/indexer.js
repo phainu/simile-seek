@@ -133,7 +133,7 @@ KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
             var greaterThan = entityString.indexOf(">");
             greaterThan = (greaterThan < 0) ? entityString.length : greaterThan;
             
-            label = entityString.substring(0, lessThan).trim().replace(/^"/, "").replace(/"$/, "");
+            label = entityString.substring(0, lessThan).trim().replace(/^["']+|["']+$/g, '');
             emailAddress = entityString.substring(lessThan + 1, greaterThan).toLowerCase();
             if (label.length == 0) {
                 label = emailAddress;
@@ -205,7 +205,7 @@ KeeperFinder.Indexer._onFinishIndexingJob = function() {
     database.loadItems(entities, "");
     database.loadData({
         properties: {
-            //"recipient": { valueType: "item" },
+            "recipient": { valueType: "item" },
             "to": { valueType: "item" },
             "cc": { valueType: "item" },
             "author": { valueType: "item" }

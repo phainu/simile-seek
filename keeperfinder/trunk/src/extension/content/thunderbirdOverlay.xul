@@ -129,6 +129,9 @@
                     <label value="" flex="1" />
                     <html:div style="display: none;"><html:a href="javascript:{}">reset</html:a></html:div>
                 </hbox>
+                <html:div class="keeperfinder-facet-quickFilter" id="keeperfinder-facet-quickFilter">
+                    <html:input />
+                </html:div>
                 <tree id="keeperFinder-facet-valuesContainer" class="keeperfinder-facet-valuesContainer" flex="1" seltype="multiple">
                     <treecols>
                         <treecol id="value-column" label="value" flex="1" />
