@@ -168,13 +168,20 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
         this._box,
         this._settings.facetLabel,
-        function(elmt, evt, target) { self.clearAllRestrictions(); }
+        function(elmt, evt, target) {
+            self._dom.filterInput.value = "";
+            self.clearAllRestrictions();
+        }
     );
     this._dom.valuesContainer.onselect = function() {
         if (!self._constructingBody) {
+            self._dom.filterInput.value = "";
             self._onSelectionChange(self._dom.valuesContainer.treeBoxObject.view.wrappedJSObject);
         }
         return true;
+    };
+    this._dom.filterInput.onkeyup = function() {
+        self._onFilterKeyUp();
     };
 };
 
@@ -182,22 +189,8 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
     this._constructingBody = true;
     
     var tree = this._dom.valuesContainer;
-    var treeView = new KeeperFinder.StaticListTreeView();
-    treeView._entries = entries;
-    treeView.rowCount = entries.length;
-    treeView.getCellText = function(row, column) {
-        var entry = this._entries[row];
-        switch (column.id) {
-        case "count-column":
-            return entry.count;
-        case "value-column":
-            return entry.selectionLabel;
-        }
-        return null;
-    };
-    treeView.getValue = function(row) {
-        return this._entries[row].value;
-    };
+    var treeView = KeeperFinder.ListFacet._createTreeView(this, entries);
+    treeView.setFilter(this._dom.filterInput.value);
     tree.treeBoxObject.view = treeView;
     
     var selection = treeView.selection;
@@ -260,7 +253,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
 KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     var restrictions = { selection: [], selectMissing: false };
     
-    var entries = view.wrappedJSObject._entries;
+    var entries = view.wrappedJSObject._filteredEntries;
     var selection = view.selection;
     var rowCount = view.rowCount;
     for (var i = 0; i < rowCount; i++) {
@@ -281,6 +274,11 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     this.applyRestrictions(restrictions);
     this._dom.setSelectionCount(selection.count);
     this._changingSelection = false;
+};
+
+KeeperFinder.ListFacet.prototype._onFilterKeyUp = function() {
+    var text = this._dom.filterInput.value;
+    this._dom.valuesContainer.treeBoxObject.view.wrappedJSObject.setFilter(text);
 };
 
 KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
@@ -328,3 +326,49 @@ KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
     
     return sortDirectionFunction;
 }
+
+KeeperFinder.ListFacet._createTreeView = function(facet, entries) {
+    var treeView = new KeeperFinder.StaticListTreeView();
+    treeView._entries = entries;
+    treeView._filteredEntries = entries;
+    treeView.rowCount = entries.length;
+    treeView.getCellText = function(row, column) {
+        var entry = this._filteredEntries[row];
+        switch (column.id) {
+        case "count-column":
+            return entry.count;
+        case "value-column":
+            return entry.selectionLabel;
+        }
+        return null;
+    };
+    treeView.getValue = function(row) {
+        return this._filteredEntries[row].value;
+    };
+    treeView.setFilter = function(text) {
+        text = text.trim().toLowerCase();
+        
+        var oldRowCount = this._filteredEntries.length;
+        if (text.length == 0) {
+            this._filteredEntries = this._entries;
+        } else {
+            this._filteredEntries = [];
+            for (var i = 0; i < this._entries.length; i++) {
+                var entry = this._entries[i];
+                if (entry.selectionLabel.toLowerCase().indexOf(text) >= 0) {
+                    this._filteredEntries.push(entry);
+                }
+            }
+        }
+        this.rowCount = this._filteredEntries.length;
+        
+        if ("treebox" in this) {
+            this.treebox.beginUpdateBatch();
+            this.treebox.rowCountChanged(0, -oldRowCount);
+            this.treebox.rowCountChanged(0, this.rowCount);
+            this.treebox.endUpdateBatch();
+        }
+    };
+    
+    return treeView;
+};

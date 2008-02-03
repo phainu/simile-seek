@@ -23,6 +23,7 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     
     return {
         valuesContainer: valuesContainer,
+        filterInput: textbox.getElementsByTagName("input")[0],
         setSelectionCount: function(count) {
             header.childNodes[1].style.display = (count > 0) ? "block" : "none";
         }
