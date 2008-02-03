@@ -279,6 +279,7 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     
     this._changingSelection = true;
     this.applyRestrictions(restrictions);
+    this._dom.setSelectionCount(selection.count);
     this._changingSelection = false;
 };
 

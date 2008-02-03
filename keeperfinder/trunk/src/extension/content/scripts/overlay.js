@@ -103,11 +103,29 @@ KeeperFinder.onStartIndexingFolder = function() {
     var deck = document.getElementById("keeperFinderPane-deck");
     deck.selectedIndex = 2; // indexing UI
     
+    var remainingLabel = document.getElementById("keeperFinderPane-indexingLayer-remaining");
+    remainingLabel.value = "";
+    
+    var start = new Date().getTime();
+    
     KeeperFinder._database = KeeperFinder.Database.create();
     KeeperFinder.Indexer.startIndexingJob(
         KeeperFinder._database, 
         KeeperFinder._selectedFolder,
         function(percent) {
+            if (percent > 5) {
+                var now = new Date().getTime();
+                var ellapsed = (now - start) / 1000; // in seconds
+                var remaining = Math.ceil(ellapsed * (100 - percent) / percent);
+                if (remaining >= 120) {
+                    remainingLabel.value = Math.floor(remaining / 60) + " minutes";
+                } else if (remaining > 60) {
+                    var seconds = remaining - 60;
+                    remainingLabel.value = "1 minute " + seconds + " seconds";
+                } else {
+                    remainingLabel.value = remaining + " seconds";
+                }
+            }
             progress.value = percent;
         },
         KeeperFinder._onFinishIndexingJob

@@ -79,7 +79,10 @@
                 <spacer flex="1" />
                 <vbox style="width: 20em;">
                     <spacer flex="1" />
-                    <description>Sorry, KeeperFinder is not supported on this folder.</description>
+                    <description>
+                        Sorry, either KeeperFinder is not supported on this folder or 
+                        something in KeeperFinder is broken.
+                    </description>
                     <spacer flex="1" />
                 </vbox>
                 <spacer flex="1" />
@@ -103,6 +106,7 @@
                     <spacer flex="1" />
                     <label value="Indexing folder..." />
                     <progressmeter id="keeperFinderPane-indexingLayer-progress" mode="determined" value="0%" />
+                    <label value="" id="keeperFinderPane-indexingLayer-remaining" />
                     <spacer flex="1" />
                 </vbox>
                 <spacer flex="1" />
