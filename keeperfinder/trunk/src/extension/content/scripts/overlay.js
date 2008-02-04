@@ -44,23 +44,14 @@ KeeperFinder.onLoad = function() {
 };
 window.addEventListener("load", function(e) { KeeperFinder.onLoad(e); }, false);
 
-KeeperFinder.showContextMenu = function(event) {
-    // show or hide the menuitem based on what the context menu is on
-    // see http://kb.mozillazine.org/Adding_items_to_menus
-    document.getElementById("context-keeperfinder").hidden = (GetNumSelectedMessages() > 0);
-};
-
-KeeperFinder.onMenuItemCommand = function(e) {
-    var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  .getService(Components.interfaces.nsIPromptService);
-    promptService.alert(window, this.strings.getString("helloMessageTitle"),
-                                this.strings.getString("helloMessage"));
-};
-
-KeeperFinder.onToolbarButtonCommand = function(e) {
-    // just reuse the function above.  you can change this, obviously!
-    keeperfinder.onMenuItemCommand(e);
-};
+KeeperFinder.onToggleKeeperFinder = function(menuItem) {
+    var checked = (menuItem.getAttribute("checked") == "true");
+    var deck = document.getElementById("keeperFinderPane-deck");
+    var splitter = document.getElementById("keeperFinder-mainSplitter");
+    
+    deck.hidden = !checked;
+    splitter.hidden = !checked;
+}
 
 KeeperFinder._getCurrentlySelectedFolder = function() {
     var folderTree = GetFolderTree();

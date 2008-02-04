@@ -46,35 +46,30 @@
     </stringbundleset>
 
     <menupopup id="taskPopup">
-        <menuitem id="keeperfinder-hello" 
-            label="&keeperfinder.label;" 
-            oncommand="keeperfinder.onMenuItemCommand(event);"
+        <menuitem id="keeperFinder-theMenuItem" 
+            label="&keeperFinder.theMenuItem.label;" 
+            accesskey="&keeperFinder.theMenuItem.accesskey;"
+            oncommand="KeeperFinder.onToggleKeeperFinder(event.target)" 
+            type="checkbox" 
+            checked="false"
+            key="keeperFinder-theKey"
+            insertafter="applyFilters"
+            />
+        <menuseparator 
+            insertafter="applyFilters"
             />
     </menupopup>
     
-    <popup id="threadPaneContext">
-        <menuitem id="context-keeperfinder" 
-            label="&keeperfinderContext.label;"
-            accesskey="&keeperfinderContext.accesskey;"
-            oncommand="keeperfinder.onMenuItemCommand(event)"
+    <keyset id="mailKeys">
+        <key id="keeperFinder-theKey"
+            key="&keeperFinder-theKey;"
+            oncommand="KeeperFinder.onToggleKeeperFinder(event.target)" 
+            modifiers="accel"
             />
-    </popup>
+    </keyset>
     
-    <toolbarpalette id="MailToolbarPalette">
-        <toolbarbutton id="keeperfinder-toolbar-button"
-            label="&keeperfinderToolbar.label;"
-            tooltiptext="&keeperfinderToolbar.tooltip;"
-            oncommand="keeperfinder.onToolbarButtonCommand()"
-            class="toolbarbutton-1 chromeclass-toolbar-additional"
-            />
-    </toolbarpalette>
-    
-    <!--
-    <vbox id="threadPaneBox">
-        <deck id="keeperFinderPane-deck" insertbefore="threadTree" flex="1">
-    -->
     <window id="messengerWindow">
-        <deck id="keeperFinderPane-deck" insertbefore="mailContentWrapper" flex="1">
+        <deck id="keeperFinderPane-deck" insertbefore="mailContentWrapper" flex="1" hidden="true">
             <hbox id="keeperFinderPane-noSupportLayer">
                 <spacer flex="1" />
                 <vbox style="width: 20em;">
@@ -141,6 +136,6 @@
                 </tree>
             </box>
         </deck>
-        <splitter insertbefore="mailContentWrapper" id="keeperFinder-mainSplitter" />
+        <splitter insertbefore="mailContentWrapper" id="keeperFinder-mainSplitter" hidden="true" />
     </window>
 </overlay>
