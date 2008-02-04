@@ -106,7 +106,7 @@ KeeperFinder.FacetAdapters["to/cc"] = function(database, collection, box) {
             expression:     ".recipient",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No recipient)"
         }
     );
@@ -128,7 +128,7 @@ KeeperFinder.FacetAdapters["to/cc name"] = function(database, collection, box) {
             expression:     ".recipient.label",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No recipient)"
         }
     );
@@ -150,7 +150,7 @@ KeeperFinder.FacetAdapters["to/cc domain"] = function(database, collection, box)
             expression:     ".recipient.domain",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No domain)"
         }
     );
@@ -172,7 +172,7 @@ KeeperFinder.FacetAdapters["from"] = function(database, collection, box) {
             expression:     ".author",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No sender)"
         }
     );
@@ -194,7 +194,7 @@ KeeperFinder.FacetAdapters["from name"] = function(database, collection, box) {
             expression:     ".author.label",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No sender)"
         }
     );
@@ -216,7 +216,7 @@ KeeperFinder.FacetAdapters["from domain"] = function(database, collection, box) 
             expression:     ".author.domain",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No domain)"
         }
     );
@@ -238,7 +238,7 @@ KeeperFinder.FacetAdapters["tag"] = function(database, collection, box) {
             expression:     ".tag",
             sortMode:       "value",
             sortDirection:  "forward",
-            showMissing:    true,
+            showMissing:    false,
             missingLabel:   "(No tag)"
         }
     );
