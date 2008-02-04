@@ -1,3 +1,13 @@
 <!ENTITY keeperFinder.theMenuItem.label "KeeperFinder">
 <!ENTITY keeperFinder.theMenuItem.accesskey "K">
 <!ENTITY keeperFinder-theKey "K">
+
+<!ENTITY keeperFinder.cantUseKeeperFinderMessage "Sorry, either KeeperFinder is not supported on this folder or something in KeeperFinder is broken.">
+
+<!ENTITY keeperFinder.startIndexingMessage "To use KeeperFinder on this folder, we need to index the folder first. This may take a few minutes.">
+<!ENTITY keeperFinder.startIndexingButton.label "Start Indexing">
+
+<!ENTITY keeperFinder.indexingMessage "Indexing folder...">
+<!ENTITY keeperFinder.cancelIndexingButton.label "Cancel">
+
+<!ENTITY keeperFinder.resetFacetLink.label "reset">

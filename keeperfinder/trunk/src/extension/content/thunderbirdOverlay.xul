@@ -74,10 +74,7 @@
                 <spacer flex="1" />
                 <vbox style="width: 20em;">
                     <spacer flex="1" />
-                    <description>
-                        Sorry, either KeeperFinder is not supported on this folder or 
-                        something in KeeperFinder is broken.
-                    </description>
+                    <description>&keeperFinder.cantUseKeeperFinderMessage;</description>
                     <spacer flex="1" />
                 </vbox>
                 <spacer flex="1" />
@@ -86,9 +83,9 @@
                 <spacer flex="1" />
                 <vbox style="width: 25em;">
                     <spacer flex="1" />
-                    <description>To use KeeperFinder on this folder, we need to index the folder first. This may take a few minutes.</description>
+                    <description>&keeperFinder.startIndexingMessage;</description>
                     <hbox>
-                        <button label="Start Indexing" oncommand="KeeperFinder.onStartIndexingFolder();" />
+                        <button label="&keeperFinder.startIndexingButton.label;" oncommand="KeeperFinder.onStartIndexingFolder();" />
                         <spacer flex="1" />
                     </hbox>
                     <spacer flex="1" />
@@ -97,11 +94,14 @@
             </hbox>
             <hbox id="keeperFinderPane-indexingLayer">
                 <spacer flex="1" />
-                <vbox style="width: 15em;">
+                <vbox style="width: 25em;">
                     <spacer flex="1" />
-                    <label value="Indexing folder..." />
+                    <label value="&keeperFinder.indexingMessage;" />
                     <progressmeter id="keeperFinderPane-indexingLayer-progress" mode="determined" value="0%" />
-                    <label value="" id="keeperFinderPane-indexingLayer-remaining" />
+                    <hbox>
+                        <label value="" id="keeperFinderPane-indexingLayer-remaining" flex="1" />
+                        <button label="&keeperFinder.cancelIndexingButton.label;" oncommand="KeeperFinder.onCancelIndexing()" />
+                    </hbox>
                     <spacer flex="1" />
                 </vbox>
                 <spacer flex="1" />
@@ -122,7 +122,7 @@
             <box hidden="true">
                 <hbox id="keeperFinder-facet-header">
                     <label value="" flex="1" />
-                    <html:div style="display: none;"><html:a href="javascript:{}">reset</html:a></html:div>
+                    <html:div style="display: none;"><html:a href="javascript:{}">&keeperFinder.resetFacetLink.label;</html:a></html:div>
                 </hbox>
                 <html:div class="keeperfinder-facet-quickFilter" id="keeperfinder-facet-quickFilter">
                     <html:input />

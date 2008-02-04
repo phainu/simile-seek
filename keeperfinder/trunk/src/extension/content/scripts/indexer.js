@@ -22,7 +22,7 @@ KeeperFinder.Indexer.startIndexingJob = function(database, msgFolder, onProgress
 
 KeeperFinder.Indexer.cancelIndexingJob = function() {
     if (KeeperFinder.Indexer._indexingTimerID != null) {
-        window.cancelTimeout(KeeperFinder.Indexer._indexingTimerID);
+        window.clearTimeout(KeeperFinder.Indexer._indexingTimerID);
         KeeperFinder.Indexer._indexingTimerID = null;
     }
     KeeperFinder.Indexer._indexingJob = null;

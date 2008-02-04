@@ -109,18 +109,37 @@ KeeperFinder.onStartIndexingFolder = function() {
                 var ellapsed = (now - start) / 1000; // in seconds
                 var remaining = Math.ceil(ellapsed * (100 - percent) / percent);
                 if (remaining >= 120) {
-                    remainingLabel.value = Math.floor(remaining / 60) + " minutes";
+                    remainingLabel.value = String.substitute(
+                        KeeperFinder.strings.getString("keeperFinder.remainingTime.minutes"),
+                        [ Math.floor(remaining / 60) ]
+                    );
                 } else if (remaining > 60) {
                     var seconds = remaining - 60;
-                    remainingLabel.value = "1 minute " + seconds + " seconds";
+                    remainingLabel.value = String.substitute(
+                        KeeperFinder.strings.getString("keeperFinder.remainingTime.oneMinuteMore"),
+                        [ seconds ]
+                    );
+                } else if (remaining > 1) {
+                    remainingLabel.value = String.substitute(
+                        KeeperFinder.strings.getString("keeperFinder.remainingTime.seconds"),
+                        [ remaining ]
+                    );
                 } else {
-                    remainingLabel.value = remaining + " seconds";
+                    remainingLabel.value =
+                        KeeperFinder.strings.getString("keeperFinder.remainingTime.almostDone");
                 }
             }
             progress.value = percent;
         },
         KeeperFinder._onFinishIndexingJob
     );
+};
+
+KeeperFinder.onCancelIndexing = function() {
+    KeeperFinder.Indexer.cancelIndexingJob();
+    
+    var deck = document.getElementById("keeperFinderPane-deck");
+    deck.selectedIndex = 1;
 };
 
 KeeperFinder._onFinishIndexingJob = function() {
