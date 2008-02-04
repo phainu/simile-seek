@@ -15,6 +15,7 @@
  * */
 
 var KeeperFinder = {
+    _visible:           false,
     _selectedFolder:    null,
     _database:          null
 };
@@ -45,12 +46,14 @@ KeeperFinder.onLoad = function() {
 window.addEventListener("load", function(e) { KeeperFinder.onLoad(e); }, false);
 
 KeeperFinder.onToggleKeeperFinder = function(menuItem) {
-    var checked = (menuItem.getAttribute("checked") == "true");
+    KeeperFinder._visible = !KeeperFinder._visible;
+    
     var deck = document.getElementById("keeperFinderPane-deck");
     var splitter = document.getElementById("keeperFinder-mainSplitter");
     
-    deck.hidden = !checked;
-    splitter.hidden = !checked;
+    menuItem.setAttribute("checked", KeeperFinder._visible);
+    deck.hidden = !KeeperFinder._visible;
+    splitter.hidden = !KeeperFinder._visible;
 }
 
 KeeperFinder._getCurrentlySelectedFolder = function() {
