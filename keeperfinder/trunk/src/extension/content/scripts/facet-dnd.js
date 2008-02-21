@@ -12,6 +12,7 @@ KeeperFinder.startDraggingFacet = function(event, facet, box) {
     
     var facetWidth = box.boxObject.width;
     var facetHeight = box.boxObject.height;
+    KeeperFinder._draggingFacet.facetWidth = facetWidth;
     
     var facetContainer = KeeperFinder._getFacetContainer();
     var scrollBoxObject = facetContainer.boxObject.QueryInterface(Components.interfaces.nsIScrollBoxObject);
@@ -89,6 +90,7 @@ KeeperFinder.onWindowMouseUp = function(event) {
         var before = facetContainer.childNodes[insertIndex * 2];
         facetContainer.insertBefore(KeeperFinder._draggingFacet.box, before);
         facetContainer.insertBefore(KeeperFinder.FacetUtilities.createFacetSplitter(), before);
+        KeeperFinder._draggingFacet.box.style.width = KeeperFinder._draggingFacet.facetWidth + "px";
         KeeperFinder._draggingFacet.box = null;
         
         if (KeeperFinder._draggingFacet.sourceIndex != newTargetIndex) {

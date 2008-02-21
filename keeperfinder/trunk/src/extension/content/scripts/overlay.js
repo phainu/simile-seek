@@ -37,6 +37,15 @@ KeeperFinder.exception = function(e) {
             .logMessage(e);
 };
 
+KeeperFinder.cancelEvent = function(evt) {
+    evt.returnValue = false;
+    evt.cancelBubble = true;
+    if ("preventDefault" in evt) {
+        evt.preventDefault();
+    }
+    return false;
+};
+
 KeeperFinder.onLoad = function() {
     // initialization code
     KeeperFinder.initialized = true;

@@ -179,7 +179,10 @@ KeeperFinder.ListFacet.prototype.refresh = function() {
 
 KeeperFinder.ListFacet.prototype._registerEventListeners = function() {   
     var self = this;
-    this._dom.reset.onclick = function() {
+    this._dom.reset.onmousedown = function(event) {
+        return KeeperFinder.cancelEvent(event);
+    };
+    this._dom.reset.onclick = function(event) {
         self._dom.filterInput.value = "";
         self.clearAllRestrictions();
     };
