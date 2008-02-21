@@ -6,12 +6,18 @@
  */
 KeeperFinder.FacetUtilities = new Object();
 
-KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, onClearAllSelections) {
+KeeperFinder.FacetUtilities.createFacetSplitter = function() {
+    var splitter = document.createElement("splitter");
+    splitter.setAttribute("resizeafter", "grow");
+    splitter.className = "keeperfinder-facetContainer-splitter";
+    return splitter;
+};
+
+KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel) {
     var header = document.getElementById("keeperFinder-facet-header").cloneNode(true);
     header.id = "";
     parentVbox.appendChild(header);
     header.childNodes[0].value = facetLabel;
-    header.childNodes[1].onclick = onClearAllSelections;
     
     var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
     textbox.id = "";
@@ -22,6 +28,8 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     parentVbox.appendChild(valuesContainer);
     
     return {
+        reset: header.childNodes[1],
+        header: header,
         valuesContainer: valuesContainer,
         filterInput: textbox.getElementsByTagName("input")[0],
         setSelectionCount: function(count) {

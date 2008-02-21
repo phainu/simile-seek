@@ -119,7 +119,8 @@ KeeperFinder.ListFacet.prototype.restrict = function(items) {
 
 KeeperFinder.ListFacet.prototype.update = function(items) {
     if (!this._changingSelection) {
-        this._constructBody(this._computeFacet(items));
+        this._entries = this._computeFacet(items);
+        this._constructBody();
     }
 };
 
@@ -164,15 +165,24 @@ KeeperFinder.ListFacet.prototype._notifyCollection = function() {
 };
 
 KeeperFinder.ListFacet.prototype._initializeUI = function() {
-    var self = this;
     this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
         this._box,
-        this._settings.facetLabel,
-        function(elmt, evt, target) {
-            self._dom.filterInput.value = "";
-            self.clearAllRestrictions();
-        }
+        this._settings.facetLabel
     );
+    this._registerEventListeners();
+};
+
+KeeperFinder.ListFacet.prototype.refresh = function() { 
+    this._registerEventListeners();  
+    this._constructBody();
+};
+
+KeeperFinder.ListFacet.prototype._registerEventListeners = function() {   
+    var self = this;
+    this._dom.reset.onclick = function() {
+        self._dom.filterInput.value = "";
+        self.clearAllRestrictions();
+    };
     this._dom.valuesContainer.onselect = function() {
         if (!self._constructingBody) {
             self._dom.filterInput.value = "";
@@ -183,11 +193,15 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._dom.filterInput.onkeyup = function() {
         self._onFilterKeyUp();
     };
+    this._dom.header.onmousedown = function(e) {
+        KeeperFinder.startDraggingFacet(e, self, self._box);
+    };
 };
 
-KeeperFinder.ListFacet.prototype._constructBody = function(entries) {   
+KeeperFinder.ListFacet.prototype._constructBody = function() {   
     this._constructingBody = true;
     
+    var entries = this._entries;
     var tree = this._dom.valuesContainer;
     var treeView = KeeperFinder.ListFacet._createTreeView(this, entries);
     treeView.setFilter(this._dom.filterInput.value);
@@ -222,18 +236,18 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
             entries.sort(function(a, b) {
                 return b.count - a.count;
             });
-            self._constructBody(entries);
+            self._constructBody();
         };
         valueColumn.onclick = function() {
             self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
             entries.reverse();
-            self._constructBody(entries);
+            self._constructBody();
         };
     } else {
         countColumn.onclick = function() {
             self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
             entries.reverse();
-            self._constructBody(entries);
+            self._constructBody();
         };
         valueColumn.onclick = function() {
             self._settings.sortMode = "value";
@@ -241,7 +255,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function(entries) {
             entries.sort(function(a, b) {
                 return a.selectionLabel.localeCompare(b.selectionLabel);
             });
-            self._constructBody(entries);
+            self._constructBody();
         };
     }
     

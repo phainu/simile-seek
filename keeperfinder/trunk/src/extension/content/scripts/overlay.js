@@ -17,7 +17,8 @@
 var KeeperFinder = {
     _visible:           false,
     _selectedFolder:    null,
-    _database:          null
+    _database:          null,
+    _facets:            []    
 };
 
 KeeperFinder.log = function(msg) {
@@ -38,12 +39,13 @@ KeeperFinder.exception = function(e) {
 
 KeeperFinder.onLoad = function() {
     // initialization code
-    this.initialized = true;
-    this.strings = document.getElementById("keeperfinder-strings");
-    document.getElementById("threadPaneContext")
-            .addEventListener("popupshowing", function(e) { this.showContextMenu(e); }, false);
+    KeeperFinder.initialized = true;
+    KeeperFinder.strings = document.getElementById("keeperfinder-strings");
+    
+    window.addEventListener("mousemove", KeeperFinder.onWindowMouseMove, false);
+    window.addEventListener("mouseup", KeeperFinder.onWindowMouseUp, false);
 };
-window.addEventListener("load", function(e) { KeeperFinder.onLoad(e); }, false);
+window.addEventListener("load", KeeperFinder.onLoad, false);
 
 KeeperFinder.onToggleKeeperFinder = function(menuItem) {
     KeeperFinder._visible = !KeeperFinder._visible;
@@ -91,6 +93,8 @@ FolderPaneSelectionChange = function() {
 };
 
 KeeperFinder.onStartIndexingFolder = function() {
+    KeeperFinder._disposeFacets();
+    
     var progress = document.getElementById("keeperFinderPane-indexingLayer-progress");
     progress.value = 0;
     
@@ -145,6 +149,22 @@ KeeperFinder.onCancelIndexing = function() {
     deck.selectedIndex = 1;
 };
 
+KeeperFinder._disposeFacets = function() {
+    for (var i = 0; i < KeeperFinder._facets.length; i++) {
+        KeeperFinder._facets[i].dispose();
+    }
+    KeeperFinder._facets = [];
+    
+    var facetContainer = KeeperFinder._getFacetContainer();
+    while (facetContainer.firstChild != null) {
+        facetContainer.removeChild(facetContainer.firstChild);
+    }
+}
+
+KeeperFinder._getFacetContainer = function() {
+    return document.getElementById("keeperFinderPane-browsingLayer-facetContainer");
+};
+
 KeeperFinder._onFinishIndexingJob = function() {
     var deck = document.getElementById("keeperFinderPane-deck");
     deck.selectedIndex = 3;
@@ -155,11 +175,7 @@ KeeperFinder._onFinishIndexingJob = function() {
         onItemsChanged: KeeperFinder._onCollectionItemsChanged
     });
     
-    var facetContainer = document.getElementById("keeperFinderPane-browsingLayer-facetContainer");
-    while (facetContainer.firstChild != null) {
-        facetContainer.removeChild(facetContainer.firstChild);
-    }
-    
+    var facetContainer = KeeperFinder._getFacetContainer();
     var appendFacet = function(name) {
         var vbox = document.createElement("vbox");
         vbox.style.width = "17em";
@@ -171,10 +187,9 @@ KeeperFinder._onFinishIndexingJob = function() {
             vbox
         );
         
-        var splitter = document.createElement("splitter");
-        splitter.resizebefore = "closest";
-        splitter.className = "keeperfinder-facetContainer-splitter";
-        facetContainer.appendChild(splitter);
+        facetContainer.appendChild(KeeperFinder.FacetUtilities.createFacetSplitter());
+        
+        KeeperFinder._facets.push(facet);
         
         return facet;
     }
@@ -185,7 +200,7 @@ KeeperFinder._onFinishIndexingJob = function() {
     appendFacet("tag");
     
     var spacer = document.createElement("spacer");
-    spacer.style.width = "100px";
+    spacer.style.width = "5px";
     facetContainer.appendChild(spacer);
 };
 
@@ -233,4 +248,3 @@ KeeperFinder._onCollectionItemsChanged = function() {
         alert(e);
     }
 };
-

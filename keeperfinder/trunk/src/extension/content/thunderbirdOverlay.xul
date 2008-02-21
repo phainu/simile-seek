@@ -24,6 +24,7 @@
     xmlns:html="http://www.w3.org/1999/xhtml">
     
     <script src="scripts/overlay.js"/>
+    <script src="scripts/facet-dnd.js"/>
     <script src="scripts/indexer.js"/>
     <script src="scripts/facet-adapters.js"/>
     
@@ -107,8 +108,8 @@
                 <spacer flex="1" />
             </hbox>
             <hbox id="keeperFinderPane-browsingLayer">
-                <hbox flex="1" style="overflow: auto;" id="keeperFinderPane-browsingLayer-facetContainer">
-                </hbox>
+                <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="keeperFinderPane-browsingLayer-facetContainer">
+                </scrollbox>
                 <vbox>
                     <groupbox>
                         <caption label="Also Include" />
@@ -120,7 +121,7 @@
                 </vbox>
             </hbox>
             <box hidden="true">
-                <hbox id="keeperFinder-facet-header">
+                <hbox id="keeperFinder-facet-header" class="keeperFinder-facet-header">
                     <label value="" flex="1" />
                     <html:div style="display: none;"><html:a href="javascript:{}">&keeperFinder.resetFacetLink.label;</html:a></html:div>
                 </hbox>

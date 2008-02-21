@@ -44,3 +44,10 @@ splitter.keeperfinder-facetContainer-splitter {
     border-left: none;
     border-right: none;
 }
+
+.keeperFinder-facet-header {
+    cursor: move;
+}
+.keeperFinder-facet-header label {
+    cursor: move;
+}
