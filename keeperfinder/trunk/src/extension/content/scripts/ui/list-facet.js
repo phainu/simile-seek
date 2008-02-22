@@ -167,7 +167,8 @@ KeeperFinder.ListFacet.prototype._notifyCollection = function() {
 KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
         this._box,
-        this._settings.facetLabel
+        this._settings.facetLabel,
+        true
     );
     this._registerEventListeners();
 };

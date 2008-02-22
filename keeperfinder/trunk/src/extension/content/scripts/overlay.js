@@ -15,6 +15,29 @@
  * */
 
 var KeeperFinder = {
+    possibleFacets: {
+        "from domain" : {
+            showInitially: false
+        },
+        "from" : {
+            showInitially: true
+        },
+        "to/cc domain" : {
+            showInitially: false
+        },
+        "to/cc" : {
+            showInitially: true
+        },
+        "tag" : {
+            showInitially: true
+        },
+        "recency" : {
+            showInitially: true
+        }/*,
+        "to/cc me" : {
+            showInitially: true
+        }*/
+    },
     _visible:           false,
     _selectedFolder:    null,
     _database:          null,
@@ -202,11 +225,12 @@ KeeperFinder._onFinishIndexingJob = function() {
         
         return facet;
     }
-    appendFacet("from domain");
+    //appendFacet("from domain");
     appendFacet("from");
-    appendFacet("to/cc domain");
+    //appendFacet("to/cc domain");
     appendFacet("to/cc");
     appendFacet("tag");
+    appendFacet("recency");
     
     var spacer = document.createElement("spacer");
     spacer.style.width = "5px";
@@ -216,7 +240,6 @@ KeeperFinder._onFinishIndexingJob = function() {
 KeeperFinder._onCollectionItemsChanged = function() {
     var collection = KeeperFinder._collection;
     var items = KeeperFinder._collection.getRestrictedItems()
-    KeeperFinder.log(items.size());
     
     try {
         initializeSearchBar();

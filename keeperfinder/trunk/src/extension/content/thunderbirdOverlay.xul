@@ -41,6 +41,7 @@
     
     <script src="scripts/ui/facet-util.js"/>
     <script src="scripts/ui/list-facet.js"/>
+    <script src="scripts/ui/recency-facet.js"/>
     
     <stringbundleset id="stringbundleset">
         <stringbundle id="keeperfinder-strings" src="chrome://keeperfinder/locale/keeperfinder.properties"/>

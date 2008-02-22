@@ -68,7 +68,8 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
         type:       "Message",
         label:      msgHdr.subject || "",
         id:         messageID,
-        uri:        messageID
+        uri:        messageID,
+        date:       msgHdr.dateInSeconds * 1000
     };
     if (!msgHdr.isRead) {
         item.isNew = true;

@@ -266,3 +266,36 @@ KeeperFinder.FacetAdapters["tag"] = function(database, collection, box) {
     };
     return facet;
 };
+
+KeeperFinder.FacetAdapters["recency"] = function(database, collection, box) {
+    var facet = new KeeperFinder.RecencyFacet(
+        database, 
+        collection, 
+        box, 
+        {
+            facetLabel:     "Recency",
+            expression:     ".date"
+        }
+    );
+    
+    facet.getSearchTerm = function() {
+        var selection = this._selection;
+        
+        var searchTerm = new KeeperFinder.SearchTerm(
+            Components.interfaces.nsMsgSearchAttrib.Date, 
+            Components.interfaces.nsMsgSearchOp.IsGreaterThan);
+            
+        if (selection == null) {
+            searchTerm.matchDate = function(aTime) { return true; };
+        } else {
+            var from = KeeperFinder.RecencyFacet.computeRecency()[selection];
+            
+            searchTerm.matchDate = function(aTime) { 
+                aTime = aTime / 1000;
+                return aTime >= from;
+            };
+        }
+        return searchTerm;
+    };
+    return facet;
+};

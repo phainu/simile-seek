@@ -13,29 +13,36 @@ KeeperFinder.FacetUtilities.createFacetSplitter = function() {
     return splitter;
 };
 
-KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel) {
+KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, hasFilter) {
     var header = document.getElementById("keeperFinder-facet-header").cloneNode(true);
     header.id = "";
     parentVbox.appendChild(header);
     header.childNodes[0].value = facetLabel;
     
-    var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
-    textbox.id = "";
-    parentVbox.appendChild(textbox);
+    if (hasFilter) {
+        var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
+        textbox.id = "";
+        parentVbox.appendChild(textbox);
+    }
     
     var valuesContainer = document.getElementById("keeperFinder-facet-valuesContainer").cloneNode(true);
     valuesContainer.id = "";
     parentVbox.appendChild(valuesContainer);
     
-    return {
+    var r = {
         reset: header.childNodes[1],
         header: header,
         valuesContainer: valuesContainer,
-        filterInput: textbox.getElementsByTagName("input")[0],
         setSelectionCount: function(count) {
             header.childNodes[1].style.display = (count > 0) ? "block" : "none";
         }
     };
+    
+    if (hasFilter) {
+        r.filterInput = textbox.getElementsByTagName("input")[0];
+    }
+    
+    return r;
 };
 
 KeeperFinder.FacetUtilities.constructFacetItem = function(
