@@ -145,8 +145,7 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
     
     var tags = msgHdr.getStringProperty("keywords");
     if (tags.length > 0 && tags != "nonjunk") {
-        tags.replace(/nonjunk/g, "");
-        item.tag = tags.split(" ");
+        item.tag = tags.replace(/nonjunk/g, "").trim().split(" ");
     }
     
     items.push(item);

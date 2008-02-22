@@ -228,11 +228,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function() {
     var selection = treeView.selection;
     for (var i = 0; i < entries.length; i++) {
         if (entries[i].selected) {
-            if (this._settings.selectMultiple) {
-                selection.select(i);
-            } else {
-                selection.currentIndex = i;
-            }
+            selection.select(i);
         }
     }
     
