@@ -38,6 +38,9 @@ KeeperFinder.ListFacet = function(database, collection, box, settings) {
 KeeperFinder.ListFacet._settingSpecs = {
     "facetLabel":       { type: "text" },
     "fixedOrder":       { type: "text" },
+    "filterable":       { type: "boolean", defaultValue: true },
+    "selectMultiple":   { type: "boolean", defaultValue: true },
+    "sortable":         { type: "boolean", defaultValue: true },
     "sortMode":         { type: "text", defaultValue: "value" },
     "sortDirection":    { type: "text", defaultValue: "forward" },
     "showMissing":      { type: "boolean", defaultValue: true },
@@ -168,8 +171,11 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
         this._box,
         this._settings.facetLabel,
-        true
+        this._settings.filterable
     );
+    if (!this._settings.selectMultiple) {
+        this._dom.valuesContainer.selType = "single";
+    }
     this._registerEventListeners();
 };
 
@@ -184,19 +190,25 @@ KeeperFinder.ListFacet.prototype._registerEventListeners = function() {
         return KeeperFinder.cancelEvent(event);
     };
     this._dom.reset.onclick = function(event) {
-        self._dom.filterInput.value = "";
+        if (self._settings.filterable) {
+            self._dom.filterInput.value = "";
+        }
         self.clearAllRestrictions();
     };
     this._dom.valuesContainer.onselect = function() {
         if (!self._constructingBody) {
-            self._dom.filterInput.value = "";
+            if (self._settings.filterable) {
+                self._dom.filterInput.value = "";
+            }
             self._onSelectionChange(self._dom.valuesContainer.treeBoxObject.view.wrappedJSObject);
         }
         return true;
     };
-    this._dom.filterInput.onkeyup = function() {
-        self._onFilterKeyUp();
-    };
+    if (this._settings.filterable) {
+        this._dom.filterInput.onkeyup = function() {
+            self._onFilterKeyUp();
+        };
+    }
     this._dom.header.onmousedown = function(e) {
         KeeperFinder.startDraggingFacet(e, self, self._box);
     };
@@ -208,13 +220,19 @@ KeeperFinder.ListFacet.prototype._constructBody = function() {
     var entries = this._entries;
     var tree = this._dom.valuesContainer;
     var treeView = KeeperFinder.ListFacet._createTreeView(this, entries);
-    treeView.setFilter(this._dom.filterInput.value);
+    if (this._settings.filterable) {
+        treeView.setFilter(this._dom.filterInput.value);
+    }
     tree.treeBoxObject.view = treeView;
     
     var selection = treeView.selection;
     for (var i = 0; i < entries.length; i++) {
         if (entries[i].selected) {
-            selection.select(i);
+            if (this._settings.selectMultiple) {
+                selection.select(i);
+            } else {
+                selection.currentIndex = i;
+            }
         }
     }
     
@@ -232,35 +250,37 @@ KeeperFinder.ListFacet.prototype._constructBody = function() {
     }
     tree.setAttribute("sortResource", sortValue ? "value-column" : "count-column");
     
-    var self = this;
-    if (sortValue) {
-        countColumn.onclick = function() {
-            self._settings.sortMode = "count";
-            self._settings.sortDirection = "forward";
-            entries.sort(function(a, b) {
-                return b.count - a.count;
-            });
-            self._constructBody();
-        };
-        valueColumn.onclick = function() {
-            self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
-            entries.reverse();
-            self._constructBody();
-        };
-    } else {
-        countColumn.onclick = function() {
-            self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
-            entries.reverse();
-            self._constructBody();
-        };
-        valueColumn.onclick = function() {
-            self._settings.sortMode = "value";
-            self._settings.sortDirection = "forward";
-            entries.sort(function(a, b) {
-                return a.selectionLabel.localeCompare(b.selectionLabel);
-            });
-            self._constructBody();
-        };
+    if (this._settings.sortable) {
+        var self = this;
+        if (sortValue) {
+            countColumn.onclick = function() {
+                self._settings.sortMode = "count";
+                self._settings.sortDirection = "forward";
+                entries.sort(function(a, b) {
+                    return b.count - a.count;
+                });
+                self._constructBody();
+            };
+            valueColumn.onclick = function() {
+                self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
+                entries.reverse();
+                self._constructBody();
+            };
+        } else {
+            countColumn.onclick = function() {
+                self._settings.sortDirection = (self._settings.sortDirection == "forward") ? "reverse" : "forward";
+                entries.reverse();
+                self._constructBody();
+            };
+            valueColumn.onclick = function() {
+                self._settings.sortMode = "value";
+                self._settings.sortDirection = "forward";
+                entries.sort(function(a, b) {
+                    return a.selectionLabel.localeCompare(b.selectionLabel);
+                });
+                self._constructBody();
+            };
+        }
     }
     
     this._dom.setSelectionCount(this._valueSet.size() + (this._selectMissing ? 1 : 0));
@@ -274,17 +294,33 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     var entries = view.wrappedJSObject._filteredEntries;
     var selection = view.selection;
     var rowCount = view.rowCount;
-    for (var i = 0; i < rowCount; i++) {
-        if (selection.isSelected(i)) {
-            var value = entries[i].value;
-            if (value == null) {
-                restrictions.selectMissing = true;
+    if (this._settings.selectMultiple) {
+        for (var i = 0; i < rowCount; i++) {
+            if (selection.isSelected(i)) {
+                var value = entries[i].value;
+                if (value == null) {
+                    restrictions.selectMissing = true;
+                } else {
+                    restrictions.selection.push(value);
+                }
+                entries[i].selected = true;
             } else {
-                restrictions.selection.push(value);
+                entries[i].selected = false;
             }
-            entries[i].selected = true;
-        } else {
-            entries[i].selected = false;
+        }
+    } else {
+        for (var i = 0; i < rowCount; i++) {
+            if (selection.currentIndex == i) {
+                var value = entries[i].value;
+                if (value == null) {
+                    restrictions.selectMissing = true;
+                } else {
+                    restrictions.selection.push(value);
+                }
+                entries[i].selected = true;
+            } else {
+                entries[i].selected = false;
+            }
         }
     }
     

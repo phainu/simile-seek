@@ -229,6 +229,7 @@ KeeperFinder._onFinishIndexingJob = function() {
     appendFacet("from");
     //appendFacet("to/cc domain");
     appendFacet("to/cc");
+    appendFacet("to/cc me");
     appendFacet("tag");
     appendFacet("recency");
     

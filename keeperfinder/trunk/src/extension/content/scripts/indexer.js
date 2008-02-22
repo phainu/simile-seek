@@ -1,12 +1,14 @@
 KeeperFinder.Indexer = {
     _indexingTimerID:   null,
-    _indexingJob:       null
+    _indexingJob:       null,
+    accountAddresses:   {}
 };
 
 
 KeeperFinder.Indexer.startIndexingJob = function(database, msgFolder, onProgress, onDone) {
     var msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
+    KeeperFinder.Indexer._retrieveAccounts();
     KeeperFinder.Indexer._indexingJob = {
         database:       database,
         msgDatabase:    msgDatabase,
@@ -26,6 +28,24 @@ KeeperFinder.Indexer.cancelIndexingJob = function() {
         KeeperFinder.Indexer._indexingTimerID = null;
     }
     KeeperFinder.Indexer._indexingJob = null;
+};
+
+KeeperFinder.Indexer._retrieveAccounts = function() {
+    KeeperFinder.Indexer.accountAddresses = {};
+
+    var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
+    var accounts = accountManager.accounts;
+    var count = accounts.Count();
+    for (var i = 0; i < count; i++) {
+        var account = accounts.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgAccount);
+        
+        var identities = account.identities;
+        var identityCount = identities.Count();
+        for (var j = 0; j < identityCount; j++) {
+            var identity = identities.GetElementAt(j).QueryInterface(Components.interfaces.nsIMsgIdentity);
+            KeeperFinder.Indexer.accountAddresses[identity.email] = true;
+        }
+    }
 };
 
 KeeperFinder.Indexer._startIndexingJob = function() {
@@ -77,15 +97,51 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
     KeeperFinder.Indexer._addEntityList(item, "author", msgHdr.author, entityMap);
     KeeperFinder.Indexer._addEntityList(item, "to", msgHdr.recipients, entityMap);
     KeeperFinder.Indexer._addEntityList(item, "cc", msgHdr.ccList, entityMap);
+    
     if ("to" in item) {
         if ("cc" in item) {
             item.recipient = item.to.concat(item.cc);
         } else {
             item.recipient = [].concat(item.to);
         }
+        
     } else if ("cc" in item) {
         item.recipient = [].concat(item.cc);
     }
+    
+    var toMe = false;
+    if ("to" in item) {
+        for (var i = 0; i < item.to.length; i++) {
+            if (item.to[i] in KeeperFinder.Indexer.accountAddresses) {
+                toMe = true;
+                break;
+            }
+        }
+    }
+    
+    var ccMe = false;
+    if ("cc" in item) {
+        for (var i = 0; i < item.cc.length; i++) {
+            if (item.cc[i] in KeeperFinder.Indexer.accountAddresses) {
+                ccMe = true;
+                break;
+            }
+        }
+    }
+    
+    var me = [];
+    if (toMe) {
+        me.push("to me");
+    }
+    if (ccMe) {
+        me.push("cc'ed to me");
+    }
+    if (toMe || ccMe) {
+        me.push("to me or cc'ed to me");
+    } else {
+        me.push("not to me nor cc'ed to me");
+    }
+    item.toOrCCToMe = me;
     
     var tags = msgHdr.getStringProperty("keywords");
     if (tags.length > 0 && tags != "nonjunk") {

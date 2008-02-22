@@ -104,6 +104,9 @@ KeeperFinder.FacetAdapters["to/cc"] = function(database, collection, box) {
         {
             facetLabel:     "To/CC",
             expression:     ".recipient",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -126,6 +129,9 @@ KeeperFinder.FacetAdapters["to/cc name"] = function(database, collection, box) {
         {
             facetLabel:     "To/CC name",
             expression:     ".recipient.label",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -148,6 +154,9 @@ KeeperFinder.FacetAdapters["to/cc domain"] = function(database, collection, box)
         {
             facetLabel:     "To/CC domain",
             expression:     ".recipient.domain",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -162,6 +171,83 @@ KeeperFinder.FacetAdapters["to/cc domain"] = function(database, collection, box)
     return facet;
 };
 
+KeeperFinder.FacetAdapters["to/cc me"] = function(database, collection, box) {
+    var facet = new KeeperFinder.ListFacet(
+        database, 
+        collection, 
+        box, 
+        {
+            facetLabel:     "To/CC me",
+            expression:     ".toOrCCToMe",
+            filterable:     false,
+            selectMultiple: false,
+            sortable:       false,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No recipient)"
+        }
+    );
+        
+    facet.getSearchTerm = function() {
+        var values = this._valueSet;
+        
+        var searchTerm = new KeeperFinder.SearchTerm(
+            Components.interfaces.nsMsgSearchAttrib.To, 
+            Components.interfaces.nsMsgSearchOp.Contains
+        );
+        if (values.size() == 0) {
+            searchTerm.matchRfc822String = function(aString, charset, charsetOverride) { return true; };
+        } else {
+            var addresses = KeeperFinder.Indexer.accountAddresses;
+            var mode = values.toArray()[0];
+            
+            var f;
+            if (mode != "not to me nor cc'ed to me") {
+                if (mode == "to me") {
+                    searchTerm.attrib = Components.interfaces.nsMsgSearchAttrib.To;
+                } else if (mode == "cc'ed to me") {
+                    searchTerm.attrib = Components.interfaces.nsMsgSearchAttrib.CC;
+                } else {
+                    searchTerm.attrib = Components.interfaces.nsMsgSearchAttrib.ToOrCC;
+                }
+                
+                f = function(aString, charset, charsetOverride) {
+                    var r = false;
+                    aString = aString.toLowerCase();
+                    for (var a in addresses) {
+                        if (aString.indexOf(a) >= 0) {
+                            r = true;
+                            break;
+                        }
+                    };
+                    return r;
+                };
+            } else {
+                searchTerm.attrib = Components.interfaces.nsMsgSearchAttrib.ToOrCC;
+                
+                f = function(aString, charset, charsetOverride) {
+                    var r = false;
+                    aString = aString.toLowerCase();
+                    for (var a in addresses) {
+                        if (aString.indexOf(a) >= 0) {
+                            r = true;
+                            break;
+                        }
+                    };
+                    return !r;
+                };
+            }
+            
+            searchTerm.matchRfc822String = f;
+            searchTerm.matchRfc2047String = f;
+        }
+        return searchTerm;
+    };
+    
+    return facet;
+};
+
 KeeperFinder.FacetAdapters["from"] = function(database, collection, box) {
     var facet = new KeeperFinder.ListFacet(
         database, 
@@ -170,6 +256,9 @@ KeeperFinder.FacetAdapters["from"] = function(database, collection, box) {
         {
             facetLabel:     "From",
             expression:     ".author",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -192,6 +281,9 @@ KeeperFinder.FacetAdapters["from name"] = function(database, collection, box) {
         {
             facetLabel:     "From name",
             expression:     ".author.label",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -214,6 +306,9 @@ KeeperFinder.FacetAdapters["from domain"] = function(database, collection, box) 
         {
             facetLabel:     "From domain",
             expression:     ".author.domain",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
@@ -236,6 +331,9 @@ KeeperFinder.FacetAdapters["tag"] = function(database, collection, box) {
         {
             facetLabel:     "Tag",
             expression:     ".tag",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
