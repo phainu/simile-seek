@@ -21,10 +21,9 @@ KeeperFinder.ListFacet = function(database, collection, box, settings) {
     }
     
     if ("fixedOrder" in settings) {
-        var values = settings.fixedOrder.split(";");
         var orderMap = {};
-        for (var i = 0; i < values.length; i++) {
-            orderMap[values[i].trim()] = i;
+        for (var i = 0; i < settings.fixedOrder.length; i++) {
+            orderMap[settings.fixedOrder[i].trim()] = i;
         }
         this._orderMap = orderMap;
     }

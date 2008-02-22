@@ -94,8 +94,8 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
     if (!msgHdr.isRead) {
         item.isNew = true;
     }
-    KeeperFinder.Indexer._addEntityList(item, "author", msgHdr.author, entityMap);
-    KeeperFinder.Indexer._addEntityList(item, "to", msgHdr.recipients, entityMap);
+    KeeperFinder.Indexer._addEntityList(item, "author", msgHdr.mime2DecodedAuthor /*.author*/, entityMap);
+    KeeperFinder.Indexer._addEntityList(item, "to", msgHdr.mime2DecodedRecipients /*.recipients*/, entityMap);
     KeeperFinder.Indexer._addEntityList(item, "cc", msgHdr.ccList, entityMap);
     
     if ("to" in item) {

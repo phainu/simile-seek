@@ -185,7 +185,13 @@ KeeperFinder.FacetAdapters["to/cc me"] = function(database, collection, box) {
             sortMode:       "value",
             sortDirection:  "forward",
             showMissing:    false,
-            missingLabel:   "(No recipient)"
+            missingLabel:   "(No recipient)",
+            fixedOrder: [
+                "to me",
+                "cc'ed to me",
+                "to me or cc'ed to me",
+                "not to me nor cc'ed to me"
+            ]
         }
     );
         
