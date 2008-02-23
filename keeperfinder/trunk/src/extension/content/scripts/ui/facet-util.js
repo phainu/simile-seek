@@ -266,7 +266,7 @@ KeeperFinder.FacetCache.prototype._buildMaps = function() {
 
 
 /*======================================================================
- *  Cache for item/value mapping
+ *  Static list tree view
  *======================================================================
  */
 KeeperFinder.StaticListTreeView = function() {

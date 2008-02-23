@@ -243,41 +243,64 @@ KeeperFinder._onCollectionItemsChanged = function() {
     var items = KeeperFinder._collection.getRestrictedItems()
     
     try {
-        initializeSearchBar();
-        RerootThreadPane();
-        
-        gSearchSession.clearScopes();
-        
-        var searchTerms = gSearchSession.searchTerms;
-        var searchTermsArray = searchTerms.QueryInterface(Components.interfaces.nsISupportsArray);
-        searchTermsArray.Clear();
-        
-        var termsArray = Components.classes["@mozilla.org/supports-array;1"].
-            createInstance(Components.interfaces.nsISupportsArray);
-            
-        var facets = collection.getFacets();
-        for (var i = 0; i < facets.length; i++) {
-            var facet = facets[i];
-            if ("getSearchTerm" in facet) {
-                termsArray.AppendElement(facet.getSearchTerm());
-            }
-        }
-            
-        var ioService = Components.classes["@mozilla.org/network/io-service;1"].
-            getService(Components.interfaces.nsIIOService);
-            
-        gSearchSession.addScopeTerm(
-            getScopeToUse(termsArray, KeeperFinder._selectedFolder, ioService.offline), 
-            KeeperFinder._selectedFolder
-        );
-        
-        for (var i = 0; i < termsArray.Count(); i++) {
-            gSearchSession.appendTerm(termsArray.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgSearchTerm));
-        }
-    
-        gDBView.searchSession = gSearchSession;
-        gSearchSession.search(msgWindow);
+        //KeeperFinder._reconfigureThreadPaneNatively(collection, items);
+        KeeperFinder._reconfigureThreadPaneOurselves(collection, items);
     } catch (e) {
         alert(e);
     }
+};
+
+KeeperFinder._reconfigureThreadPaneNatively = function(collection, items) {
+    initializeSearchBar();
+    RerootThreadPane();
+    
+    gSearchSession.clearScopes();
+    
+    var searchTerms = gSearchSession.searchTerms;
+    var searchTermsArray = searchTerms.QueryInterface(Components.interfaces.nsISupportsArray);
+    searchTermsArray.Clear();
+    
+    var termsArray = Components.classes["@mozilla.org/supports-array;1"].
+        createInstance(Components.interfaces.nsISupportsArray);
+        
+    var facets = collection.getFacets();
+    for (var i = 0; i < facets.length; i++) {
+        var facet = facets[i];
+        if ("getSearchTerm" in facet) {
+            termsArray.AppendElement(facet.getSearchTerm());
+        }
+    }
+        
+    var ioService = Components.classes["@mozilla.org/network/io-service;1"].
+        getService(Components.interfaces.nsIIOService);
+        
+    gSearchSession.addScopeTerm(
+        getScopeToUse(termsArray, KeeperFinder._selectedFolder, ioService.offline), 
+        KeeperFinder._selectedFolder
+    );
+    
+    for (var i = 0; i < termsArray.Count(); i++) {
+        gSearchSession.appendTerm(termsArray.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgSearchTerm));
+    }
+
+    gDBView.searchSession = gSearchSession;
+    gSearchSession.search(msgWindow);
+};
+
+KeeperFinder._reconfigureThreadPaneOurselves = function(collection, items) {
+    var database = KeeperFinder._database;
+    
+    var baseMsgKeyArray = [];
+    items.visit(function(itemID) {
+        baseMsgKeyArray.push(database.getObject(itemID, "msgKey"));
+    });
+    
+    var treeView = new KeeperFinder.ThreadTreeView(
+        KeeperFinder._selectedFolder,
+        baseMsgKeyArray,
+        {}
+    );
+    
+    var threadTree = GetThreadTree();
+    threadTree.treeBoxObject.view = treeView;
 };

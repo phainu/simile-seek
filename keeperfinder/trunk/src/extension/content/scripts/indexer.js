@@ -9,6 +9,8 @@ KeeperFinder.Indexer.startIndexingJob = function(database, msgFolder, onProgress
     var msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
     KeeperFinder.Indexer._retrieveAccounts();
+    KeeperFinder.Indexer._retrieveTags();
+    
     KeeperFinder.Indexer._indexingJob = {
         database:       database,
         msgDatabase:    msgDatabase,
@@ -30,6 +32,34 @@ KeeperFinder.Indexer.cancelIndexingJob = function() {
     KeeperFinder.Indexer._indexingJob = null;
 };
 
+
+KeeperFinder.Indexer.getTags = function(msgHdr) {
+    var keys = msgHdr.getStringProperty("keywords").split(" ");
+    var label = msgHdr.label;
+    if (label >= 0) {
+        var labelKey = "$label" + label;
+        if (keys.indexOf(labelKey) < 0) {
+            keys.unshift(labelKey);
+        }
+    }
+    
+    for (var i = keys.length - 1; i >= 0; i--) {
+        if (!(keys[i] in this._tagKeys)) {
+            keys.splice(i, 1);
+        }
+    }
+    
+    return keys;
+};
+
+KeeperFinder.Indexer.getTagLabels = function(msgHdr) {
+    var r = KeeperFinder.Indexer.getTags(msgHdr);
+    for (var i = 0; i < r.length; i++) {
+        r[i] = this._tagKeys[r[i]];
+    }
+    return r;
+};
+
 KeeperFinder.Indexer._retrieveAccounts = function() {
     KeeperFinder.Indexer.accountAddresses = {};
 
@@ -46,6 +76,21 @@ KeeperFinder.Indexer._retrieveAccounts = function() {
             KeeperFinder.Indexer.accountAddresses[identity.email] = true;
         }
     }
+};
+
+KeeperFinder.Indexer._retrieveTags = function() {
+    var tagService = Components.classes["@mozilla.org/messenger/tagservice;1"].
+        getService(Components.interfaces.nsIMsgTagService);
+        
+    var tagArray = tagService.getAllTags({});
+    var tagKeys = {};
+    for each (var tagInfo in tagArray) {
+        if (tagInfo.tag) {
+            tagKeys[tagInfo.key] = tagInfo.tag;
+        }
+    }
+    
+    this._tagKeys = tagKeys;
 };
 
 KeeperFinder.Indexer._startIndexingJob = function() {
@@ -88,7 +133,7 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
         type:       "Message",
         label:      msgHdr.subject || "",
         id:         messageID,
-        uri:        messageID,
+        msgKey:     msgHdr.messageKey,
         date:       msgHdr.dateInSeconds * 1000
     };
     if (!msgHdr.isRead) {
@@ -143,10 +188,7 @@ KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
     }
     item.toOrCCToMe = me;
     
-    var tags = msgHdr.getStringProperty("keywords");
-    if (tags.length > 0 && tags != "nonjunk") {
-        item.tag = tags.replace(/nonjunk/g, "").trim().split(" ");
-    }
+    item.tag = KeeperFinder.Indexer.getTags(msgHdr);
     
     items.push(item);
 };
