@@ -117,8 +117,8 @@
                 <vbox>
                     <groupbox>
                         <caption label="Also Include" />
-                        <checkbox label="Whole threads" />
-                        <checkbox label="New messages" />
+                        <checkbox label="Whole threads" id="keeperFinderPane-browsingLayer-showWholeThreads" />
+                        <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" />
                     </groupbox>
                     <spacer flex="1" />
                     <button label="Re-Index" oncommand="KeeperFinder.onStartIndexingFolder();" />

@@ -2,12 +2,14 @@
  *  Thread Tree View
  *======================================================================
  */
-KeeperFinder.ThreadTreeView = function(msgFolder, baseMsgKeyArray, settings) {
+KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, settings) {
     settings = settings || {};
     
     this.wrappedJSObject = this;
     this.msgFolder = msgFolder;
     this.msgDatabase = msgFolder.getMsgDatabase(msgWindow);
+    
+    this._dbView = dbView;
     
     if (!("sortColumnId" in settings)) {
         settings.sortColumnId = "dateCol";
@@ -19,12 +21,14 @@ KeeperFinder.ThreadTreeView = function(msgFolder, baseMsgKeyArray, settings) {
     if (!("showThreads" in settings)) {
         settings.showThreads = false;
     }
-    if (!("showNew" in settings)) {
-        settings.showNew = false;
+    if (!("showNewMessages" in settings)) {
+        settings.showNewMessages = false;
     }
     
     this._settings = settings;
     this._baseMsgKeyArray = baseMsgKeyArray;
+    this._msgKeyToRecord = {};
+    this._processedThreads = {};
     
     this._atomService = Components.classes["@mozilla.org/atom-service;1"].
         getService(Components.interfaces.nsIAtomService);
@@ -58,12 +62,7 @@ KeeperFinder.ThreadTreeView.prototype = {
     get rowCount() {
         return this._flattenedRecords.length;
     },
-    isContainer :          function(row) { return false; },
-    isContainerOpen :      function(row) { return false; },
-    isContainerEmpty :     function(row) { return true; },
     setCellText :          function(row, col, text) {},
-    getParentIndex :       function(row) { return -1; },
-    getLevel :             function(row) { return 0; },
     hasNextSibling :       function(row, after) { return true; },
     toggleOpenState :      function(row) {},
     isEditable :           function(row) { return false; },
@@ -77,7 +76,6 @@ KeeperFinder.ThreadTreeView.prototype = {
     getRowProperties :     function(row, props) {},
     getCellProperties :    function(row, col, props) {},
     getColumnProperties :  function(colid, col, props) {},
-    selectionChanged :     function() {},
     performAction :        function(action) {},
     performActionOnCell :  function(action, row, col) {}
 };
@@ -94,30 +92,198 @@ KeeperFinder.ThreadTreeView.prototype.getMsgKeyForRow = function(row) {
     return this.getRecordForRow(row).msgKey;
 };
 
+KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
+    UpdateMailToolbar("keeper finder driven, thread pane");
+};
+
+KeeperFinder.ThreadTreeView.prototype.getLevel = function(row) {
+    return this.getRecordForRow(row).level;
+};
+
+KeeperFinder.ThreadTreeView.prototype.getParentIndex = function(row) {
+    var level = this.getRecordForRow(row).level;
+    if (level == 0) {
+        return -1;
+    }
+    
+    var parentRow = row - 1;
+    while (parentRow >= 0 && this.getRecordForRow(parentRow).level >= level) {
+        parentRow--;
+    }
+    return parentRow;
+};
+
+KeeperFinder.ThreadTreeView.prototype.isContainer = function(row) {
+    return this.getRecordForRow(row).hasChildren;
+};
+
+KeeperFinder.ThreadTreeView.prototype.isContainerOpen = function(row) {
+    return this.getRecordForRow(row).opened;
+};
+
+KeeperFinder.ThreadTreeView.prototype.isContainerEmpty = function(row) {
+    return this.getRecordForRow(row).children.length == 0;
+};
+
+KeeperFinder.ThreadTreeView.prototype.hasNextSibling = function(row, after) {
+    var level = this.getLevel(row);
+    for (var r = after + 1; r < this._flattenedRecords.length; r++) {
+        var level2 = this.getLevel(r);
+        if (level2 == level) {
+            return true;
+        } else if (level2 < level) {
+            break;
+        }
+    }
+    return false;
+};
+
+KeeperFinder.ThreadTreeView.prototype.toggleOpenState = function(row) {
+    if (this.isContainerEmpty(row))
+        return;
+        
+    this.treebox.beginUpdateBatch();
+            
+    var record = this._flattenedRecords[row];
+    if (record.opened) {
+        var deleteCount = 0;
+        var level = this.getLevel(row);
+        for (var r = row + 1; r < this._flattenedRecords.length; r++) {
+            if (this.getLevel(r) > level) {
+                deleteCount++;
+                this._flattenedRecords[r].opened = false;
+            } else {
+                break;
+            }
+        }
+      
+        if (deleteCount > 0) {
+            this._flattenedRecords.splice(row + 1, deleteCount);
+            
+            this.treebox.rowCountChanged(row, -1 - deleteCount);
+            this.treebox.rowCountChanged(row, 1);
+        }
+    } else {
+        var newRows = record.children;
+        this._flattenedRecords = this._flattenedRecords.slice(0, row + 1).concat(newRows).concat(this._flattenedRecords.slice(row + 1));
+        
+        this.treebox.rowCountChanged(row, -1);
+        this.treebox.rowCountChanged(row, 1 + newRows.length);
+    }
+    record.opened = !record.opened;
+    
+    this.treebox.endUpdateBatch();
+};
+
 KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     var self = this;
     var sorter = this._createSorter();
     
     this._rootRecords = [];
     for (var i = 0; i < this._baseMsgKeyArray.length; i++) {
-        this._rootRecords.push(sorter.prepare(this._makeRootRecord(this._baseMsgKeyArray[i])));
+        var rootRecord = this._makeRootRecord(this._baseMsgKeyArray[i], this._settings.showThreads);
+        if (rootRecord != null) {
+            this._rootRecords.push(sorter.prepare(rootRecord));
+        }
     }
     this._rootRecords.sort(sorter.comparator);
-    this._flattenedRecords = this._rootRecords;
+    
+    if (this._settings.showThreads) {
+        var flattenedRecords = this._flattenedRecords = [];
+        
+        var pushRecordAndChildren = function(record) {
+            flattenedRecords.push(record);
+            
+            if (record.hasChildren) {
+                record.opened = true;
+                for (var j = 0; j < record.children.length; j++) {
+                    pushRecordAndChildren(record.children[j]);
+                }
+            }
+        };
+        
+        for (var i = 0; i < this._rootRecords.length; i++) {
+            pushRecordAndChildren(this._rootRecords[i]);
+        }
+    } else {
+        this._flattenedRecords = this._rootRecords;
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
+    if (msgKey in this._msgKeyToRecord) {
+        return this._msgKeyToRecord[msgKey];
+    }
+    
     var msgHdr = this.getMessageHeader(msgKey);
     var record = {
         msgKey:         msgKey,
         level:          0,
         hasChildren:    false
     };
+    
+    this._msgKeyToRecord[msgKey] = record;
+    
     return record;
 };
 
-KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey) {
-    return this._makeRecord(msgKey);
+KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads) {
+    if (msgKey in this._msgKeyToRecord) {
+        return null; // processed message already
+    }
+    
+    if (!showThreads) {
+        return this._makeRecord(msgKey);
+    }
+    
+    var msgHdr = this.getMessageHeader(msgKey);
+    if (msgHdr.threadId in this._processedThreads) {
+        return null; // processed thread already
+    }
+    this._processedThreads[msgHdr.threadId] = true;
+    
+    var msgThread = this._getMsgThread(msgHdr);
+    var msgHdrRoot = msgThread.GetChildAt(0);
+    
+    return this._makeRecordAndChildren(msgHdrRoot, msgThread, 0);
+};
+
+KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, msgThread, level) {
+    var msgKey = msgHdr.messageKey;
+    var record = {
+        msgKey:         msgKey,
+        level:          level,
+        hasChildren:    false,
+        opened:         false,
+        children:       []
+    };
+    this._msgKeyToRecord[msgKey] = record;
+    
+    var e = msgThread.EnumerateMessages(msgKey);
+    while (e.hasMoreElements()) {
+        var child = e.getNext();
+        try {
+            var childThread = child.QueryInterface(Components.interfaces.nsIMsgThread);
+            if (childThread != null) {
+                KeeperFinder.log("child thread " + childThread);
+                continue;
+            }
+        } catch (e) {
+        }
+        
+        try {
+            var childMsgHdr = child.QueryInterface(Components.interfaces.nsIMsgDBHdr);
+            if (childMsgHdr != null) {
+                record.children.push(this._makeRecordAndChildren(childMsgHdr, msgThread, level + 1));
+                continue;
+            }
+        } catch (e) {
+        }
+    }
+    
+    record.hasChildren = record.children.length > 0;
+    
+    return record;
 };
 
 KeeperFinder.ThreadTreeView.prototype._getMsgThread = function(msgHdr) {

@@ -38,10 +38,11 @@ var KeeperFinder = {
             showInitially: true
         }*/
     },
-    _visible:           false,
-    _selectedFolder:    null,
-    _database:          null,
-    _facets:            []    
+    _visible:               false,
+    _selectedFolder:        null,
+    _database:              null,
+    _facets:                [],
+    _currentSettings:       null
 };
 
 KeeperFinder.log = function(msg) {
@@ -198,6 +199,16 @@ KeeperFinder._getFacetContainer = function() {
 };
 
 KeeperFinder._onFinishIndexingJob = function() {
+    KeeperFinder._currentSettings = {
+        showThreads:        true,
+        showNewMessages:    false
+    };
+    
+    document.getElementById("keeperFinderPane-browsingLayer-showWholeThreads").checked = 
+        KeeperFinder._currentSettings.showThreads;
+    document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked = 
+        KeeperFinder._currentSettings.showNewMessages;
+
     var deck = document.getElementById("keeperFinderPane-deck");
     deck.selectedIndex = 3;
     
@@ -239,18 +250,18 @@ KeeperFinder._onFinishIndexingJob = function() {
 };
 
 KeeperFinder._onCollectionItemsChanged = function() {
-    var collection = KeeperFinder._collection;
-    var items = KeeperFinder._collection.getRestrictedItems()
-    
     try {
-        //KeeperFinder._reconfigureThreadPaneNatively(collection, items);
-        KeeperFinder._reconfigureThreadPaneOurselves(collection, items);
+        //KeeperFinder._reconfigureThreadPaneNatively();
+        KeeperFinder._reconfigureThreadPaneOurselves();
     } catch (e) {
         alert(e);
     }
 };
 
-KeeperFinder._reconfigureThreadPaneNatively = function(collection, items) {
+KeeperFinder._reconfigureThreadPaneNatively = function() {
+    var collection = KeeperFinder._collection;
+    var items = KeeperFinder._collection.getRestrictedItems()
+    
     initializeSearchBar();
     RerootThreadPane();
     
@@ -287,7 +298,15 @@ KeeperFinder._reconfigureThreadPaneNatively = function(collection, items) {
     gSearchSession.search(msgWindow);
 };
 
-KeeperFinder._reconfigureThreadPaneOurselves = function(collection, items) {
+KeeperFinder._reconfigureThreadPaneOurselves = function() {
+    //initializeSearchBar();
+    //RerootThreadPane();
+    KeeperFinder._rerenderThreadPane();
+};
+
+KeeperFinder._rerenderThreadPane = function() {
+    var collection = KeeperFinder._collection;
+    var items = KeeperFinder._collection.getRestrictedItems()
     var database = KeeperFinder._database;
     
     var baseMsgKeyArray = [];
@@ -296,11 +315,14 @@ KeeperFinder._reconfigureThreadPaneOurselves = function(collection, items) {
     });
     
     var treeView = new KeeperFinder.ThreadTreeView(
+        gDBView,
         KeeperFinder._selectedFolder,
         baseMsgKeyArray,
-        {}
+        KeeperFinder._currentSettings
     );
     
     var threadTree = GetThreadTree();
+    threadTree.columns.getNamedColumn("subjectCol").element.setAttribute(
+        "primary", KeeperFinder._currentSettings.showThreads);
     threadTree.treeBoxObject.view = treeView;
 };
