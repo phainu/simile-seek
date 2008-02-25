@@ -29,6 +29,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this._baseMsgKeyArray = baseMsgKeyArray;
     this._msgKeyToRecord = {};
     this._processedThreads = {};
+    this._viewFlags = 0;
     
     this._atomService = Components.classes["@mozilla.org/atom-service;1"].
         getService(Components.interfaces.nsIAtomService);
@@ -53,6 +54,10 @@ KeeperFinder.ThreadTreeView._priorityLabels = [
 ];
 
 KeeperFinder.ThreadTreeView.prototype = {
+    /*
+     *  nsIMsgDBView
+     */
+     
     get currentlyDisplayedMessage() {
         return this.selection.currentIndex;
     },
@@ -60,34 +65,31 @@ KeeperFinder.ThreadTreeView.prototype = {
         return this.msgDatabase;
     },
     get viewIndexForFirstSelectedMsg() {
-        return this.selection.currentIndex;
+        var start = {};
+        var end = {};
+        this.selection.getRangeAt(0, start, end);
+        return start.value;
     },
     get hdrForFirstSelectedMessage() {
-        var row = this.selection.currentIndex;
-        var msgKey = this.getMsgKeyForRow(row);
-        return this.getMessageHeader(msgKey);
+        return this.getMessageHeader(this.keyForFirstSelectedMessage);
     },
     get keyForFirstSelectedMessage() {
-        var row = this.selection.currentIndex;
-        var msgKey = this.getMsgKeyForRow(row);
-        return msgKey;
+        return this.getMsgKeyForRow(this.viewIndexForFirstSelectedMsg);
     },
     get URIForFirstSelectedMessage() {
-        var row = this.selection.currentIndex;
-        var msgKey = this.getMsgKeyForRow(row);
-        return this.msgFolder.generateMessageURI(msgKey);
+        return this.msgFolder.generateMessageURI(this.keyForFirstSelectedMessage);
     },
     get numSelected() {
         return this.selection.count;
     },
     get removeRowOnMoveOrDelete() {
-        return true;
+        return true; // there's something about mark to delete for imap, which we don't handle now
     },
     get searchSession() {
-        return null;
+        return null; // not implemented
     },
     get supportsThreading() {
-        return this._settings.showThreads;
+        return false; // this._settings.showThreads; // not sure why but the C++ impl. returns false always
     },
     get suppressCommandUpdating() {
         return false;
@@ -99,7 +101,7 @@ KeeperFinder.ThreadTreeView.prototype = {
         return true;
     },
     get viewFlags() {
-        return 0;
+        return this._viewFlags;
     },
     get viewFolder() {
         return this.msgFolder;
@@ -109,6 +111,9 @@ KeeperFinder.ThreadTreeView.prototype = {
     },
     
     
+    /*
+     *  nsITreeView
+     */
     get rowCount() {
         return this._flattenedRecords.length;
     },
@@ -172,7 +177,10 @@ KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
             gThreadPaneCommandUpdater.updateCommandStatus();
         }
         
-        //this.msgFolder.setLastMessageLoaded(msgKey);
+        this.msgFolder.lastMessageLoaded = msgKey;
+        
+        gCurrentMessageUri = this.URIForFirstSelectedMessage;
+        gCurrentFolderUri = this.hdrForFirstSelectedMessage.folder.URI;
     }
 };
 
