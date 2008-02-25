@@ -9,7 +9,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this.msgFolder = msgFolder;
     this.msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
-    this._dbView = dbView;
+    this.dbView = dbView;
     
     if (!("sortColumnId" in settings)) {
         settings.sortColumnId = "dateCol";
@@ -53,14 +53,71 @@ KeeperFinder.ThreadTreeView._priorityLabels = [
 ];
 
 KeeperFinder.ThreadTreeView.prototype = {
+    get currentlyDisplayedMessage() {
+        return this.selection.currentIndex;
+    },
+    get db() {
+        return this.msgDatabase;
+    },
+    get viewIndexForFirstSelectedMsg() {
+        return this.selection.currentIndex;
+    },
+    get hdrForFirstSelectedMessage() {
+        var row = this.selection.currentIndex;
+        var msgKey = this.getMsgKeyForRow(row);
+        return this.getMessageHeader(msgKey);
+    },
+    get keyForFirstSelectedMessage() {
+        var row = this.selection.currentIndex;
+        var msgKey = this.getMsgKeyForRow(row);
+        return msgKey;
+    },
+    get URIForFirstSelectedMessage() {
+        var row = this.selection.currentIndex;
+        var msgKey = this.getMsgKeyForRow(row);
+        return this.msgFolder.generateMessageURI(msgKey);
+    },
+    get numSelected() {
+        return this.selection.count;
+    },
+    get removeRowOnMoveOrDelete() {
+        return true;
+    },
+    get searchSession() {
+        return null;
+    },
+    get supportsThreading() {
+        return this._settings.showThreads;
+    },
+    get suppressCommandUpdating() {
+        return false;
+    },
+    get suppressMsgDisplay() {
+        return false;
+    },
+    get usingLines() {
+        return true;
+    },
+    get viewFlags() {
+        return 0;
+    },
+    get viewFolder() {
+        return this.msgFolder;
+    },
+    get viewType() {
+        return 0;
+    },
+    
+    
+    get rowCount() {
+        return this._flattenedRecords.length;
+    },
     setTree: function(treebox) {
         this.treebox = treebox;
     },
     setSelection: function(selection) {
         this.selection = selection;
-    },
-    get rowCount() {
-        return this._flattenedRecords.length;
+        this.dbView.selection = selection;
     },
     setCellText :          function(row, col, text) {},
     hasNextSibling :       function(row, after) { return true; },
@@ -93,7 +150,30 @@ KeeperFinder.ThreadTreeView.prototype.getMsgKeyForRow = function(row) {
 };
 
 KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
-    UpdateMailToolbar("keeper finder driven, thread pane");
+    //UpdateMailToolbar("keeper finder driven, thread pane");
+    if (this.selection.count == 1) {
+        var row = this.selection.currentIndex;
+        var msgKey = this.getMsgKeyForRow(row);
+        var msgURI = this.msgFolder.generateMessageURI(msgKey);
+        
+        var messenger = Components.classes["@mozilla.org/messenger;1"].createInstance().
+            QueryInterface(Components.interfaces.nsIMessenger);
+            
+        messenger.SetWindow(window, msgWindow);
+        messenger.OpenURL(msgURI);
+        
+        if (gThreadPaneCommandUpdater) {
+            var msgHdr = this.getMessageHeader(msgKey);
+            gThreadPaneCommandUpdater.displayMessageChanged(
+                this.msgFolder, 
+                msgHdr.subject, 
+                msgHdr.getStringProperty("keywords")
+            );
+            gThreadPaneCommandUpdater.updateCommandStatus();
+        }
+        
+        //this.msgFolder.setLastMessageLoaded(msgKey);
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype.getLevel = function(row) {

@@ -320,6 +320,7 @@ KeeperFinder._rerenderThreadPane = function() {
         baseMsgKeyArray,
         KeeperFinder._currentSettings
     );
+    gDBView = treeView;
     
     var threadTree = GetThreadTree();
     threadTree.columns.getNamedColumn("subjectCol").element.setAttribute(
