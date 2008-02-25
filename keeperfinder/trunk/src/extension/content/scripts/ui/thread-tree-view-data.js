@@ -88,17 +88,24 @@ KeeperFinder.ThreadTreeView.prototype.getRowProperties = function(row, props) {
 };
 
 KeeperFinder.ThreadTreeView.prototype.getCellProperties = function(row, col, props) {
+    var columnId = col.id;
     var msgKey = this.getMsgKeyForRow(row);
     var msgHdr = this.getMessageHeader(msgKey);
     
     this._getTagProperties(msgHdr, props, true);
-    this._getFlagProperties(msgHdr, props, col.id, false);
+    this._getFlagProperties(msgHdr, props, columnId, false);
     this._getPriorityProperties(msgHdr, props);
     
     var junkscore = msgHdr.getStringProperty("junkscore");
     if (junkscore.length > 0) {
         var j = parseInt(junkscore);
         props.AppendElement(this._atomService.getAtom(j > 50 ? "junk" : "notjunk"));
+    }
+    
+    if (columnId == "subjectCol" && 
+        (this._settings.showThreads || this._settings.showNewMessages) && 
+        this.getRecordForRow(row).isMatch) {
+        props.AppendElement(this._atomService.getAtom("kf-match"));
     }
 };
 

@@ -28,7 +28,6 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this._settings = settings;
     this._baseMsgKeyArray = baseMsgKeyArray;
     this._msgKeyToRecord = {};
-    this._processedThreads = {};
     this._viewFlags = 0;
     
     this._atomService = Components.classes["@mozilla.org/atom-service;1"].
@@ -307,6 +306,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
     var record = {
         msgKey:         msgKey,
         level:          0,
+        isMatch:        false,
         hasChildren:    false
     };
     
@@ -317,6 +317,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
 
 KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads) {
     if (msgKey in this._msgKeyToRecord) {
+        this._msgKeyToRecord[msgKey].isMatch = true;
         return null; // processed message already
     }
     
@@ -325,15 +326,13 @@ KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThr
     }
     
     var msgHdr = this.getMessageHeader(msgKey);
-    if (msgHdr.threadId in this._processedThreads) {
-        return null; // processed thread already
-    }
-    this._processedThreads[msgHdr.threadId] = true;
-    
     var msgThread = this._getMsgThread(msgHdr);
     var msgHdrRoot = msgThread.GetChildAt(0);
+    var rootRecord = this._makeRecordAndChildren(msgHdrRoot, msgThread, 0);
     
-    return this._makeRecordAndChildren(msgHdrRoot, msgThread, 0);
+    this._msgKeyToRecord[msgKey].isMatch = true;
+    
+    return rootRecord;
 };
 
 KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, msgThread, level) {
@@ -341,6 +340,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, 
     var record = {
         msgKey:         msgKey,
         level:          level,
+        isMatch:        false,
         hasChildren:    false,
         opened:         false,
         children:       []

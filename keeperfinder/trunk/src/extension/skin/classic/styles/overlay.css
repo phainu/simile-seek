@@ -1,10 +1,9 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-/* This is just an example.  You shouldn't do this. */
-#keeperfinder-hello
-{
-  color: red ! important;
+treechildren::-moz-tree-cell-text(kf-match) {
+    text-decoration: underline;
 }
+
 #keeperfinder-toolbar-button
 {
   list-style-image: url("chrome://keeperfinder/skin/images/toolbar-button.png");
