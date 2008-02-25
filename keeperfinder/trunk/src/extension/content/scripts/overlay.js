@@ -112,6 +112,9 @@ FolderPaneSelectionChange = function() {
     if (KeeperFinder._selectedFolder != msgFolder) {
         KeeperFinder.Indexer.cancelIndexingJob();
         
+        KeeperFinder._relinquishThreadPaneOurselves();
+        //KeeperFinder._relinquishThreadPaneNatively();
+        
         KeeperFinder._selectedFolder = msgFolder;
         
         var deck = document.getElementById("keeperFinderPane-deck");
@@ -247,6 +250,8 @@ KeeperFinder._onFinishIndexingJob = function() {
     var spacer = document.createElement("spacer");
     spacer.style.width = "5px";
     facetContainer.appendChild(spacer);
+    
+    KeeperFinder._onCollectionItemsChanged();
 };
 
 KeeperFinder._onCollectionItemsChanged = function() {
@@ -298,13 +303,25 @@ KeeperFinder._reconfigureThreadPaneNatively = function() {
     gSearchSession.search(msgWindow);
 };
 
+KeeperFinder._relinquishThreadPaneNatively = function() {
+    // nothing
+};
+
 KeeperFinder._reconfigureThreadPaneOurselves = function() {
-    //initializeSearchBar();
-    //RerootThreadPane();
     KeeperFinder._rerenderThreadPane();
 };
 
+KeeperFinder._relinquishThreadPaneOurselves = function() {
+    if ("_oldDBView" in KeeperFinder) {
+        gDBView = KeeperFinder._oldDBView;
+    }
+};
+
 KeeperFinder._rerenderThreadPane = function() {
+    if (!("_oldDBView" in KeeperFinder)) {
+        KeeperFinder._oldDBView = gDBView;
+    }
+    
     var collection = KeeperFinder._collection;
     var items = KeeperFinder._collection.getRestrictedItems()
     var database = KeeperFinder._database;
@@ -325,5 +342,6 @@ KeeperFinder._rerenderThreadPane = function() {
     var threadTree = GetThreadTree();
     threadTree.columns.getNamedColumn("subjectCol").element.setAttribute(
         "primary", KeeperFinder._currentSettings.showThreads);
+        
     threadTree.treeBoxObject.view = treeView;
 };

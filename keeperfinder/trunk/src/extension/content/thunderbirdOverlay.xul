@@ -31,6 +31,7 @@
     <script src="scripts/util/set.js"/>
     <script src="scripts/util/listener-queue.js"/>
     <script src="scripts/util/string.js"/>
+    <script src="scripts/util/db-change-listener.js"/>
     
     <script src="scripts/data/expression-parser.js"/>
     <script src="scripts/data/expression.js"/>

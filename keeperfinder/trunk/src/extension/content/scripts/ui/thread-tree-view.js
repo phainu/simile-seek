@@ -3,14 +3,13 @@
  *======================================================================
  */
 KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, settings) {
-    settings = settings || {};
-    
     this.wrappedJSObject = this;
+    
+    this.dbView = dbView;
     this.msgFolder = msgFolder;
     this.msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
-    this.dbView = dbView;
-    
+    settings = settings || {};
     if (!("sortColumnId" in settings)) {
         settings.sortColumnId = "dateCol";
         settings.sortAscending = false;
@@ -38,7 +37,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     
     this._dateFormat = Components.classes["@mozilla.org/intl/scriptabledateformat;1"].
         getService(Components.interfaces.nsIScriptableDateFormat);
-        
+    
     this._initialize();
 };
 
@@ -47,7 +46,7 @@ KeeperFinder.ThreadTreeView._priorityLabels = [
     "", //"none",
     "Lowest",
     "Low",
-    "", //"normal",
+    "Normal",
     "High",
     "Highest"
 ];
@@ -118,10 +117,12 @@ KeeperFinder.ThreadTreeView.prototype = {
     },
     setTree: function(treebox) {
         this.treebox = treebox;
+        if (treebox == null) {
+            this.msgDatabase.RemoveListener(this._dbChangeListener);
+        }
     },
     setSelection: function(selection) {
         this.selection = selection;
-        this.dbView.selection = selection;
     },
     setCellText :          function(row, col, text) {},
     hasNextSibling :       function(row, after) { return true; },
@@ -295,6 +296,13 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     } else {
         this._flattenedRecords = this._rootRecords;
     }
+    
+    var self = this;
+    this._dbChangeListener = new KeeperFinder.DBChangeListener(this.msgDatabase);
+    this._dbChangeListener.onHdrChange = function(hdrChanged, oldFlags, newFlags, instigator) {
+        self._updateMsgHdr(hdrChanged);
+    };
+    this.msgDatabase.AddListener(this._dbChangeListener);
 };
 
 KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
