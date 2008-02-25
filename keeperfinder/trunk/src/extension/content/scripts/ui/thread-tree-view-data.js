@@ -11,16 +11,10 @@ KeeperFinder.ThreadTreeView.prototype.getCellText = function(row, column) {
         return msgHdr.mime2DecodedSubject;
         
     case "senderCol" :
-        return msgHdr.mime2DecodedAuthor;
+        return this._decodeMessageHeaders(msgHdr.mime2DecodedAuthor).join(", ");
         
     case "recipientCol" :
-        var addresses = {};
-        var fullNames = {};
-        var names = {};
-        var numAddresses = this._headerParser.parseHeadersWithArray(
-            msgHdr.mime2DecodedRecipients, addresses, names, fullNames);
-            
-        return names.value.join(", ");
+        return this._decodeMessageHeaders(msgHdr.mime2DecodedRecipients).join(", ");
         
     case "dateCol" :
         var d = new Date(msgHdr.date / 1000);
@@ -104,8 +98,8 @@ KeeperFinder.ThreadTreeView.prototype.getCellProperties = function(row, col, pro
     
     if (columnId == "subjectCol" && 
         (this._settings.showThreads || this._settings.showNewMessages) && 
-        this.getRecordForRow(row).isMatch) {
-        props.AppendElement(this._atomService.getAtom("kf-match"));
+        !this.getRecordForRow(row).isMatch) {
+        props.AppendElement(this._atomService.getAtom("kf-nonmatch"));
     }
 };
 
@@ -305,3 +299,11 @@ KeeperFinder.ThreadTreeView.prototype._getPriorityProperties = function(msgHdr, 
     }
 };
 
+KeeperFinder.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
+    var addresses = {};
+    var fullNames = {};
+    var names = {};
+    var numAddresses = this._headerParser.parseHeadersWithArray(s, addresses, names, fullNames);
+        
+    return names.value;
+};
