@@ -1,7 +1,7 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 treechildren::-moz-tree-cell-text(kf-nonmatch) {
-    font-style: italic;
+    color: #888888;
 }
 
 #keeperfinder-toolbar-button

@@ -28,6 +28,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this._baseMsgKeyArray = baseMsgKeyArray;
     this._msgKeyToRecord = {};
     this._viewFlags = 0;
+    this._suppressChangeNotification = false;
     
     this._atomService = Components.classes["@mozilla.org/atom-service;1"].
         getService(Components.interfaces.nsIAtomService);
@@ -52,6 +53,15 @@ KeeperFinder.ThreadTreeView._priorityLabels = [
 ];
 
 KeeperFinder.ThreadTreeView.prototype = {
+    QueryInterface: function(iid) {
+        if (iid.equals(Components.interfaces.nsIMsgDBView) ||
+            iid.equals(Components.interfaces.nsITreeView) ||
+            iid.equals(Components.interfaces.nsISupports)) {
+            return this;
+        }
+        throw Components.interfaces.NS_ERROR_NOINTERFACE;
+    },
+    
     /*
      *  nsIMsgDBView
      */
@@ -108,7 +118,6 @@ KeeperFinder.ThreadTreeView.prototype = {
         return 0;
     },
     
-    
     /*
      *  nsITreeView
      */
@@ -143,7 +152,11 @@ KeeperFinder.ThreadTreeView.prototype = {
 };
 
 KeeperFinder.ThreadTreeView.prototype.getMessageHeader = function(msgKey) {
-    return this.msgFolder.GetMessageHeader(msgKey);
+    try {
+        return this.msgFolder.GetMessageHeader(msgKey);
+    } catch (e) {
+        return null;
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype.getRecordForRow = function(row) {
@@ -277,22 +290,7 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     this._rootRecords.sort(sorter.comparator);
     
     if (this._settings.showThreads) {
-        var flattenedRecords = this._flattenedRecords = [];
-        
-        var pushRecordAndChildren = function(record) {
-            flattenedRecords.push(record);
-            
-            if (record.hasChildren) {
-                record.opened = true;
-                for (var j = 0; j < record.children.length; j++) {
-                    pushRecordAndChildren(record.children[j]);
-                }
-            }
-        };
-        
-        for (var i = 0; i < this._rootRecords.length; i++) {
-            pushRecordAndChildren(this._rootRecords[i]);
-        }
+        this._expandAll();
     } else {
         this._flattenedRecords = this._rootRecords;
     }
@@ -304,6 +302,25 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     };
     this.msgDatabase.AddListener(this._dbChangeListener);
 };
+
+KeeperFinder.ThreadTreeView.prototype._expandAll = function() {
+    var flattenedRecords = this._flattenedRecords = [];
+    
+    var pushRecordAndChildren = function(record) {
+        flattenedRecords.push(record);
+        
+        if (record.hasChildren) {
+            record.opened = true;
+            for (var j = 0; j < record.children.length; j++) {
+                pushRecordAndChildren(record.children[j]);
+            }
+        }
+    };
+    
+    for (var i = 0; i < this._rootRecords.length; i++) {
+        pushRecordAndChildren(this._rootRecords[i]);
+    }
+}
 
 KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
     if (msgKey in this._msgKeyToRecord) {

@@ -17,12 +17,15 @@ KeeperFinder.ThreadTreeView.prototype.close = function() {
 KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
     var nsMsgViewCommandType = Components.interfaces.nsMsgViewCommandType;
     
-    alert(command);
     switch (command) {
     case nsMsgViewCommandType.downloadSelectedForOffline:
         // this.DownloadForOffline(mMsgWindow, indices, numIndices);
+        break;
+        
     case nsMsgViewCommandType.downloadFlaggedForOffline:
         // this.DownloadFlaggedForOffline(mMsgWindow);
+        break;
+        
     case nsMsgViewCommandType.markMessagesRead:
     case nsMsgViewCommandType.markMessagesUnread:
     case nsMsgViewCommandType.toggleMessageRead:
@@ -34,15 +37,11 @@ KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
     case nsMsgViewCommandType.markThreadRead:
     case nsMsgViewCommandType.junk:
     case nsMsgViewCommandType.unjunk:
-        // since the FE could have constructed the list of indices in
-        // any order (e.g. order of discontiguous selection), we have to
-        // sort the indices in order to find out which nsMsgViewIndex will
-        // be deleted first.
-        /*
-        if (numIndices > 1) {
-            NS_QuickSort (indices, numIndices, sizeof(nsMsgViewIndex), CompareViewIndices, nsnull);
-        }
+        var indices = this._getSelectedIndices();
+        indices.sort();
         
+        this._applyCommandToIndices(command, indices);
+        /*
         NoteStartChange(nsMsgViewNotificationCode.none, 0, 0);
         rv = ApplyCommandToIndices(command, indices, numIndices);
         NoteEndChange(nsMsgViewNotificationCode.none, 0, 0);
@@ -50,18 +49,18 @@ KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
         break;
         
     case nsMsgViewCommandType.selectAll:
-        /*if (mTreeSelection && mTree) {
-            // if in threaded mode, we need to expand all before selecting
-            if (m_viewFlags & nsMsgViewFlagsType.kThreadedDisplay) {
-                rv = ExpandAll();
-            }
-            mTreeSelection->SelectAll();
-            mTree->Invalidate();
-        }*/
+        // if in threaded mode, we need to expand all before selecting
+        if (this._settings.showThreads) {
+            this._expandAll();
+        }
+        this.selection.selectAll();
+        this.treebox.invalidate();
         break;
+        
     case nsMsgViewCommandType.selectThread:
         //rv = ExpandAndSelectThread();
         break;
+        
     case nsMsgViewCommandType.selectFlagged:
         /*
         if (!mTreeSelection) {
@@ -87,21 +86,19 @@ KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
         }
         */
         break;
+        
     case nsMsgViewCommandType.toggleThreadWatched:
         /*
         rv = ToggleWatched(indices,	numIndices);
         */
         break;
+        
     case nsMsgViewCommandType.expandAll:
-        /*
-        rv = ExpandAll();
-        m_viewFlags |= nsMsgViewFlagsType.kExpandAll;
-        SetViewFlags(m_viewFlags);
-        NS_ASSERTION(mTree, "no tree, see bug #114956");
-        if (mTree) {
-            mTree->Invalidate();
+        if (this._settings.showThreads) {
+            this._expandAll();
         }
-        */
+        this.treebox.invalidate();
+        
         break;
     case nsMsgViewCommandType.collapseAll:
         /*
@@ -113,6 +110,7 @@ KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
             mTree->Invalidate();
         }*/
         break;
+        
     default:
         /*
         NS_ASSERTION(PR_FALSE, "invalid command type");
@@ -263,5 +261,226 @@ KeeperFinder.ThreadTreeView.prototype._updateMsgHdr = function(msgHdr) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._recordToRow = function(record) {
+KeeperFinder.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices) {
+    if (indices.length == 0) {
+        return;
+    }
+    
+    var nsMsgViewCommandType = Components.interfaces.nsMsgViewCommandType;
+    
+    if (command == nsMsgViewCommandType.deleteMsg) {
+        this._deleteMessages(msgWindow, indices, false);
+        return;
+    }
+    if (command == nsMsgViewCommandType.deleteNoTrash) {
+        this._deleteMessages(msgWindow, indices, true);
+        return;
+    }
+    
+    if (command == nsMsgViewCommandType.junk || command == nsMsgViewCommandType.unjunk) {
+        // There's supposedly some preparation to be done here
+        alert("Not yet implemented");
+        return;
+    }
+    
+    var imapUids = []; //Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
+    var folderIsImap = false;
+    var imapFolder = null;
+    try {
+        imapFolder = this.msgFolder.QueryInterface(Components.interfaces.nsIMsgImapMailFolder);
+        folderIsImap = true;
+    } catch (e) {
+    }
+   
+    this.msgFolder.enableNotifications(Components.interfaces.nsIMsgFolder.allMessageCountNotifications, false, true);
+    
+    for (var i = 0; i < indices.length; i++) {
+        var index = indices[i];
+        if (folderIsImap) {
+            imapUids.push(this.getMsgKeyForRow(index));
+        }
+        
+        switch (command) {
+        case nsMsgViewCommandType.markMessagesRead:
+            this._setReadByIndex(index, true);
+            break;
+            
+        case nsMsgViewCommandType.markMessagesUnread:
+            this._setReadByIndex(index, false);
+            break;
+            
+        case nsMsgViewCommandType.toggleMessageRead:
+            this._toggleReadByIndex(index);
+            break;
+            
+        case nsMsgViewCommandType.flagMessages:
+            this._setFlaggedByIndex(index, true);
+            break;
+            
+        case nsMsgViewCommandType.unflagMessages:
+            this._setFlaggedByIndex(index, false);
+            break;
+            
+        /*
+        case nsMsgViewCommandType.markThreadRead:
+        case nsMsgViewCommandType.junk:
+        case nsMsgViewCommandType.unjunk:
+        case nsMsgViewCommandType.undeleteMsg:
+        */
+        }
+    }
+    
+    this.msgFolder.enableNotifications(Components.interfaces.nsIMsgFolder.allMessageCountNotifications, true, true);
+    
+    if (folderIsImap) {
+        // flags are from mailnews/imap/src/nsImapCore.h
+        
+        var flags = 0;
+        var addFlags = false;
+        var isRead = false;;
+        
+        switch (command) {
+        case nsMsgViewCommandType.markMessagesRead:
+        case nsMsgViewCommandType.markThreadRead:
+            flags |= 0x0001; // kImapMsgSeenFlag
+            addFlags = true;
+            break;
+            
+        case nsMsgViewCommandType.markMessagesUnread:
+            flags |= 0x0001; // kImapMsgSeenFlag
+            addFlags = false;
+            break;
+            
+        case nsMsgViewCommandType.toggleMessageRead:
+            flags |= 0x0001; // kImapMsgSeenFlag
+            addFlags = this.msgDatabase.isRead(this.getMsgKeyForRow(indices[0]));
+            break;
+            
+        case nsMsgViewCommandType.flagMessages:
+            flags |= 0x0004; // kImapMsgFlaggedFlag
+            addFlags = true;
+            break;
+            
+        case nsMsgViewCommandType.unflagMessages:
+            flags |= 0x0004; // kImapMsgFlaggedFlag
+            addFlags = false;
+            break;
+            
+        case nsMsgViewCommandType.undeleteMsg:
+            flags |= 0x0008; // kImapMsgDeletedFlag
+            addFlags = false;
+            break;
+            
+        case nsMsgViewCommandType.junk:
+            imapFolder.storeCustomKeywords(msgWindow, "Junk", "NonJunk", imapUids, imapUids.length, null);
+            return;
+            
+        case nsMsgViewCommandType.unjunk:
+            imapFolder.storeCustomKeywords(msgWindow, "NonJunk", "Junk", imapUids, imapUids.length, null);
+            return;
+        }
+        
+        if (flags != 0) {
+            imapFolder.storeImapFlags(flags, addFlags, imapUids, imapUids.length, null);
+        }
+    }
+};
+
+KeeperFinder.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indices, deleteStorage) {
+    /*
+    var headers = Components.classes["@mozilla.org/supports-array;1"].
+        createInstance(Components.interfaces.nsISupportsArray);
+        
+    for (var i = 0; i < indices.length; i++) {
+        headers.AppendElement(this.getMessageHeader(this.getMsgKeyForRow(indices[i])));
+    }
+    this.msgFolder.deleteMessages(headers, msgWindow, deleteStorage, false, null, true);
+    */
+    alert("Not implemented yet");
+};
+
+KeeperFinder.ThreadTreeView.prototype._setReadByIndex = function(index, read) {
+    if (read) {
+        this._orExtraFlag(index, 0x0001); // MSG_FLAG_READ
+        this._andExtraFlag(index, ~0x10000); // MSG_FLAG_NEW
+    } else {
+        this._andExtraFlag(index, ~0x0001); // MSG_FLAG_READ
+    }
+    
+    var msgKey = this.getMsgKeyForRow(index);
+    this.msgDatabase.MarkRead(msgKey, read, this);
+    
+    this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
+    if (this._settings.showThreads) {
+        var threadIndex = index;//this._threadIndexOfMsg(msgKey);
+        if (threadIndex != index) {
+            this._noteChange(threadIndex, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
+        }
+    }
+};
+
+KeeperFinder.ThreadTreeView.prototype._toggleReadByIndex = function(index) {
+    var msgKey = this.getMsgKeyForRow(index);
+    var msgHdr = this.getMessageHeader(msgKey);
+    this._setReadByIndex(index, !(msgHdr.flags & 0x0001)); // MSG_FLAG_READ
+};
+
+KeeperFinder.ThreadTreeView.prototype._setFlaggedByIndex = function(index, mark) {
+    if (mark) {
+        this._orExtraFlag(index, 0x0004); // MSG_FLAG_MARKED
+    } else {
+        this._andExtraFlag(index, ~0x0004); // MSG_FLAG_MARKED
+    }
+    
+    var msgKey = this.getMsgKeyForRow(index);
+    this.msgDatabase.MarkMarked(msgKey, mark, this);
+    
+    this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
+};
+
+KeeperFinder.ThreadTreeView.prototype._orExtraFlag = function(index, flag) {
+    var msgKey = this.getMsgKeyForRow(index);
+    var msgHdr = this.getMessageHeader(msgKey);
+    var flags = msgHdr.flags | flag;
+    msgHdr.flags = flags;
+    
+    this._onExtraFlagChanged(index, flags);
+};
+
+KeeperFinder.ThreadTreeView.prototype._andExtraFlag = function(index, flag) {
+    var msgKey = this.getMsgKeyForRow(index);
+    var msgHdr = this.getMessageHeader(msgKey);
+    var flags = msgHdr.flags & flag;
+    msgHdr.flags = flags;
+    
+    this._onExtraFlagChanged(index, flags);
+};
+
+KeeperFinder.ThreadTreeView.prototype._onExtraFlagChanged = function(index, flags) {
+    // not sure what to do here; presumably there's work to do if we're showing threads
+};
+
+KeeperFinder.ThreadTreeView.prototype._noteChange = function(firstLineChanged, numChanged, changeType) {
+    if (!this._suppressChangeNotification) {
+        switch (changeType) {
+        case Components.interfaces.nsMsgViewNotificationCode.changed:
+            this.treebox.invalidateRange(firstLineChanged, firstLineChanged + numChanged - 1);
+            break;
+            
+        case Components.interfaces.nsMsgViewNotificationCode.insertOrDelete:
+            this.treebox.rowCountChanged(firstLineChanged, numChanged);
+            break;
+            
+        case Components.interfaces.nsMsgViewNotificationCode.all:
+            // TODO
+            break;
+        }
+    }
+};
+
+KeeperFinder.ThreadTreeView.prototype._noteStartChange = function(firstLineChanged, numChanged, changeType) {
+};
+
+KeeperFinder.ThreadTreeView.prototype._noteEndChange = function(firstLineChanged, numChanged, changeType) {
+    this._noteChange(firstLineChanged, numChanged, changeType);
 };

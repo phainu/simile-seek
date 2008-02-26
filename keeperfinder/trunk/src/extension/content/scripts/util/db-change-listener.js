@@ -7,6 +7,14 @@ KeeperFinder.DBChangeListener = function(msgDatabase) {
     this.msgDatabase = msgDatabase;
 }
 
+KeeperFinder.DBChangeListener.prototype.QueryInterface = function(iid) {
+    if (iid.equals(Components.interfaces.nsIDBChangeListener) ||
+        iid.equals(Components.interfaces.nsISupports)) {
+        return this;
+    }
+    throw Components.interfaces.NS_ERROR_NOINTERFACE;
+};
+
 KeeperFinder.DBChangeListener.prototype.onAnnouncerGoingAway = function(instigator) {
     this.msgDatabase.RemoveListener(this);
 };
