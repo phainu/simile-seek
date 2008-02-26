@@ -244,23 +244,6 @@ KeeperFinder.ThreadTreeView.prototype._getSelectedIndices = function() {
     return indices;
 };
 
-KeeperFinder.ThreadTreeView.prototype._updateMsgHdr = function(msgHdr) {
-    var msgKey = msgHdr.messageKey;
-    if (!(msgKey in this._msgKeyToRecord)) {
-        return;
-    }
-    
-    var record = this._msgKeyToRecord[msgKey];
-    var first = this.treebox.getFirstVisibleRow();
-    var last = this.treebox.getLastVisibleRow();
-    for (var i = first; i <= last; i++) {
-        if (this._flattenedRecords[i] == record) {
-            this.treebox.invalidateRow(i);
-            break;
-        }
-    }
-};
-
 KeeperFinder.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices) {
     if (indices.length == 0) {
         return;

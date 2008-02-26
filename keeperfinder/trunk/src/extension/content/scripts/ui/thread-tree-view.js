@@ -27,6 +27,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this._settings = settings;
     this._baseMsgKeyArray = baseMsgKeyArray;
     this._msgKeyToRecord = {};
+    this._processedThreadKeys = {};
     this._viewFlags = 0;
     this._suppressChangeNotification = false;
     
@@ -126,9 +127,6 @@ KeeperFinder.ThreadTreeView.prototype = {
     },
     setTree: function(treebox) {
         this.treebox = treebox;
-        if (treebox == null) {
-            this.msgDatabase.RemoveListener(this._dbChangeListener);
-        }
     },
     setSelection: function(selection) {
         this.selection = selection;
@@ -273,6 +271,23 @@ KeeperFinder.ThreadTreeView.prototype.toggleOpenState = function(row) {
     }
     record.opened = !record.opened;
     
+    if (record.level == 0) {
+        record.expandedDescendantCount = record.opened ? record.children.length : 0;
+    } else {
+        var thisRootRow = row - 1;
+        while (thisRootRow >= 0 && this._flattenedRecords[thisRootRow].level > 0) {
+            thisRootRow--;
+        }
+        
+        var nextRootRow = row + 1;
+        while (nextRootRow < this._flattenedRecords.length && this._flattenedRecords[nextRootRow].level > 0) {
+            nextRootRow++;
+        }
+        
+        var thisRootRecord = this._flattenedRecords[thisRootRow];
+        thisRootRecord.expandedDescendantCount = nextRootRow - thisRootRow - 1;
+    }
+    
     this.treebox.endUpdateBatch();
 };
 
@@ -294,13 +309,6 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     } else {
         this._flattenedRecords = this._rootRecords;
     }
-    
-    var self = this;
-    this._dbChangeListener = new KeeperFinder.DBChangeListener(this.msgDatabase);
-    this._dbChangeListener.onHdrChange = function(hdrChanged, oldFlags, newFlags, instigator) {
-        self._updateMsgHdr(hdrChanged);
-    };
-    this.msgDatabase.AddListener(this._dbChangeListener);
 };
 
 KeeperFinder.ThreadTreeView.prototype._expandAll = function() {
@@ -318,7 +326,10 @@ KeeperFinder.ThreadTreeView.prototype._expandAll = function() {
     };
     
     for (var i = 0; i < this._rootRecords.length; i++) {
-        pushRecordAndChildren(this._rootRecords[i]);
+        var rootRecord = this._rootRecords[i];
+        var c = this._flattenedRecords.length;
+        pushRecordAndChildren(rootRecord);
+        rootRecord.expandedDescendantCount = this._flattenedRecords.length - c - 1;
     }
 }
 
@@ -352,8 +363,10 @@ KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThr
     
     var msgHdr = this.getMessageHeader(msgKey);
     var msgThread = this._getMsgThread(msgHdr);
+    
     var msgHdrRoot = msgThread.GetChildAt(0);
     var rootRecord = this._makeRecordAndChildren(msgHdrRoot, msgThread, 0);
+    this._processedThreadKeys[msgThread.threadKey] = rootRecord;
     
     this._msgKeyToRecord[msgKey].isMatch = true;
     
@@ -401,4 +414,133 @@ KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, 
 
 KeeperFinder.ThreadTreeView.prototype._getMsgThread = function(msgHdr) {
     return this.msgDatabase.GetThreadContainingMsgHdr(msgHdr);
+};
+
+KeeperFinder.ThreadTreeView.prototype.onNewMatch = function(msgKey) {
+};
+
+KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
+    var msgKey = msgHdr.messageKey;
+    
+    if (msgKey in this._msgKeyToRecord) {
+        /*
+         *  Update existing record
+         */
+        var record = this._msgKeyToRecord[msgKey];
+        var first = this.treebox.getFirstVisibleRow();
+        var last = this.treebox.getLastVisibleRow();
+        for (var i = first; i <= last; i++) {
+            if (this._flattenedRecords[i] == record) {
+                this.treebox.invalidateRow(i);
+                break;
+            }
+        }
+        return;
+    }
+
+    var msgThread = this._getMsgThread(msgHdr);
+    if (msgThread != null && msgThread.threadKey in this._processedThreadKeys) {
+        /*
+         *  New record in an existing thread (but the record is not a match).
+         */
+        var newRecord = this._makeRecord(msgKey);
+        
+        var rootRecord = this._processedThreadKeys[msgThread.threadKey];
+        var rootRecordRow = this._rootRecordToRow(rootRecord);
+        var row = rootRecordRow;
+        
+        var threadParent = msgHdr.threadParent;KeeperFinder.log("here " + threadParent + " " + rootRecordRow);
+        var self = this;
+        var f = function(parentRecord, opened) {
+            if (opened) {
+                row++;
+            }
+            
+            opened = opened && parentRecord.opened;
+            if (threadParent == parentRecord.msgKey) {
+                newRecord.level = parentRecord.level + 1;
+                
+                parentRecord.children.push(newRecord);
+                if (opened) {
+                    while (row < self._flattenedRecords.length && self._flattenedRecords[row].level > parentRecord.level) {
+                        row++;
+                    }
+                    
+                    self._flattenedRecords.splice(row, 0, newRecord);
+                    rootRecord.expandedDescendantCount++;
+                    
+                    self.treebox.beginUpdateBatch();
+                    self.treebox.rowCountChanged(row, 1);
+                    self.treebox.endUpdateBatch();
+                }
+                
+                return true;
+            } else {
+                for (var i = 0; i < parentRecord.children.length; i++) {
+                    if (f(parentRecord.children[i], opened)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        
+        f(rootRecord, true);
+        return;
+    }
+    
+    if (this._settings.showNewMessages && !(msgHdr.flags & 0x0001)) {
+        /*
+         *  New unread message, put itself or its thread (collapsed) at the top.
+         *  TODO: insert it in the sorting order.
+         */
+        var rootRecord = this._makeRootRecord(msgKey, this._settings.showThreads);
+        if (rootRecord != null) {
+            this._createSorter().prepare(rootRecord);
+            this._collapseAll(rootRecord);
+            
+            this._rootRecords.unshift(rootRecord);
+            this._flattenedRecords.unshift(rootRecord);
+            
+            this.treebox.beginUpdateBatch();
+            this.treebox.rowCountChanged(0, 1);
+            this.treebox.endUpdateBatch();
+        }
+    }
+};
+
+KeeperFinder.ThreadTreeView.prototype._collapseAll = function(rootRecord) {
+    var collapse = function(r) {
+        if (r.hasChildren) {
+            r.opened = false;
+            for (var i = 0; i < r.children.length; i++) {
+                collapse(r.children[i]);
+            }
+        }
+    }
+    collapse(rootRecord);
+    
+    rootRecord.expandedDescendantCount = 0;
+};
+
+KeeperFinder.ThreadTreeView.prototype._rootRecordToRow = function(rootRecord) {
+    if (this._settings.showThreads) {
+        var records = this._flattenedRecords;
+        for (var r = 0; r < records.length; ) {
+            var record = records[r];
+            if (record == rootRecord) {
+                return r;
+            }
+            r += record.expandedDescendantCount + 1;
+        }
+    } else {
+        var records = this._flattenedRecords;
+        for (var r = 0; r < records.length; r++) {
+            var record = records[r];
+            if (record == rootRecord) {
+                return r;
+            }
+        }
+    }
+    return -1;
 };

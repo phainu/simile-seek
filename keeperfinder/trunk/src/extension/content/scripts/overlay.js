@@ -42,7 +42,9 @@ var KeeperFinder = {
     _selectedFolder:        null,
     _database:              null,
     _facets:                [],
-    _currentSettings:       null
+    _currentSettings:       null,
+    _dbChangeListener:      null,
+    _processingUpdates:     false
 };
 
 KeeperFinder.log = function(msg) {
@@ -110,6 +112,12 @@ FolderPaneSelectionChange = function() {
     
     var msgFolder = KeeperFinder._getCurrentlySelectedFolder();
     if (KeeperFinder._selectedFolder != msgFolder) {
+        if (KeeperFinder._selectedFolder != null && KeeperFinder._dbChangeListener != null) {
+            var msgDatabase = KeeperFinder._selectedFolder.getMsgDatabase(msgWindow);
+            msgDatabase.RemoveListener(KeeperFinder._dbChangeListener);
+            KeeperFinder._dbChangeListener = null;
+        }
+        
         KeeperFinder.Indexer.cancelIndexingJob();
         
         KeeperFinder._relinquishThreadPaneOurselves();
@@ -130,6 +138,10 @@ FolderPaneSelectionChange = function() {
 
 KeeperFinder.onStartIndexingFolder = function() {
     KeeperFinder._disposeFacets();
+    
+    var msgDatabase = KeeperFinder._selectedFolder.getMsgDatabase(msgWindow);
+    KeeperFinder._dbChangeListener = KeeperFinder._createDBChangeListener();
+    msgDatabase.AddListener(KeeperFinder._dbChangeListener);
     
     var progress = document.getElementById("keeperFinderPane-indexingLayer-progress");
     progress.value = 0;
@@ -204,7 +216,7 @@ KeeperFinder._getFacetContainer = function() {
 KeeperFinder._onFinishIndexingJob = function() {
     KeeperFinder._currentSettings = {
         showThreads:        true,
-        showNewMessages:    false
+        showNewMessages:    true
     };
     
     document.getElementById("keeperFinderPane-browsingLayer-showWholeThreads").checked = 
@@ -251,73 +263,27 @@ KeeperFinder._onFinishIndexingJob = function() {
     spacer.style.width = "5px";
     facetContainer.appendChild(spacer);
     
-    KeeperFinder._onCollectionItemsChanged();
+    KeeperFinder._rewireThreadPane();
 };
 
 KeeperFinder._onCollectionItemsChanged = function() {
-    try {
-        //KeeperFinder._reconfigureThreadPaneNatively();
-        KeeperFinder._reconfigureThreadPaneOurselves();
-    } catch (e) {
-        alert(e);
-    }
-};
-
-KeeperFinder._reconfigureThreadPaneNatively = function() {
-    var collection = KeeperFinder._collection;
-    var items = KeeperFinder._collection.getRestrictedItems()
-    
-    initializeSearchBar();
-    RerootThreadPane();
-    
-    gSearchSession.clearScopes();
-    
-    var searchTerms = gSearchSession.searchTerms;
-    var searchTermsArray = searchTerms.QueryInterface(Components.interfaces.nsISupportsArray);
-    searchTermsArray.Clear();
-    
-    var termsArray = Components.classes["@mozilla.org/supports-array;1"].
-        createInstance(Components.interfaces.nsISupportsArray);
-        
-    var facets = collection.getFacets();
-    for (var i = 0; i < facets.length; i++) {
-        var facet = facets[i];
-        if ("getSearchTerm" in facet) {
-            termsArray.AppendElement(facet.getSearchTerm());
+    if (!KeeperFinder._processingUpdates) {
+        try {
+            KeeperFinder._rewireThreadPane();
+        } catch (e) {
+            alert(e);
         }
     }
-        
-    var ioService = Components.classes["@mozilla.org/network/io-service;1"].
-        getService(Components.interfaces.nsIIOService);
-        
-    gSearchSession.addScopeTerm(
-        getScopeToUse(termsArray, KeeperFinder._selectedFolder, ioService.offline), 
-        KeeperFinder._selectedFolder
-    );
-    
-    for (var i = 0; i < termsArray.Count(); i++) {
-        gSearchSession.appendTerm(termsArray.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgSearchTerm));
-    }
-
-    gDBView.searchSession = gSearchSession;
-    gSearchSession.search(msgWindow);
-};
-
-KeeperFinder._relinquishThreadPaneNatively = function() {
-    // nothing
-};
-
-KeeperFinder._reconfigureThreadPaneOurselves = function() {
-    KeeperFinder._rerenderThreadPane();
 };
 
 KeeperFinder._relinquishThreadPaneOurselves = function() {
     if ("_oldDBView" in KeeperFinder) {
         gDBView = KeeperFinder._oldDBView;
+        delete KeeperFinder._oldDBView;
     }
 };
 
-KeeperFinder._rerenderThreadPane = function() {
+KeeperFinder._rewireThreadPane = function() {
     if (!("_oldDBView" in KeeperFinder)) {
         KeeperFinder._oldDBView = gDBView;
     }
@@ -344,4 +310,56 @@ KeeperFinder._rerenderThreadPane = function() {
         "primary", KeeperFinder._currentSettings.showThreads);
         
     threadTree.treeBoxObject.view = treeView;
+};
+
+KeeperFinder._createDBChangeListener = function() {
+    var msgDatabase = KeeperFinder._selectedFolder.getMsgDatabase(msgWindow);
+    var l = new KeeperFinder.DBChangeListener(msgDatabase);
+    l.onHdrChange = KeeperFinder._onHdrChange;
+    l.onHdrAdded = KeeperFinder._onHdrAdded;
+    return l;
+};
+
+KeeperFinder._onHdrChange = function(hdrChanged, oldFlags, newFlags, instigator) {
+    if (KeeperFinder._hasOurOwnTreeView()) {
+        KeeperFinder._getOurOwnTreeView().onHdrChange(hdrChanged);
+    }
+};
+
+KeeperFinder._onHdrAdded = function(hdrChanged, parentKey, flags, instigator) {
+    /*
+     *  Flagging _processingUpdates will let us update the thread tree incrementally
+     *  while the facets get updated the usual way. This avoids reconstructing the
+     *  whole thread tree.
+     */
+    KeeperFinder._processingUpdates = true;
+    
+        var entityMap = {};
+        var items = [];
+        KeeperFinder.Indexer.indexMsg(hdrChanged, KeeperFinder._database, entityMap, items);
+        KeeperFinder._database.loadItems(items, "");
+        
+        if (KeeperFinder._hasOurOwnTreeView()) {
+            var msgKey = hdrChanged.messageKey;
+            var itemID = KeeperFinder.Indexer.makeMessageID(msgKey);
+            
+            var collection = KeeperFinder._collection;
+            var items = KeeperFinder._collection.getRestrictedItems()
+            
+            var treeView = KeeperFinder._getOurOwnTreeView();
+            if (items.contains(itemID)) {
+                treeView.onNewMatch(msgKey);
+            } else {
+                treeView.onHdrChange(hdrChanged);
+            }
+        }
+    KeeperFinder._processingUpdates = false;
+};
+
+KeeperFinder._hasOurOwnTreeView = function() {
+    return ("_oldDBView" in KeeperFinder);
+};
+
+KeeperFinder._getOurOwnTreeView = function() {
+    return GetThreadTree().treeBoxObject.view.wrappedJSObject;
 };

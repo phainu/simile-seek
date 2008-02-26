@@ -111,7 +111,7 @@ KeeperFinder.Indexer._performIndexingJob = function() {
     while (e.hasMoreElements() && count < 25) {
         var o = e.getNext();
         var msgHdr = o.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-        KeeperFinder.Indexer._indexMsg(msgHdr, database, entityMap, items);
+        KeeperFinder.Indexer.indexMsg(msgHdr, database, entityMap, items);
         
         count++;
     }
@@ -127,8 +127,12 @@ KeeperFinder.Indexer._performIndexingJob = function() {
     }
 };
 
-KeeperFinder.Indexer._indexMsg = function(msgHdr, database, entityMap, items) {
-    var messageID = "urn:message:" + msgHdr.messageKey;
+KeeperFinder.Indexer.makeMessageID = function(msgKey) {
+    return "urn:message:" + msgKey;
+};
+
+KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
+    var messageID = KeeperFinder.Indexer.makeMessageID(msgHdr.messageKey);
     var item = {
         type:       "Message",
         label:      msgHdr.subject || "",
