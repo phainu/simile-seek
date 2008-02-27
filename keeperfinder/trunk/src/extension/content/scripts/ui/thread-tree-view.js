@@ -571,6 +571,16 @@ KeeperFinder.ThreadTreeView.prototype._insertRootRecord = function(rootRecord) {
     KeeperFinder.ThreadTreeView._expandRootRecord(rootRecord, rowToInsert);
     
     var insert = 0;
+    var flattenedRecords = this._flattenedRecords;
+    while (insert < flattenedRecords.length) {
+        var rootRecord2 = flattenedRecords[insert];
+        if (sorter.comparator(rootRecord, rootRecord2) < 0) {
+            break;
+        } else {
+            insert += rootRecord2.expandedDescendantCount + 1;
+        }
+    }
+    
     this._rootRecords.push(rootRecord);
     this._flattenedRecords = this._flattenedRecords.slice(0, insert).
         concat(rowToInsert).
