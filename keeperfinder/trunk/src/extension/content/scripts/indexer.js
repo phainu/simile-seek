@@ -192,7 +192,7 @@ KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     }
     item.toOrCCToMe = me;
     
-    item.tag = KeeperFinder.Indexer.getTags(msgHdr);
+    item.tag = KeeperFinder.Indexer.getTagLabels(msgHdr);
     
     items.push(item);
 };

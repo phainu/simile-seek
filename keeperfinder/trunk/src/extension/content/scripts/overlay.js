@@ -15,29 +15,6 @@
  * */
 
 var KeeperFinder = {
-    possibleFacets: {
-        "from domain" : {
-            showInitially: false
-        },
-        "from" : {
-            showInitially: true
-        },
-        "to/cc domain" : {
-            showInitially: false
-        },
-        "to/cc" : {
-            showInitially: true
-        },
-        "tag" : {
-            showInitially: true
-        },
-        "recency" : {
-            showInitially: true
-        }/*,
-        "to/cc me" : {
-            showInitially: true
-        }*/
-    },
     _visible:               false,
     _selectedFolder:        null,
     _database:              null,
@@ -210,6 +187,12 @@ KeeperFinder._getFacetContainer = function() {
 };
 
 KeeperFinder._onFinishIndexingJob = function() {
+    KeeperFinder._collection = KeeperFinder.Collection.createTypeBasedCollection(
+        "default", KeeperFinder._database, [ "Message" ]);
+    KeeperFinder._collection.addListener({
+        onItemsChanged: KeeperFinder._onCollectionItemsChanged
+    });
+    
     KeeperFinder._currentSettings = {
         showThreads:        true,
         showNewMessages:    true
@@ -223,43 +206,38 @@ KeeperFinder._onFinishIndexingJob = function() {
     var deck = document.getElementById("keeperFinderPane-deck");
     deck.selectedIndex = 3;
     
-    KeeperFinder._collection = KeeperFinder.Collection.createTypeBasedCollection(
-        "default", KeeperFinder._database, [ "Message" ]);
-    KeeperFinder._collection.addListener({
-        onItemsChanged: KeeperFinder._onCollectionItemsChanged
-    });
-    
-    var facetContainer = KeeperFinder._getFacetContainer();
-    var appendFacet = function(name) {
-        var vbox = document.createElement("vbox");
-        vbox.style.width = "17em";
-        facetContainer.appendChild(vbox);
-        
-        var facet = KeeperFinder.FacetAdapters[name](
-            KeeperFinder._database,
-            KeeperFinder._collection,
-            vbox
-        );
-        
-        facetContainer.appendChild(KeeperFinder.FacetUtilities.createFacetSplitter());
-        
-        KeeperFinder._facets.push(facet);
-        
-        return facet;
-    }
-    //appendFacet("from domain");
-    appendFacet("from");
-    //appendFacet("to/cc domain");
-    appendFacet("to/cc");
-    appendFacet("to/cc me");
-    appendFacet("tag");
-    appendFacet("recency");
-    
     var spacer = document.createElement("spacer");
     spacer.style.width = "5px";
-    facetContainer.appendChild(spacer);
+    KeeperFinder._getFacetContainer().appendChild(spacer);
+    
+    for (var n in KeeperFinder.FacetConfigurations.possibleFacets) {
+        var config = KeeperFinder.FacetConfigurations.possibleFacets[n];
+        if (config.showInitially) {
+            KeeperFinder.appendFacet(n);
+        }
+    }
     
     KeeperFinder._rewireThreadPane();
+};
+
+KeeperFinder.appendFacet = function(name) {
+    var facetContainer = KeeperFinder._getFacetContainer();
+    
+    var vbox = document.createElement("vbox");
+    vbox.style.width = "17em";
+    facetContainer.insertBefore(vbox, facetContainer.lastChild);
+    
+    var facet = KeeperFinder.FacetConfigurations[name](
+        KeeperFinder._database,
+        KeeperFinder._collection,
+        vbox
+    );
+    
+    facetContainer.insertBefore(KeeperFinder.FacetUtilities.createFacetSplitter(), facetContainer.lastChild);
+    
+    KeeperFinder._facets.push(facet);
+    
+    return facet;
 };
 
 KeeperFinder._onCollectionItemsChanged = function() {
