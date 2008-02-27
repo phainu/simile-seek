@@ -150,8 +150,11 @@ KeeperFinder.RecencyFacet.prototype._registerEventListeners = function() {
         }
         return true;
     };
-    this._dom.header.onmousedown = function(e) {
+    this._dom.headerLabel.onmousedown = function(e) {
         KeeperFinder.startDraggingFacet(e, self, self._box);
+    };
+    this._dom.closeButton.onclick = function(e) {
+        KeeperFinder.removeFacet(self);
     };
 };
 

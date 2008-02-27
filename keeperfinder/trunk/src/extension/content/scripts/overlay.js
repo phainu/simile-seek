@@ -56,6 +56,22 @@ KeeperFinder.onLoad = function() {
     
     window.addEventListener("mousemove", KeeperFinder.onWindowMouseMove, false);
     window.addEventListener("mouseup", KeeperFinder.onWindowMouseUp, false);
+    
+    var addFacetPopup = document.getElementById("keeperFinderPane-addFacetPopup");
+    var makeMenuItem = function(n) {
+        var config = KeeperFinder.FacetConfigurations.possibleFacets[n].config;
+        var menuItem = document.createElement("menuitem");
+        
+        addFacetPopup.appendChild(menuItem);
+        
+        menuItem.setAttribute("label", config.facetLabel);
+        menuItem.addEventListener('command', function() {
+            KeeperFinder.appendFacet(n);
+        }, false);
+    };
+    for (var n in KeeperFinder.FacetConfigurations.possibleFacets) {
+        makeMenuItem(n);
+    }
 };
 window.addEventListener("load", KeeperFinder.onLoad, false);
 
@@ -238,6 +254,19 @@ KeeperFinder.appendFacet = function(name) {
     KeeperFinder._facets.push(facet);
     
     return facet;
+};
+
+KeeperFinder.removeFacet = function(facet) {
+    for (var i = 0; i < KeeperFinder._facets.length; i++) {
+        if (KeeperFinder._facets[i] == facet) {
+            facet.dispose();
+            KeeperFinder._facets.splice(i, 1);
+            
+            var facetContainer = KeeperFinder._getFacetContainer();
+            facetContainer.removeChild(facetContainer.childNodes[i * 2]);
+            facetContainer.removeChild(facetContainer.childNodes[i * 2]); // remove the resizer, too
+        }
+    }
 };
 
 KeeperFinder._onCollectionItemsChanged = function() {

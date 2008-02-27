@@ -44,9 +44,19 @@ splitter.keeperfinder-facetContainer-splitter {
     border-right: none;
 }
 
-.keeperFinder-facet-header {
-    cursor: move;
-}
 .keeperFinder-facet-header label {
     cursor: move;
+}
+
+.keeperFinder-facet-header-closeButton {
+    background: url("chrome://keeperfinder/skin/images/cross.png") center center no-repeat;
+    width:      20px;
+    cursor:     pointer;
+}
+.keeperFinder-facet-header-closeButton:hover {
+    background: url("chrome://keeperfinder/skin/images/cross_over.png") center center no-repeat;
+    border: none;
+}
+.keeperFinder-facet-header-closeButton:active {
+    background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
 }

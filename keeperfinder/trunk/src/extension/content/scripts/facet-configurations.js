@@ -2,91 +2,15 @@ KeeperFinder.FacetConfigurations = {};
 
 KeeperFinder.FacetConfigurations.possibleFacets = {
     "recency" : {
-        showInitially: true
+        showInitially: true,
+        config: {
+            facetLabel:     "Recency",
+            expression:     ".date"
+        }
     },
     "to/cc me" : {
-        showInitially: true
-    },
-    "tag" : {
-        showInitially: true
-    },
-    "from" : {
-        showInitially: true
-    },
-    "from domain" : {
-        showInitially: true
-    },
-    "to/cc" : {
-        showInitially: false
-    },
-    "to/cc domain" : {
-        showInitially: false
-    }
-};
-
-KeeperFinder.FacetConfigurations["to/cc"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "To/CC",
-            expression:     ".recipient",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No recipient)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["to/cc name"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "To/CC name",
-            expression:     ".recipient.label",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No recipient)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["to/cc domain"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "To/CC domain",
-            expression:     ".recipient.domain",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No domain)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["to/cc me"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
+        showInitially: true,
+        config: {
             facetLabel:     "To/CC me",
             expression:     ".toOrCCToMe",
             filterable:     false,
@@ -103,72 +27,10 @@ KeeperFinder.FacetConfigurations["to/cc me"] = function(database, collection, bo
                 "not to me nor cc'ed to me"
             ]
         }
-    );
-};
-
-KeeperFinder.FacetConfigurations["from"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "From",
-            expression:     ".author",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No sender)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["from name"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "From name",
-            expression:     ".author.label",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No sender)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["from domain"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
-            facetLabel:     "From domain",
-            expression:     ".author.domain",
-            filterable:     true,
-            selectMultiple: true,
-            sortable:       true,
-            sortMode:       "value",
-            sortDirection:  "forward",
-            showMissing:    false,
-            missingLabel:   "(No domain)"
-        }
-    );
-};
-
-KeeperFinder.FacetConfigurations["tag"] = function(database, collection, box) {
-    return new KeeperFinder.ListFacet(
-        database, 
-        collection, 
-        box, 
-        {
+    },
+    "tag" : {
+        showInitially: true,
+        config: {
             facetLabel:     "Tag",
             expression:     ".tag",
             filterable:     true,
@@ -179,7 +41,96 @@ KeeperFinder.FacetConfigurations["tag"] = function(database, collection, box) {
             showMissing:    false,
             missingLabel:   "(No tag)"
         }
+    },
+    "from" : {
+        showInitially: true,
+        config: {
+            facetLabel:     "From",
+            expression:     ".author",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No sender)"
+        }
+    },
+    "from domain" : {
+        showInitially: true,
+        config: {
+            facetLabel:     "From domain",
+            expression:     ".author.domain",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No domain)"
+        }
+    },
+    "to/cc" : {
+        showInitially: false,
+        config: {
+            facetLabel:     "To/CC",
+            expression:     ".recipient",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No recipient)"
+        }
+    },
+    "to/cc domain" : {
+        showInitially: false,
+        config: {
+            facetLabel:     "To/CC domain",
+            expression:     ".recipient.domain",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No domain)"
+        }
+    }
+};
+
+KeeperFinder.FacetConfigurations._constructListFacet = function(database, collection, box, name) {
+    return new KeeperFinder.ListFacet(
+        database, 
+        collection, 
+        box, 
+        KeeperFinder.FacetConfigurations.possibleFacets[name].config
     );
+};
+
+KeeperFinder.FacetConfigurations["to/cc"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc");
+};
+
+KeeperFinder.FacetConfigurations["to/cc domain"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc domain");
+};
+
+KeeperFinder.FacetConfigurations["to/cc me"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc me");
+};
+
+KeeperFinder.FacetConfigurations["from"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "from");
+};
+
+KeeperFinder.FacetConfigurations["from domain"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "from domain");
+};
+
+KeeperFinder.FacetConfigurations["tag"] = function(database, collection, box) {
+    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "tag");
 };
 
 KeeperFinder.FacetConfigurations["recency"] = function(database, collection, box) {
@@ -187,9 +138,6 @@ KeeperFinder.FacetConfigurations["recency"] = function(database, collection, box
         database, 
         collection, 
         box, 
-        {
-            facetLabel:     "Recency",
-            expression:     ".date"
-        }
+        KeeperFinder.FacetConfigurations.possibleFacets["recency"].config
     );
 };

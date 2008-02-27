@@ -17,7 +17,7 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     var header = document.getElementById("keeperFinder-facet-header").cloneNode(true);
     header.id = "";
     parentVbox.appendChild(header);
-    header.childNodes[0].value = facetLabel;
+    header.childNodes[1].value = facetLabel;
     
     if (hasFilter) {
         var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
@@ -30,11 +30,13 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     parentVbox.appendChild(valuesContainer);
     
     var r = {
-        reset: header.childNodes[1],
         header: header,
+        closeButton: header.childNodes[0],
+        headerLabel: header.childNodes[1],
+        reset: header.childNodes[2],
         valuesContainer: valuesContainer,
         setSelectionCount: function(count) {
-            header.childNodes[1].style.display = (count > 0) ? "block" : "none";
+            header.childNodes[2].style.display = (count > 0) ? "block" : "none";
         }
     };
     

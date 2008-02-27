@@ -11,3 +11,6 @@
 <!ENTITY keeperFinder.cancelIndexingButton.label "Cancel">
 
 <!ENTITY keeperFinder.resetFacetLink.label "reset">
+
+<!ENTITY keeperFinder.addFacetButton.label "Add Facet">
+<!ENTITY keeperFinder.closeFacetButton.tooltip "Remove this facet">

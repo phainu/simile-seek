@@ -75,6 +75,10 @@
             />
     </keyset>
     
+    <popupset>
+        <popup id="keeperFinderPane-addFacetPopup" />
+    </popupset>
+    
     <window id="messengerWindow">
         <deck id="keeperFinderPane-deck" insertbefore="mailContentWrapper" flex="1" hidden="true">
             <hbox id="keeperFinderPane-noSupportLayer">
@@ -117,6 +121,7 @@
                 <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="keeperFinderPane-browsingLayer-facetContainer">
                 </scrollbox>
                 <vbox>
+                    <button id="keeperFinderPane-browsingLayer-addFacet" label="&keeperFinder.addFacetButton.label;" popup="keeperFinderPane-addFacetPopup" />
                     <groupbox>
                         <caption label="Also Include" />
                         <checkbox label="Whole threads" id="keeperFinderPane-browsingLayer-showWholeThreads" />
@@ -128,6 +133,8 @@
             </hbox>
             <box hidden="true">
                 <hbox id="keeperFinder-facet-header" class="keeperFinder-facet-header">
+                    <box class="keeperFinder-facet-header-closeButton" 
+                        tooltiptext="&keeperFinder.closeFacetButton.tooltip;" />
                     <label value="" flex="1" />
                     <html:div style="display: none;"><html:a href="javascript:{}">&keeperFinder.resetFacetLink.label;</html:a></html:div>
                 </hbox>
