@@ -211,8 +211,8 @@ KeeperFinder._getFacetContainer = function() {
 
 KeeperFinder._onFinishIndexingJob = function() {
     KeeperFinder._currentSettings = {
-        showThreads:        false,
-        showNewMessages:    false
+        showThreads:        true,
+        showNewMessages:    true
     };
     
     document.getElementById("keeperFinderPane-browsingLayer-showWholeThreads").checked = 
@@ -316,11 +316,7 @@ KeeperFinder._rewireThreadPane = function() {
     );
     gDBView = treeView;
     
-    var threadTree = GetThreadTree();
-    threadTree.columns.getNamedColumn("subjectCol").element.setAttribute(
-        "primary", KeeperFinder._currentSettings.showThreads);
-        
-    threadTree.treeBoxObject.view = treeView;
+    GetThreadTree().treeBoxObject.view = treeView;
 };
 
 KeeperFinder._createDBChangeListener = function() {

@@ -243,11 +243,8 @@ KeeperFinder.ThreadTreeView.prototype.sort = function(sortType, sortOrder) {
         this.selection.clearSelection();
         
         this._rootRecords.sort(sorter.comparator);
-        if (this._settings.showThreads) {
-            this._expandAll();
-        } else {
-            this._flattenedRecords = this._rootRecords;
-        }
+        this._reroot();
+        
         this.treebox.invalidate();
     }
 };
