@@ -706,6 +706,15 @@ KeeperFinder.Database._Impl.prototype.removeObjects = function(s, p) {
     }
 };
 
+KeeperFinder.Database._Impl.prototype.removeItem = function(itemID) {
+    var properties = this._spo[itemID];
+    if (properties) {
+        for (var p in properties) {
+            this.removeObjects(itemID, p);
+        }
+    }
+};
+
 KeeperFinder.Database._Impl.prototype.removeSubjects = function(o, p) {
     var indexRemove = KeeperFinder.Database._indexRemove;
     var indexRemoveList = KeeperFinder.Database._indexRemoveList;

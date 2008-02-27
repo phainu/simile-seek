@@ -340,7 +340,7 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     
     this._rootRecords = [];
     for (var i = 0; i < this._baseMsgKeyArray.length; i++) {
-        var rootRecord = this._makeRootRecord(this._baseMsgKeyArray[i], this._settings.showThreads);
+        var rootRecord = this._makeRootRecord(this._baseMsgKeyArray[i], this._settings.showThreads, true);
         if (rootRecord != null) {
             this._rootRecords.push(sorter.prepare(rootRecord));
         }
@@ -410,7 +410,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
     return record;
 };
 
-KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads) {
+KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads, isMatch) {
     if (msgKey in this._msgKeyToRecord) {
         this._msgKeyToRecord[msgKey].isMatch = true;
         return null; // processed message already
@@ -427,7 +427,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThr
     var rootRecord = this._makeRecordAndChildren(msgHdrRoot, msgThread, 0);
     this._processedThreadKeys[msgThread.threadKey] = rootRecord;
     
-    this._msgKeyToRecord[msgKey].isMatch = true;
+    this._msgKeyToRecord[msgKey].isMatch = isMatch;
     
     return rootRecord;
 };
@@ -476,16 +476,22 @@ KeeperFinder.ThreadTreeView.prototype._getMsgThread = function(msgHdr) {
 };
 
 KeeperFinder.ThreadTreeView.prototype.onNewMatch = function(msgKey) {
+    var rootRecord = this._makeRootRecord(msgKey, this._settings.showThreads, true);
+    if (rootRecord != null) {
+        this._insertRootRecord(rootRecord);
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
     var msgKey = msgHdr.messageKey;
     
+    // existing message
     if (msgKey in this._msgKeyToRecord) {
         this._updateExistingRecord(this._msgKeyToRecord[msgKey]);
         return;
     }
 
+    // new message of an existing thread, but not a match
     var msgThread = this._getMsgThread(msgHdr);
     if (msgThread != null && msgThread.threadKey in this._processedThreadKeys) {
         var newRecord = this._makeRecord(msgKey);
@@ -493,8 +499,9 @@ KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
         return;
     }
     
+    // new message, but not a match
     if (this._settings.showNewMessages && !(msgHdr.flags & 0x0001)) {
-        var rootRecord = this._makeRootRecord(msgKey, this._settings.showThreads);
+        var rootRecord = this._makeRootRecord(msgKey, this._settings.showThreads, false);
         if (rootRecord != null) {
             this._insertRootRecord(rootRecord);
         }

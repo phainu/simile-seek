@@ -324,6 +324,7 @@ KeeperFinder._createDBChangeListener = function() {
     var l = new KeeperFinder.DBChangeListener(msgDatabase);
     l.onHdrChange = KeeperFinder._onHdrChange;
     l.onHdrAdded = KeeperFinder._onHdrAdded;
+    l.onHdrDeleted = KeeperFinder._onHdrDeleted;
     return l;
 };
 
@@ -361,6 +362,25 @@ KeeperFinder._onHdrAdded = function(hdrChanged, parentKey, flags, instigator) {
             }
         }
     KeeperFinder._processingUpdates = false;
+};
+
+KeeperFinder._onHdrDeleted = function(hdrChanged, parentKey, flags, instigator) {
+    var msgKey = hdrChanged.messageKey;
+    var itemID = KeeperFinder.Indexer.makeMessageID(msgKey);
+    KeeperFinder._database.removeItem(itemID);
+    KeeperFinder._collection._update();
+    
+    // TODO: we need to update the thread tree in a more incremental manner
+    
+    if (KeeperFinder._hasOurOwnTreeView()) {
+        var collection = KeeperFinder._collection;
+        var items = KeeperFinder._collection.getRestrictedItems();
+        
+        var treeView = KeeperFinder._getOurOwnTreeView();
+        if (!items.contains(itemID)) {
+            treeView.onHdrChange(hdrChanged);
+        }
+    }
 };
 
 KeeperFinder._hasOurOwnTreeView = function() {
