@@ -382,67 +382,6 @@ KeeperFinder.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indi
     alert("Not implemented yet");
 };
 
-KeeperFinder.ThreadTreeView.prototype._setReadByIndex = function(index, read) {
-    if (read) {
-        this._orExtraFlag(index, 0x0001); // MSG_FLAG_READ
-        this._andExtraFlag(index, ~0x10000); // MSG_FLAG_NEW
-    } else {
-        this._andExtraFlag(index, ~0x0001); // MSG_FLAG_READ
-    }
-    
-    var msgKey = this.getMsgKeyForRow(index);
-    this.msgDatabase.MarkRead(msgKey, read, this);
-    
-    this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
-    if (this._settings.showThreads) {
-        var threadIndex = index;//this._threadIndexOfMsg(msgKey);
-        if (threadIndex != index) {
-            this._noteChange(threadIndex, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
-        }
-    }
-};
-
-KeeperFinder.ThreadTreeView.prototype._toggleReadByIndex = function(index) {
-    var msgKey = this.getMsgKeyForRow(index);
-    var msgHdr = this.getMessageHeader(msgKey);
-    this._setReadByIndex(index, !(msgHdr.flags & 0x0001)); // MSG_FLAG_READ
-};
-
-KeeperFinder.ThreadTreeView.prototype._setFlaggedByIndex = function(index, mark) {
-    if (mark) {
-        this._orExtraFlag(index, 0x0004); // MSG_FLAG_MARKED
-    } else {
-        this._andExtraFlag(index, ~0x0004); // MSG_FLAG_MARKED
-    }
-    
-    var msgKey = this.getMsgKeyForRow(index);
-    this.msgDatabase.MarkMarked(msgKey, mark, this);
-    
-    this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
-};
-
-KeeperFinder.ThreadTreeView.prototype._orExtraFlag = function(index, flag) {
-    var msgKey = this.getMsgKeyForRow(index);
-    var msgHdr = this.getMessageHeader(msgKey);
-    var flags = msgHdr.flags | flag;
-    msgHdr.flags = flags;
-    
-    this._onExtraFlagChanged(index, flags);
-};
-
-KeeperFinder.ThreadTreeView.prototype._andExtraFlag = function(index, flag) {
-    var msgKey = this.getMsgKeyForRow(index);
-    var msgHdr = this.getMessageHeader(msgKey);
-    var flags = msgHdr.flags & flag;
-    msgHdr.flags = flags;
-    
-    this._onExtraFlagChanged(index, flags);
-};
-
-KeeperFinder.ThreadTreeView.prototype._onExtraFlagChanged = function(index, flags) {
-    // not sure what to do here; presumably there's work to do if we're showing threads
-};
-
 KeeperFinder.ThreadTreeView.prototype._noteChange = function(firstLineChanged, numChanged, changeType) {
     if (!this._suppressChangeNotification) {
         switch (changeType) {
@@ -467,3 +406,4 @@ KeeperFinder.ThreadTreeView.prototype._noteStartChange = function(firstLineChang
 KeeperFinder.ThreadTreeView.prototype._noteEndChange = function(firstLineChanged, numChanged, changeType) {
     this._noteChange(firstLineChanged, numChanged, changeType);
 };
+

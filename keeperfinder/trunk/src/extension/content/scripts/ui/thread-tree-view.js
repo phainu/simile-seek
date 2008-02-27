@@ -141,7 +141,6 @@ KeeperFinder.ThreadTreeView.prototype = {
     getProgressMode :      function(row, col) {},
     getCellValue :         function(row, col) {},
     cycleHeader :          function(colID, elmt) {},
-    cycleCell :            function(row, col) {},
     getRowProperties :     function(row, props) {},
     getCellProperties :    function(row, col, props) {},
     getColumnProperties :  function(colid, col, props) {},
@@ -163,6 +162,10 @@ KeeperFinder.ThreadTreeView.prototype.getRecordForRow = function(row) {
 
 KeeperFinder.ThreadTreeView.prototype.getMsgKeyForRow = function(row) {
     return this.getRecordForRow(row).msgKey;
+};
+
+KeeperFinder.ThreadTreeView.prototype.getMsgHdrForRow = function(row) {
+    return this.getMessageHeader(this.getRecordForRow(row).msgKey);
 };
 
 KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
@@ -289,6 +292,43 @@ KeeperFinder.ThreadTreeView.prototype.toggleOpenState = function(row) {
     }
     
     this.treebox.endUpdateBatch();
+};
+
+KeeperFinder.ThreadTreeView.prototype.cycleCell = function(row, col) {
+    switch (col.id) {
+    case "unreadCol":
+    case "unreadButtonColHeader":
+        this._applyCommandToIndices(Components.interfaces.nsMsgViewCommandType.toggleMessageRead, [ row ]);
+        break;
+        
+    case "flaggedCol":
+        var msgHdr = this.getMsgHdrForRow(row);
+        this._applyCommandToIndices(
+            (msgHdr.flags & 0x0004) ? //MSG_FLAG_MARKED
+                Components.interfaces.nsMsgViewCommandType.unflagMessages :
+                Components.interfaces.nsMsgViewCommandType.flagMessages, 
+            [ row ]
+        );
+        break;
+        
+    case "junkStatusCol":
+        var msgHdr = this.getMsgHdrForRow(row);
+        var s = msgHdr.getStringProperty("junkscore");
+        var junkScore = 0;
+        if (s != null && s.length > 0) {
+            junkScore = parseInt(s);
+        }
+        this._applyCommandToIndices(
+            (junkScore < 50) ?
+                Components.interfaces.nsMsgViewCommandType.junkMessages :
+                Components.interfaces.nsMsgViewCommandType.unjunkMessages, 
+            [ row ]
+        );
+        break;
+        
+    case "threadCol":
+        // TODO
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype._initialize = function() {
