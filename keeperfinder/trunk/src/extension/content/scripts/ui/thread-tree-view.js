@@ -10,12 +10,6 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     this.msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
     settings = settings || {};
-    if (!("sortColumnId" in settings)) {
-        settings.sortColumnId = "dateCol";
-        settings.sortAscending = false;
-    } else if (!("sortAscending" in settings)) {
-        settings.sortAscending = true;
-    }
     
     if (!("showThreads" in settings)) {
         settings.showThreads = false;
@@ -23,6 +17,9 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
     if (!("showNewMessages" in settings)) {
         settings.showNewMessages = false;
     }
+
+    this.sortType = settings.sortType;
+    this.sortOrder = settings.sortOrder;
     
     this._settings = settings;
     this._baseMsgKeyArray = baseMsgKeyArray;
@@ -323,14 +320,8 @@ KeeperFinder.ThreadTreeView.prototype.cycleCell = function(row, col) {
         break;
         
     case "junkStatusCol":
-        var msgHdr = this.getMsgHdrForRow(row);
-        var s = msgHdr.getStringProperty("junkscore");
-        var junkScore = 0;
-        if (s != null && s.length > 0) {
-            junkScore = parseInt(s);
-        }
         this._applyCommandToIndices(
-            (junkScore < 50) ?
+            (KeeperFinder.ThreadTreeView.getJunkScore(this.getMsgHdrForRow(row)) < 50) ?
                 Components.interfaces.nsMsgViewCommandType.junkMessages :
                 Components.interfaces.nsMsgViewCommandType.unjunkMessages, 
             [ row ]

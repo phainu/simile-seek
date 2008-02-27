@@ -124,7 +124,7 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
     var self = this;
     
     var sortColumnId = this._settings.sortColumnId;
-    var sortMultiply = this._settings.sortAscending ? 1 : -1;
+    var sortMultiply = this.sortOrder == Components.interfaces.nsMsgViewSortOrder.ascending ? 1 : -1;
     var sortType = "text";
     
     var dateGetter = function(record) {
@@ -134,67 +134,99 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
         return "";
     };
     
-    switch (sortColumnId) {
-    case "subjectCol" :
+    var nsMsgViewSortType = Components.interfaces.nsMsgViewSortType;
+    switch (this.sortType) {
+    case nsMsgViewSortType.bySubject:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedSubject;
+            return self.getMessageHeader(record.msgKey).mime2DecodedSubject || "";
         };
         break;
         
-    case "senderCol" :
+    case nsMsgViewSortType.byAuthor:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedAuthor;
+            return self.getMessageHeader(record.msgKey).mime2DecodedAuthor || "";
         };
         break;
         
-    case "recipientCol" :
+    case nsMsgViewSortType.byRecipient:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedRecipients;
+            return self.getMessageHeader(record.msgKey).mime2DecodedRecipients || "";
         };
         break;
         
-    case "dateCol" :
+    case nsMsgViewSortType.byDate:
         sortKeyGetter = dateGetter;
         sortType = "number";
         break;
         
-    case "tagsCol" :
+    case nsMsgViewSortType.byTags:
         sortKeyGetter = function(record) {
-            return KeeperFinder.Indexer.getTags(self.getMessageHeader(record.msgKey));
+            return KeeperFinder.Indexer.getTags(self.getMessageHeader(record.msgKey)).join(" ");
         };
         break;
         
-    case "sizeCol" :
+    case nsMsgViewSortType.bySize:
         sortKeyGetter = function(record) {
             return self.getMessageHeader(record.msgKey).messageSize;
         };
         sortType = "number";
         break;
         
-    case "statusCol" :
+    case nsMsgViewSortType.byStatus:
         sortKeyGetter = function(record) {
             return KeeperFinder.ThreadTreeView._getStatusString(self.getMessageHeader(record.msgKey));
         };
         break;
         
-    case "priorityCol" :
+    case nsMsgViewSortType.byPriority:
         sortKeyGetter = function(record) {
             return self.getMessageHeader(record.msgKey).priority;
         };
         sortType = "number";
         break;
         
+    case nsMsgViewSortType.byId:
+        sortKeyGetter = function(record) {
+            return record.msgKey;
+        };
+        sortType = "number";
+        break;
+        
+    case nsMsgViewSortType.byFlagged:
+        sortKeyGetter = function(record) {
+            return (self.getMessageHeader(record.msgKey).flags & 0x0004) != 0 ? 1 : -1;
+        };
+        sortType = "number";
+        break;
+        
+    case nsMsgViewSortType.byUnread:
+        sortKeyGetter = function(record) {
+            return (self.getMessageHeader(record.msgKey).flags & 0x0001) == 0 ? 1 : -1;
+        };
+        sortType = "number";
+        break;
+        
+    case nsMsgViewSortType.byJunkStatus:
+        sortKeyGetter = function(record) {
+            return KeeperFinder.ThreadTreeView.getJunkScore(self.getMessageHeader(record.msgKey));
+        };
+        sortType = "number";
+        break;
+    
+    case nsMsgViewSortType.byAttachments:
+        sortKeyGetter = function(record) {
+            return (self.getMessageHeader(record.msgKey).flags & 0x10000000) != 0 ? 1 : -1;
+        };
+        sortType = "number";
+        break;
+    
     /*
-    case "threadCol" :
-    case "attachmentCol" :
-    case "junkStatusCol" :
-    case "unreadButtonColHeader" :
-    case "flaggedCol" :
-    case "accountCol" :
-    case "unreadCol" :
-    case "totalCol" :
-    case "locationCol" :
-    case "idCol" :
+    case nsMsgViewSortType.byThread:
+    case nsMsgViewSortType.byLocation:
+    case nsMsgViewSortType.byAccount:
+    case nsMsgViewSortType.byReceived:
+    case nsMsgViewSortType.byCustom:
+    case nsMsgViewSortType.byNone:
     */
     }
     
@@ -369,3 +401,11 @@ KeeperFinder.ThreadTreeView.prototype._onExtraFlagChanged = function(index, flag
     // not sure what to do here; presumably there's work to do if we're showing threads
 };
 
+KeeperFinder.ThreadTreeView.getJunkScore = function(msgHdr) {
+    var s = msgHdr.getStringProperty("junkscore");
+    var junkScore = 0;
+    if (s != null && s.length > 0) {
+        junkScore = parseInt(s);
+    }
+    return junkScore;
+};

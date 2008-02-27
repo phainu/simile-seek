@@ -211,8 +211,8 @@ KeeperFinder._getFacetContainer = function() {
 
 KeeperFinder._onFinishIndexingJob = function() {
     KeeperFinder._currentSettings = {
-        showThreads:        true,
-        showNewMessages:    true
+        showThreads:        false,
+        showNewMessages:    false
     };
     
     document.getElementById("keeperFinderPane-browsingLayer-showWholeThreads").checked = 
@@ -296,9 +296,11 @@ KeeperFinder._rewireThreadPane = function() {
     if (!("_oldDBView" in KeeperFinder)) {
         KeeperFinder._oldDBView = gDBView;
     }
+    KeeperFinder._currentSettings.sortType = gDBView.sortType;
+    KeeperFinder._currentSettings.sortOrder = gDBView.sortOrder;
     
     var collection = KeeperFinder._collection;
-    var items = KeeperFinder._collection.getRestrictedItems()
+    var items = KeeperFinder._collection.getRestrictedItems();
     var database = KeeperFinder._database;
     
     var baseMsgKeyArray = [];

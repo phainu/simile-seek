@@ -223,7 +223,33 @@ KeeperFinder.ThreadTreeView.prototype.selectMsgByKey = function(msgKey) {
 };
 
 KeeperFinder.ThreadTreeView.prototype.sort = function(sortType, sortOrder) {
+    var sorter = null; 
     
+    if (sortType != this.sortType) {
+        this.sortType = sortType;
+        this.sortOrder = sortOrder;
+        
+        sorter = this._createSorter();
+        
+        for (var i = 0; i < this._rootRecords.length; i++) {
+            sorter.prepare(this._rootRecords[i]);
+        }
+    } else if (sortOrder != this.sortOrder) {
+        this.sortOrder = sortOrder;
+        sorter = this._createSorter();
+    }
+    
+    if (sorter != null) {
+        this.selection.clearSelection();
+        
+        this._rootRecords.sort(sorter.comparator);
+        if (this._settings.showThreads) {
+            this._expandAll();
+        } else {
+            this._flattenedRecords = this._rootRecords;
+        }
+        this.treebox.invalidate();
+    }
 };
 
 KeeperFinder.ThreadTreeView.prototype.viewNavigate = function(motion, resultId, resultIndex, threadIndex, wrap) {
