@@ -124,8 +124,8 @@
                     <button id="keeperFinderPane-browsingLayer-addFacet" label="&keeperFinder.addFacetButton.label;" popup="keeperFinderPane-addFacetPopup" />
                     <groupbox>
                         <caption label="Also Include" />
-                        <checkbox label="Whole threads" id="keeperFinderPane-browsingLayer-showWholeThreads" />
-                        <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" />
+                        <checkbox label="Whole threads" id="keeperFinderPane-browsingLayer-showThreads" oncommand="KeeperFinder.toggleShowThreads()" />
+                        <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" oncommand="KeeperFinder.toggleShowNewMessages()" />
                     </groupbox>
                     <spacer flex="1" />
                     <button label="Re-Index" oncommand="KeeperFinder.onStartIndexingFolder();" />

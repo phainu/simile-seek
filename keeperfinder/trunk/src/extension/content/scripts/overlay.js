@@ -186,6 +186,16 @@ KeeperFinder.onCancelIndexing = function() {
     deck.selectedIndex = 1;
 };
 
+KeeperFinder.toggleShowThreads = function() {
+    KeeperFinder._currentSettings.showThreads = document.getElementById("keeperFinderPane-browsingLayer-showThreads").checked;
+    KeeperFinder._rewireThreadPane();
+};
+
+KeeperFinder.toggleShowNewMessages = function() {
+    KeeperFinder._currentSettings.showNewMessages = document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked;
+    KeeperFinder._rewireThreadPane();
+};
+
 KeeperFinder._disposeFacets = function() {
     for (var i = 0; i < KeeperFinder._facets.length; i++) {
         KeeperFinder._facets[i].dispose();
@@ -214,7 +224,7 @@ KeeperFinder._onFinishIndexingJob = function() {
         showNewMessages:    true
     };
     
-    document.getElementById("keeperFinderPane-browsingLayer-showWholeThreads").checked = 
+    document.getElementById("keeperFinderPane-browsingLayer-showThreads").checked = 
         KeeperFinder._currentSettings.showThreads;
     document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked = 
         KeeperFinder._currentSettings.showNewMessages;

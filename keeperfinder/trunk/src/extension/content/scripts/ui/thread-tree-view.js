@@ -345,6 +345,24 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
             this._rootRecords.push(sorter.prepare(rootRecord));
         }
     }
+    
+    if (this._settings.showNewMessages) {
+        /*
+        // TODO: this doesn't seem to return any message.
+        
+        var count = {};
+        var keys = {};
+        this.msgDatabase.getNewList(count, keys);
+        
+        for (var i = 0; i < keys.value.length; i++) {
+            var rootRecord = this._makeRootRecord(keys.value[i], this._settings.showThreads, false);
+            if (rootRecord != null) {
+                this._rootRecords.push(sorter.prepare(rootRecord));
+            }
+        }
+        */
+    }
+    
     this._rootRecords.sort(sorter.comparator);
     this._reroot();
 };
@@ -392,7 +410,7 @@ KeeperFinder.ThreadTreeView._expandRootRecord = function(rootRecord, into) {
     rootRecord.expandedDescendantCount = into.length - c - 1;
 }
 
-KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
+KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey, isMatch) {
     if (msgKey in this._msgKeyToRecord) {
         return this._msgKeyToRecord[msgKey];
     }
@@ -401,7 +419,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey) {
     var record = {
         msgKey:         msgKey,
         level:          0,
-        isMatch:        false,
+        isMatch:        isMatch,
         hasChildren:    false
     };
     
@@ -417,7 +435,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThr
     }
     
     if (!showThreads) {
-        return this._makeRecord(msgKey);
+        return this._makeRecord(msgKey, isMatch);
     }
     
     var msgHdr = this.getMessageHeader(msgKey);
@@ -494,7 +512,7 @@ KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
     // new message of an existing thread, but not a match
     var msgThread = this._getMsgThread(msgHdr);
     if (msgThread != null && msgThread.threadKey in this._processedThreadKeys) {
-        var newRecord = this._makeRecord(msgKey);
+        var newRecord = this._makeRecord(msgKey, false);
         this._insertRecordIntoExistingThread(newRecord, msgHdr, msgThread);
         return;
     }
