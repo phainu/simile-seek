@@ -108,21 +108,17 @@ KeeperFinder._getCurrentlySelectedFolder = function() {
 
 var oldFolderPaneSelectionChange = FolderPaneSelectionChange;
 FolderPaneSelectionChange = function() {
+    var msgFolder = KeeperFinder._getCurrentlySelectedFolder();
+    var changed = (KeeperFinder._selectedFolder != msgFolder);
+    
+    if (changed) {
+        KeeperFinder.Indexer.cancelIndexingJob();
+        KeeperFinder._relinquishThreadPaneOurselves();
+    }
+    
     oldFolderPaneSelectionChange();
     
-    var msgFolder = KeeperFinder._getCurrentlySelectedFolder();
-    if (KeeperFinder._selectedFolder != msgFolder) {
-        if (KeeperFinder._selectedFolder != null && KeeperFinder._dbChangeListener != null) {
-            var msgDatabase = KeeperFinder._selectedFolder.getMsgDatabase(msgWindow);
-            msgDatabase.RemoveListener(KeeperFinder._dbChangeListener);
-            KeeperFinder._dbChangeListener = null;
-        }
-        
-        KeeperFinder.Indexer.cancelIndexingJob();
-        
-        KeeperFinder._relinquishThreadPaneOurselves();
-        //KeeperFinder._relinquishThreadPaneNatively();
-        
+    if (changed) {
         KeeperFinder._selectedFolder = msgFolder;
         
         var deck = document.getElementById("keeperFinderPane-deck");
@@ -278,8 +274,21 @@ KeeperFinder._onCollectionItemsChanged = function() {
 
 KeeperFinder._relinquishThreadPaneOurselves = function() {
     if ("_oldDBView" in KeeperFinder) {
+        if (KeeperFinder._selectedFolder != null && KeeperFinder._dbChangeListener != null) {
+            var msgDatabase = KeeperFinder._selectedFolder.getMsgDatabase(msgWindow);
+            msgDatabase.RemoveListener(KeeperFinder._dbChangeListener);
+            KeeperFinder._dbChangeListener = null;
+        }
+        
+        var treeView = KeeperFinder._getOurOwnTreeView();
+        treeView.selection.clearSelection();
+        gCurrentMessageUri = null;
+        gCurrentFolderUri = null;
+        
         gDBView = KeeperFinder._oldDBView;
         delete KeeperFinder._oldDBView;
+        
+        GetThreadTree().treeBoxObject.view = gDBView;
     }
 };
 

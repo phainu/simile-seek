@@ -74,19 +74,26 @@ KeeperFinder.ThreadTreeView.prototype = {
         return this.msgDatabase;
     },
     get viewIndexForFirstSelectedMsg() {
-        var start = {};
-        var end = {};
-        this.selection.getRangeAt(0, start, end);
-        return start.value;
+        if (this.selection.count > 0) {
+            var start = {};
+            var end = {};
+            this.selection.getRangeAt(0, start, end);
+            return start.value;
+        } else {
+            return -1;
+        }
     },
     get hdrForFirstSelectedMessage() {
-        return this.getMessageHeader(this.keyForFirstSelectedMessage);
+        var msgKey = this.keyForFirstSelectedMessage;
+        return msgKey == null ? null : this.getMessageHeader(msgKey);
     },
     get keyForFirstSelectedMessage() {
-        return this.getMsgKeyForRow(this.viewIndexForFirstSelectedMsg);
+        var index = this.viewIndexForFirstSelectedMsg;
+        return index < 0 ? null : this.getMsgKeyForRow(index);
     },
     get URIForFirstSelectedMessage() {
-        return this.msgFolder.generateMessageURI(this.keyForFirstSelectedMessage);
+        var msgKey = this.keyForFirstSelectedMessage;
+        return msgKey == null ? null : this.msgFolder.generateMessageURI(msgKey);
     },
     get numSelected() {
         return this.selection.count;
@@ -128,9 +135,6 @@ KeeperFinder.ThreadTreeView.prototype = {
     setTree: function(treebox) {
         this.treebox = treebox;
     },
-    setSelection: function(selection) {
-        this.selection = selection;
-    },
     setCellText :          function(row, col, text) {},
     hasNextSibling :       function(row, after) { return true; },
     toggleOpenState :      function(row) {},
@@ -146,6 +150,14 @@ KeeperFinder.ThreadTreeView.prototype = {
     getColumnProperties :  function(colid, col, props) {},
     performAction :        function(action) {},
     performActionOnCell :  function(action, row, col) {}
+};
+
+KeeperFinder.ThreadTreeView.prototype.setSelection = function(selection) {
+    selection.clearSelection();
+    
+    this.selection = selection;
+    gCurrentMessageUri = null;
+    gCurrentFolderUri = null;
 };
 
 KeeperFinder.ThreadTreeView.prototype.getMessageHeader = function(msgKey) {
@@ -169,7 +181,6 @@ KeeperFinder.ThreadTreeView.prototype.getMsgHdrForRow = function(row) {
 };
 
 KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
-    //UpdateMailToolbar("keeper finder driven, thread pane");
     if (this.selection.count == 1) {
         var row = this.selection.currentIndex;
         var msgKey = this.getMsgKeyForRow(row);
