@@ -128,7 +128,9 @@
                         <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" oncommand="KeeperFinder.toggleShowNewMessages()" />
                     </groupbox>
                     <spacer flex="1" />
-                    <button label="Re-Index" oncommand="KeeperFinder.onStartIndexingFolder();" />
+                    <button label="&keeperFinder.disengageButton.label;" 
+                        tooltiptext="&keeperFinder.disengageButton.tooltip;"
+                        oncommand="KeeperFinder.disengage();" />
                 </vbox>
             </hbox>
             <box hidden="true">

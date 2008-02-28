@@ -4,13 +4,16 @@
 
 <!ENTITY keeperFinder.cantUseKeeperFinderMessage "Sorry, either KeeperFinder is not supported on this folder or something in KeeperFinder is broken.">
 
-<!ENTITY keeperFinder.startIndexingMessage "To use KeeperFinder on this folder, we need to index the folder first. This may take a few minutes.">
+<!ENTITY keeperFinder.startIndexingMessage "To use KeeperFinder on this folder, we need to index the folder first. This will just take a minute.">
 <!ENTITY keeperFinder.startIndexingButton.label "Start Indexing">
 
 <!ENTITY keeperFinder.indexingMessage "Indexing folder...">
 <!ENTITY keeperFinder.cancelIndexingButton.label "Cancel">
 
 <!ENTITY keeperFinder.resetFacetLink.label "reset">
+
+<!ENTITY keeperFinder.disengageButton.label "Disengage">
+<!ENTITY keeperFinder.disengageButton.tooltip "Disengage KeeperFinder from this folder">
 
 <!ENTITY keeperFinder.addFacetButton.label "Add Facet">
 <!ENTITY keeperFinder.closeFacetButton.tooltip "Remove this facet">

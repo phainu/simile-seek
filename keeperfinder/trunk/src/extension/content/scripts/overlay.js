@@ -125,6 +125,17 @@ FolderPaneSelectionChange = function() {
     }
 };
 
+KeeperFinder.disengage = function() {
+    KeeperFinder._disposeFacets();
+    KeeperFinder._relinquishThreadPaneOurselves();
+    
+    KeeperFinder._database = null;
+    KeeperFinder._collection = null;
+    
+    var deck = document.getElementById("keeperFinderPane-deck");
+    deck.selectedIndex = 1;
+};
+
 KeeperFinder.onStartIndexingFolder = function() {
     KeeperFinder._disposeFacets();
     
