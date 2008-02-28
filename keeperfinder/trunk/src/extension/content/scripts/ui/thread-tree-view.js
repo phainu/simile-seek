@@ -549,11 +549,16 @@ KeeperFinder.ThreadTreeView.prototype._insertRecordIntoExistingThread = function
             row++;
         }
         
-        opened = opened && parentRecord.opened;
+        opened = opened && ((parentRecord.children.length == 0) || parentRecord.opened);
         if (threadParent == parentRecord.msgKey) {
             newRecord.level = parentRecord.level + 1;
             
+            if (parentRecord.children.length == 0) {
+                parentRecord.opened = true;
+                parentRecord.hasChildren = true;
+            }
             parentRecord.children.push(newRecord);
+            
             if (opened) {
                 while (row < self._flattenedRecords.length && self._flattenedRecords[row].level > parentRecord.level) {
                     row++;
