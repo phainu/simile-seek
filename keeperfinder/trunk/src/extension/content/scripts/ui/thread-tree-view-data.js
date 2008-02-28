@@ -336,7 +336,12 @@ KeeperFinder.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
     var fullNames = {};
     var names = {};
     var numAddresses = this._headerParser.parseHeadersWithArray(s, addresses, names, fullNames);
-        
+    
+    for (var i = 0; i < names.value.length; i++) {
+        if (names.value[i].length == 0) {
+            names.value[i] = addresses.value[i];
+        }
+    }
     return names.value;
 };
 
