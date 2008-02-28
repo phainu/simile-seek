@@ -60,3 +60,20 @@ splitter.keeperfinder-facetContainer-splitter {
 .keeperFinder-facet-header-closeButton:active {
     background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
 }
+
+#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove {
+    background: url("chrome://keeperfinder/skin/images/cross.png") center center no-repeat;
+    width:      16px;
+    height:     16px;
+    cursor:     pointer;
+}
+
+#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove:hover {
+    background: url("chrome://keeperfinder/skin/images/cross_over.png") center center no-repeat;
+    cursor:     pointer;
+}
+
+#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove:active {
+    background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
+    cursor:     pointer;
+}

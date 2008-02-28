@@ -72,6 +72,12 @@ KeeperFinder.onLoad = function() {
     for (var n in KeeperFinder.FacetConfigurations.possibleFacets) {
         makeMenuItem(n);
     }
+    
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-input").
+        addEventListener('keyup', KeeperFinder.onContentSearchInputKeyUp, false);
+    
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry-remove").
+        addEventListener('click', KeeperFinder.onClearContentSearch, false);
 };
 window.addEventListener("load", KeeperFinder.onLoad, false);
 
@@ -418,3 +424,41 @@ KeeperFinder._hasOurOwnTreeView = function() {
 KeeperFinder._getOurOwnTreeView = function() {
     return GetThreadTree().treeBoxObject.view.wrappedJSObject;
 };
+
+KeeperFinder.createSearchSession = function() {
+    var searchSession = Components.classes["@mozilla.org/messenger/searchSession;1"].
+        createInstance(Components.interfaces.nsIMsgSearchSession);
+        
+    searchSession.addScopeTerm(
+        KeeperFinder._selectedFolder.server.searchScope, 
+        KeeperFinder._selectedFolder
+    );
+    
+    return searchSession;
+}
+
+KeeperFinder.onContentSearchInputKeyUp = function(event) {
+    if (event.keyCode == 13) {
+        var contentSearchInput = document.getElementById("keeperFinderPane-browsingLayer-textSearch-input");
+        var text = contentSearchInput.value.trim();
+        
+        if (text.length == 0) {
+            document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry").hidden = true;
+            KeeperFinder._collection.setContentSearch([], "all");
+        } else {
+            var searchMode = document.getElementById("keeperFinderPane-browsingLayer-textSearch-mode").value;
+            var searchTerms = (searchMode == "phrase") ? [ text ] : text.split(" ");
+            
+            document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry-description").value = text;
+            document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry").hidden = false;
+            
+            KeeperFinder._collection.setContentSearch(searchTerms, searchMode);
+        }
+    }
+}
+
+KeeperFinder.onClearContentSearch = function() {
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-input").value = "";
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry").hidden = true;
+    KeeperFinder._collection.setContentSearch([], "all");
+}

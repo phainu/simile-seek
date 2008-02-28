@@ -123,8 +123,21 @@
                 <vbox>
                     <button id="keeperFinderPane-browsingLayer-addFacet" label="&keeperFinder.addFacetButton.label;" popup="keeperFinderPane-addFacetPopup" />
                     <groupbox>
-                        <caption label="Also Include" />
-                        <checkbox label="Whole threads" id="keeperFinderPane-browsingLayer-showThreads" oncommand="KeeperFinder.toggleShowThreads()" />
+                        <caption label="&keeperFinder.contentSearch.label;" />
+                        <radiogroup id="keeperFinderPane-browsingLayer-textSearch-mode" orient="horizontal">
+                            <radio id="keeperFinderPane-browsingLayer-textSearch-mode-all" value="all" label="&keeperFinder.contentSearch.all;" selected="true" />
+                            <radio id="keeperFinderPane-browsingLayer-textSearch-mode-any" value="any" label="&keeperFinder.contentSearch.any;" />
+                            <radio id="keeperFinderPane-browsingLayer-textSearch-mode-phrase" value="phrase" label="&keeperFinder.contentSearch.phrase;" />
+                        </radiogroup>
+                        <textbox id="keeperFinderPane-browsingLayer-textSearch-input" />
+                        <hbox id="keeperFinderPane-browsingLayer-textSearch-pastEntry" hidden="true">
+                            <box id="keeperFinderPane-browsingLayer-textSearch-pastEntry-remove" />
+                            <description id="keeperFinderPane-browsingLayer-textSearch-pastEntry-description" />
+                        </hbox>
+                    </groupbox>
+                    <groupbox>
+                        <caption label="&keeperFinder.alsoInclude.label;" />
+                        <checkbox label="&keeperFinder.alsoInclude.wholeThreads.label;" id="keeperFinderPane-browsingLayer-showThreads" oncommand="KeeperFinder.toggleShowThreads()" />
                         <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" oncommand="KeeperFinder.toggleShowNewMessages()" />
                     </groupbox>
                     <spacer flex="1" />

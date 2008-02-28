@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<?xml-stylesheet href="chrome://keeperfinder/skin/styles/search-progress.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://keeperfinder/locale/search-progress.dtd">
+
+<dialog
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    id="keeperFinder-searchProgress-dialog"
+    orient="vertical"
+    title="&keeperFinder.searchProgressDialog.title;"
+    onload="KeeperFinderSearchProgressDialog.onLoad();"
+    ondialogcancel="KeeperFinderSearchProgressDialog.onCancel();"
+    ondialogaccept="KeeperFinderSearchProgressDialog.onDone();"
+    buttons="cancel"
+    style="width: 30em; height: 8em;"
+    >
+    <script src="scripts/search-progress-dialog.js" />
+
+    <label id="keeperFinder-searchProgressDialog-message" value=" " />
+    <progressmeter id="keeperFinder-searchProgressDialog-progress" mode="undetermined" />
+</dialog>

@@ -8,6 +8,8 @@ KeeperFinder.Collection = function(id, database) {
     
     this._listeners = new KeeperFinder.ListenerQueue();
     this._facets = [];
+    this._contentSearchTerms = [];
+    this._contentSearchMode = "all";
     this._updating = false;
     
     this._items = null;
@@ -16,7 +18,7 @@ KeeperFinder.Collection = function(id, database) {
 
 KeeperFinder.Collection.createAllItemsCollection = function(id, database) {
     var collection = new KeeperFinder.Collection(id, database);
-    collection._update = KeeperFinder.Collection._allItemsCollection_update;
+    collection._internalUpdate = KeeperFinder.Collection._allItemsCollection_update;
     
     KeeperFinder.Collection._initializeBasicCollection(collection, database);
     
@@ -26,7 +28,7 @@ KeeperFinder.Collection.createAllItemsCollection = function(id, database) {
 KeeperFinder.Collection.createTypeBasedCollection = function(id, database, itemTypes) {
     var collection = new KeeperFinder.Collection(id, database);
     collection._itemTypes = itemTypes;
-    collection._update = KeeperFinder.Collection._typeBasedCollection_update;
+    collection._internalUpdate = KeeperFinder.Collection._typeBasedCollection_update;
     
     KeeperFinder.Collection._initializeBasicCollection(collection, database);
     
@@ -50,7 +52,6 @@ KeeperFinder.Collection._initializeBasicCollection = function(collection, databa
  */
 KeeperFinder.Collection._allItemsCollection_update = function() {
     this._items = this._database.getAllItems();
-    this._onRootItemsChanged();
 };
 
 KeeperFinder.Collection._typeBasedCollection_update = function() {
@@ -60,7 +61,6 @@ KeeperFinder.Collection._typeBasedCollection_update = function() {
     }
     
     this._items = newItems;
-    this._onRootItemsChanged();
 };
 
 /*======================================================================
@@ -149,6 +149,12 @@ KeeperFinder.Collection.prototype.applyRestrictions = function(restrictions) {
     this.onFacetUpdated(null);
 };
 
+KeeperFinder.Collection.prototype.setContentSearch = function(searchTerms, searchMode) {
+    this._contentSearchTerms = searchTerms;
+    this._contentSearchMode = searchMode;
+    this._update();
+};
+
 KeeperFinder.Collection.prototype.getAllItems = function() {
     return new KeeperFinder.Set(this._items);
 };
@@ -172,6 +178,15 @@ KeeperFinder.Collection.prototype.onFacetUpdated = function(facetChanged) {
         this._listeners.fire("onItemsChanged", []);
     }
 }
+
+KeeperFinder.Collection.prototype._update = function() {
+    this._internalUpdate();
+    if (this._contentSearchTerms.length > 0) {
+        this._performSearchWithUI();
+    } else {
+        this._onRootItemsChanged();
+    }
+};
 
 KeeperFinder.Collection.prototype._onRootItemsChanged = function() {
     this._listeners.fire("onRootItemsChanged", []);
@@ -218,4 +233,74 @@ KeeperFinder.Collection.prototype._computeRestrictedItems = function() {
             this._restrictedItems = facet.restrict(this._restrictedItems);
         }
     }
+};
+
+KeeperFinder.Collection.prototype._performSearchWithUI = function() {
+    var self = this;
+    var database = this._database;
+    var items = new KeeperFinder.Set();
+    
+    var listener = {
+        onNewSearch: function() {},
+        onSearchDone: function() {
+            searchSession.unregisterListener(listener);
+            
+            parameters.onDone();
+            
+            self._onDoneContentSearch(items);
+        },
+        onSearchHit: function(msgHdr, msgFolder) {
+            var itemID = KeeperFinder.Indexer.makeMessageID(msgHdr.messageKey);
+            if (database.containsItem(itemID)) {
+                items.add(itemID);
+                parameters.setMessage(String.substitute(
+                    KeeperFinder.strings.getString("keeperFinder.contentSearch.matchCount"),
+                    [ items.size() ]
+                ));
+            }
+        }
+    };
+    
+    var searchSession = KeeperFinder.createSearchSession()
+    searchSession.registerListener(listener);
+    this._appendSearchTerms(searchSession);
+        
+    var parameters = {
+        onStart: function() {
+            searchSession.search(msgWindow);
+        },
+        onCancel: function() {
+            searchSession.interruptSearch();
+            searchSession.unregisterListener(listener);
+        }
+    };
+    
+    window.openDialog(
+        "chrome://keeperfinder/content/search-progress.xul",
+        "search-progress",
+        "chrome,dialog,modal,resizable=no,centerscreen",
+        null,
+        parameters
+    );
+};
+
+KeeperFinder.Collection.prototype._appendSearchTerms = function(searchSession) {
+    var booleanAnd = (this._contentSearchMode == "all");
+    for (var i = 0; i < this._contentSearchTerms.length; i++) {
+        var term = searchSession.createTerm();
+        var value = term.value;
+        value.str = this._contentSearchTerms[i];
+        
+        term.value = value;
+        term.attrib = Components.interfaces.nsMsgSearchAttrib.Body;
+        term.op = Components.interfaces.nsMsgSearchOp.Contains;
+        term.booleanAnd = booleanAnd;
+        
+        searchSession.appendTerm(term);
+    }
+};
+
+KeeperFinder.Collection.prototype._onDoneContentSearch = function(items) {
+    this._items = items;
+    this._onRootItemsChanged();
 };

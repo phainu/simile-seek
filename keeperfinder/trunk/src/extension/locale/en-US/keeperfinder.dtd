@@ -6,14 +6,23 @@
 
 <!ENTITY keeperFinder.startIndexingMessage "To use KeeperFinder on this folder, we need to index the folder first. This will just take a minute.">
 <!ENTITY keeperFinder.startIndexingButton.label "Start Indexing">
-
 <!ENTITY keeperFinder.indexingMessage "Indexing folder...">
 <!ENTITY keeperFinder.cancelIndexingButton.label "Cancel">
 
-<!ENTITY keeperFinder.resetFacetLink.label "reset">
+<!ENTITY keeperFinder.addFacetButton.label "Add Facet">
+
+<!ENTITY keeperFinder.contentSearch.label "Content Search">
+<!ENTITY keeperFinder.contentSearch.all "all">
+<!ENTITY keeperFinder.contentSearch.any "any">
+<!ENTITY keeperFinder.contentSearch.phrase "phrase">
+
+<!ENTITY keeperFinder.alsoInclude.label "Also Include">
+<!ENTITY keeperFinder.alsoInclude.wholeThreads.label "whole threads">
+<!ENTITY keeperFinder.alsoInclude.newMessages.label "whole threads">
 
 <!ENTITY keeperFinder.disengageButton.label "Disengage">
 <!ENTITY keeperFinder.disengageButton.tooltip "Disengage KeeperFinder from this folder">
 
-<!ENTITY keeperFinder.addFacetButton.label "Add Facet">
+<!ENTITY keeperFinder.resetFacetLink.label "reset">
 <!ENTITY keeperFinder.closeFacetButton.tooltip "Remove this facet">
+
