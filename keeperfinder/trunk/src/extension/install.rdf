@@ -3,18 +3,18 @@
  xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>keeperfinder@david.huynh</em:id>
-    <em:name>Keeper Finder</em:name>
+    <em:name>KeeperFinder</em:name>
     <em:version>1.0</em:version>
     <em:creator>David Huynh</em:creator>
     <em:description>Keep all your emails and you can still find them</em:description>
-    <em:homepageURL>http://simile.mit.edu/keeper-finder/</em:homepageURL>
-    <em:updateURL>http://simile.mit.edu/keeper-finder/update.rdf</em:updateURL>
+    <em:homepageURL>http://simile.mit.edu/keeperfinder/</em:homepageURL>
+    <em:updateURL>http://simile.mit.edu/keeperfinder/update.rdf</em:updateURL>
     <em:aboutURL>chrome://keeperfinder/content/about.xul</em:aboutURL>
     <em:optionsURL>chrome://keeperfinder/content/options.xul</em:optionsURL>
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
-        <em:minVersion>1.5</em:minVersion>
+        <em:minVersion>2.0.0.1</em:minVersion>
         <em:maxVersion>2.0.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>

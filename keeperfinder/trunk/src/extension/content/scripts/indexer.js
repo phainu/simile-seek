@@ -133,9 +133,17 @@ KeeperFinder.Indexer.makeMessageID = function(msgKey) {
 
 KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     var messageID = KeeperFinder.Indexer.makeMessageID(msgHdr.messageKey);
+    var subject = msgHdr.mime2DecodedSubject;
+    if (subject == null || subject.length == 0) {
+        subject = msgHdr.subject;
+    }
+    if (subject == null) {
+        subject = "";
+    }
+    
     var item = {
         type:       "Message",
-        label:      msgHdr.subject || "",
+        label:      subject,
         id:         messageID,
         msgKey:     msgHdr.messageKey,
         date:       msgHdr.dateInSeconds * 1000

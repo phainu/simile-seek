@@ -142,6 +142,9 @@
                         <checkbox label="New messages" id="keeperFinderPane-browsingLayer-showNewMessages" oncommand="KeeperFinder.toggleShowNewMessages()" />
                     </groupbox>
                     <spacer flex="1" />
+                    <button label="Visualize" 
+                        tooltiptext="visualize"
+                        oncommand="KeeperFinder.visualize();" />
                     <button label="&keeperFinder.disengageButton.label;" 
                         tooltiptext="&keeperFinder.disengageButton.tooltip;"
                         oncommand="KeeperFinder.disengage();" />

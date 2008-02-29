@@ -532,3 +532,13 @@ KeeperFinder.onClearContentSearch = function() {
     document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry").hidden = true;
     KeeperFinder._collection.setContentSearch([], "all");
 }
+
+KeeperFinder.visualize = function() {
+    window.openDialog(
+        "chrome://keeperfinder/content/visualize.xul",
+        "keeperFinder-visualize",
+        "chrome,dialog=no,all",
+        null,
+        { database: KeeperFinder._database }
+    );
+}

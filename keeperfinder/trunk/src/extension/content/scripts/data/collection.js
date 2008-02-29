@@ -277,7 +277,7 @@ KeeperFinder.Collection.prototype._performSearchWithUI = function() {
     
     window.openDialog(
         "chrome://keeperfinder/content/search-progress.xul",
-        "search-progress",
+        "keeperFinder-searchProgress",
         "chrome,dialog,modal,resizable=no,centerscreen",
         null,
         parameters
