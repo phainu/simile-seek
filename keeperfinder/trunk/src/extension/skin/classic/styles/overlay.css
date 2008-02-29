@@ -23,8 +23,7 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
 }
 
 #keeperFinderPane-deck {
-    padding-left: 5px;
-    padding-top: 5px;
+    padding: 5px 5px 0px 5px;
 }
 #keeperFinder-mainSplitter {
     border-top: none;
@@ -76,4 +75,14 @@ splitter.keeperfinder-facetContainer-splitter {
 #keeperFinderPane-browsingLayer-textSearch-pastEntry-remove:active {
     background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
     cursor:     pointer;
+}
+
+.keeperFinderPane-group {
+    background:     #ddd;
+    margin-bottom:  7px;
+    padding:        0px 3px;
+}
+
+.keeperFinderPane-groupLabel {
+    font-weight: bold;
 }

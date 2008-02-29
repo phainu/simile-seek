@@ -18,7 +18,10 @@
 
 <!ENTITY keeperFinder.alsoInclude.label "Also Include">
 <!ENTITY keeperFinder.alsoInclude.wholeThreads.label "whole threads">
-<!ENTITY keeperFinder.alsoInclude.newMessages.label "whole threads">
+<!ENTITY keeperFinder.alsoInclude.newMessages.label "new messages">
+
+<!ENTITY keeperFinder.visualizeButton.label "Visualize">
+<!ENTITY keeperFinder.visualizeButton.tooltip "Visualize email messages in novel ways">
 
 <!ENTITY keeperFinder.disengageButton.label "Disengage">
 <!ENTITY keeperFinder.disengageButton.tooltip "Disengage KeeperFinder from this folder">
