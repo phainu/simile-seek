@@ -23,10 +23,18 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
 }
 
 #keeperFinderPane-deck {
-    padding: 5px 5px 0px 5px;
 }
 #keeperFinder-mainSplitter {
     border-top: none;
+}
+#keeperFinderPane-browsingLayer-facetContainer {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+#keeperFinderPane-browsingLayer-controlPanel {
+    padding:    5px;
+    background: #eee;
 }
 
 tree.keeperfinder-facet-valuesContainer {
@@ -45,6 +53,7 @@ splitter.keeperfinder-facetContainer-splitter {
 
 .keeperFinder-facet-header label {
     cursor: move;
+    background: url("chrome://keeperfinder/skin/images/grip.png") center right no-repeat;
 }
 
 .keeperFinder-facet-header-closeButton {
@@ -80,7 +89,7 @@ splitter.keeperfinder-facetContainer-splitter {
 .keeperFinderPane-group {
     background:     #ddd;
     margin-bottom:  7px;
-    padding:        0px 3px;
+    padding:        3px;
 }
 
 .keeperFinderPane-groupLabel {

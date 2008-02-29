@@ -121,7 +121,7 @@
             <hbox id="keeperFinderPane-browsingLayer">
                 <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="keeperFinderPane-browsingLayer-facetContainer">
                 </scrollbox>
-                <vbox>
+                <vbox id="keeperFinderPane-browsingLayer-controlPanel">
                     <label value="&keeperFinder.contentSearch.label;" class="keeperFinderPane-groupLabel" />
                     <vbox class="keeperFinderPane-group">
                         <radiogroup id="keeperFinderPane-browsingLayer-textSearch-mode" orient="horizontal">
