@@ -28,8 +28,9 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
     border-top: none;
 }
 #keeperFinderPane-browsingLayer-facetContainer {
-    margin-left: 5px;
-    margin-top: 5px;
+    padding-left: 5px;
+    padding-top: 5px;
+    background: url("chrome://keeperfinder/skin/images/drop-shadow.png") right repeat-y;
 }
 
 #keeperFinderPane-browsingLayer-controlPanel {
