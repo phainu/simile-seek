@@ -239,17 +239,17 @@ KeeperFinder.ListFacet.prototype._constructBody = function() {
     var valueColumn = cols[0];
     var countColumn = cols[1];
     
-    var sortValue = this._settings.sortMode == "value";
-    if (sortValue) {
-        valueColumn.setAttribute("sortDirection", (this._settings.sortDirection == "forward") ? "ascending" : "descending");
-        countColumn.setAttribute("sortDirection", "");
-    } else {
-        countColumn.setAttribute("sortDirection", (this._settings.sortDirection == "forward") ? "descending" : "ascending");
-        valueColumn.setAttribute("sortDirection", "");
-    }
-    tree.setAttribute("sortResource", sortValue ? "value-column" : "count-column");
-    
     if (this._settings.sortable) {
+        var sortValue = this._settings.sortMode == "value";
+        if (sortValue) {
+            valueColumn.setAttribute("sortDirection", (this._settings.sortDirection == "forward") ? "ascending" : "descending");
+            countColumn.setAttribute("sortDirection", "");
+        } else {
+            countColumn.setAttribute("sortDirection", (this._settings.sortDirection == "forward") ? "descending" : "ascending");
+            valueColumn.setAttribute("sortDirection", "");
+        }
+        tree.setAttribute("sortResource", sortValue ? "value-column" : "count-column");
+        
         var self = this;
         if (sortValue) {
             countColumn.onclick = function() {
