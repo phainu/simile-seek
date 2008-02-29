@@ -96,6 +96,7 @@ KeeperFinder.onWindowMouseUp = function(event) {
         if (KeeperFinder._draggingFacet.sourceIndex != newTargetIndex) {
             KeeperFinder._facets.splice(KeeperFinder._draggingFacet.sourceIndex, 1);
             KeeperFinder._facets.splice(insertIndex, 0, KeeperFinder._draggingFacet.facet);
+            KeeperFinder._saveSettings();
         }
         
         KeeperFinder._draggingFacet.facet.refresh();

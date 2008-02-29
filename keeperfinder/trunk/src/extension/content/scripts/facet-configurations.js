@@ -102,6 +102,7 @@ KeeperFinder.FacetConfigurations.possibleFacets = {
 
 KeeperFinder.FacetConfigurations._constructListFacet = function(database, collection, box, name) {
     return new KeeperFinder.ListFacet(
+        name,
         database, 
         collection, 
         box, 
@@ -135,6 +136,7 @@ KeeperFinder.FacetConfigurations["tag"] = function(database, collection, box) {
 
 KeeperFinder.FacetConfigurations["recency"] = function(database, collection, box) {
     return new KeeperFinder.RecencyFacet(
+        "recency",
         database, 
         collection, 
         box, 

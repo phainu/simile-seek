@@ -3,7 +3,8 @@
  *==================================================
  */
 
-KeeperFinder.RecencyFacet = function(database, collection, box, settings) {
+KeeperFinder.RecencyFacet = function(name, database, collection, box, settings) {
+    this.name = name;
     this._database = database;
     this._collection = collection;
     this._box = box;

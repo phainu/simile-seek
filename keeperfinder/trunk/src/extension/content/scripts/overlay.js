@@ -21,7 +21,8 @@ var KeeperFinder = {
     _facets:                [],
     _currentSettings:       null,
     _dbChangeListener:      null,
-    _processingUpdates:     false
+    _processingUpdates:     false,
+    _folderSettings:        null
 };
 
 KeeperFinder.log = function(msg) {
@@ -81,13 +82,14 @@ KeeperFinder.onLoad = function() {
 };
 window.addEventListener("load", KeeperFinder.onLoad, false);
 
-KeeperFinder.onToggleKeeperFinder = function(menuItem) {
+KeeperFinder.onToggleKeeperFinder = function() {
     KeeperFinder._visible = !KeeperFinder._visible;
+    
+    document.getElementById("keeperFinder-theMenuItem").setAttribute("checked", KeeperFinder._visible);
     
     var deck = document.getElementById("keeperFinderPane-deck");
     var splitter = document.getElementById("keeperFinder-mainSplitter");
     
-    menuItem.setAttribute("checked", KeeperFinder._visible);
     deck.hidden = !KeeperFinder._visible;
     splitter.hidden = !KeeperFinder._visible;
 }
@@ -206,11 +208,13 @@ KeeperFinder.onCancelIndexing = function() {
 KeeperFinder.toggleShowThreads = function() {
     KeeperFinder._currentSettings.showThreads = document.getElementById("keeperFinderPane-browsingLayer-showThreads").checked;
     KeeperFinder._rewireThreadPane();
+    KeeperFinder._saveSettings();
 };
 
 KeeperFinder.toggleShowNewMessages = function() {
     KeeperFinder._currentSettings.showNewMessages = document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked;
     KeeperFinder._rewireThreadPane();
+    KeeperFinder._saveSettings();
 };
 
 KeeperFinder._disposeFacets = function() {
@@ -236,15 +240,15 @@ KeeperFinder._onFinishIndexingJob = function() {
         onItemsChanged: KeeperFinder._onCollectionItemsChanged
     });
     
-    KeeperFinder._currentSettings = {
-        showThreads:        true,
-        showNewMessages:    true
-    };
+    KeeperFinder._retrieveSettings();
     
     document.getElementById("keeperFinderPane-browsingLayer-showThreads").checked = 
         KeeperFinder._currentSettings.showThreads;
     document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked = 
         KeeperFinder._currentSettings.showNewMessages;
+        
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-input").value = "";
+    document.getElementById("keeperFinderPane-browsingLayer-textSearch-pastEntry").hidden = true;
 
     var deck = document.getElementById("keeperFinderPane-deck");
     deck.selectedIndex = 3;
@@ -253,13 +257,19 @@ KeeperFinder._onFinishIndexingJob = function() {
     spacer.style.width = "5px";
     KeeperFinder._getFacetContainer().appendChild(spacer);
     
-    for (var n in KeeperFinder.FacetConfigurations.possibleFacets) {
-        var config = KeeperFinder.FacetConfigurations.possibleFacets[n];
-        if (config.showInitially) {
-            KeeperFinder.appendFacet(n);
+    if ("facetNames" in KeeperFinder._currentSettings) {
+        var facetNames = KeeperFinder._currentSettings.facetNames;
+        for (var i = 0; i < facetNames.length; i++) {
+            KeeperFinder.appendFacet(facetNames[i]);
+        }
+    } else {
+        for (var n in KeeperFinder.FacetConfigurations.possibleFacets) {
+            var config = KeeperFinder.FacetConfigurations.possibleFacets[n];
+            if (config.showInitially) {
+                KeeperFinder.appendFacet(n);
+            }
         }
     }
-    
     KeeperFinder._rewireThreadPane();
 };
 
@@ -280,6 +290,8 @@ KeeperFinder.appendFacet = function(name) {
     
     KeeperFinder._facets.push(facet);
     
+    KeeperFinder._saveSettings();
+    
     return facet;
 };
 
@@ -292,6 +304,9 @@ KeeperFinder.removeFacet = function(facet) {
             var facetContainer = KeeperFinder._getFacetContainer();
             facetContainer.removeChild(facetContainer.childNodes[i * 2]);
             facetContainer.removeChild(facetContainer.childNodes[i * 2]); // remove the resizer, too
+            
+            KeeperFinder._saveSettings();
+            break;
         }
     }
 };
@@ -424,6 +439,61 @@ KeeperFinder._hasOurOwnTreeView = function() {
 KeeperFinder._getOurOwnTreeView = function() {
     return GetThreadTree().treeBoxObject.view.wrappedJSObject;
 };
+
+KeeperFinder._retrieveSettings = function() {
+    KeeperFinder._ensureSettingsLoaded();
+    
+    var name = KeeperFinder._selectedFolder.name;
+    if (name in KeeperFinder._folderSettings) {
+        KeeperFinder._currentSettings = KeeperFinder._folderSettings[name];
+    } else {
+        KeeperFinder._currentSettings = {
+            showThreads:        false,
+            showNewMessages:    false
+        };
+    }
+};
+
+KeeperFinder._ensureSettingsLoaded = function() {
+    if (KeeperFinder._folderSettings == null) {
+        var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+        var s = null;
+        try {
+            s = prefs.getCharPref("extensions.keeperfinder.folderSettings");
+        } catch (e) {}
+        
+        if (s != null && s.length > 0) {
+            KeeperFinder._folderSettings = eval("(" + s + ")");
+        } else {
+            KeeperFinder._folderSettings = {}
+        }
+    }
+};
+
+KeeperFinder._saveSettings = function() {
+    KeeperFinder._ensureSettingsLoaded();
+    
+    var settings = {
+        showThreads:        document.getElementById("keeperFinderPane-browsingLayer-showThreads").checked,
+        showNewMessages:    document.getElementById("keeperFinderPane-browsingLayer-showNewMessages").checked,
+        facetNames:         []
+    };
+    
+    for (var i = 0; i < KeeperFinder._facets.length; i++) {
+        settings.facetNames.push(KeeperFinder._facets[i].name);
+    }
+    
+    KeeperFinder._folderSettings[KeeperFinder._selectedFolder.name] = settings;
+    
+    var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+    prefs.setCharPref(
+        "extensions.keeperfinder.folderSettings", 
+        KeeperFinder.JSON.toJSONString(KeeperFinder._folderSettings));
+};
+
+KeeperFinder._getFolderSettingsPrefKey = function() {
+    return "keeperFinder.folder." + KeeperFinder._selectedFolder.name + ".settings";
+}
 
 KeeperFinder.createSearchSession = function() {
     var searchSession = Components.classes["@mozilla.org/messenger/searchSession;1"].

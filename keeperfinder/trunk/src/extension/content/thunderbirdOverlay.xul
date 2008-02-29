@@ -29,6 +29,7 @@
     <script src="scripts/facet-configurations.js"/>
     
     <script src="scripts/util/set.js"/>
+    <script src="scripts/util/json.js"/>
     <script src="scripts/util/listener-queue.js"/>
     <script src="scripts/util/string.js"/>
     <script src="scripts/util/db-change-listener.js"/>
@@ -56,7 +57,7 @@
         <menuitem id="keeperFinder-theMenuItem" 
             label="&keeperFinder.theMenuItem.label;" 
             accesskey="&keeperFinder.theMenuItem.accesskey;"
-            oncommand="KeeperFinder.onToggleKeeperFinder(event.target)" 
+            oncommand="KeeperFinder.onToggleKeeperFinder()" 
             type="checkbox" 
             checked="false"
             key="keeperFinder-theKey"

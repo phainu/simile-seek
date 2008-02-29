@@ -7,7 +7,7 @@ KeeperFinderSearchProgressDialog.onLoad = function() {
         window.close();
     };
     parameters.setMessage = function(s) {
-        document.getElementById("keeperFinder-searchProgressDialog-message").label = s;
+        document.getElementById("keeperFinder-searchProgressDialog-message").value = s;
     };
     
     parameters.onStart();
