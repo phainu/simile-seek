@@ -2,6 +2,10 @@
 <!ENTITY seek.theMenuItem.accesskey "k">
 <!ENTITY seek-theKey "K">
 
+<!ENTITY seek.statusPane.message "Seek is still engaged on this folder.">
+<!ENTITY seek.statusPane.disengageNow.label "Disengage Now">
+<!ENTITY seek.statusPane.showSeek.label "Show Seek">
+
 <!ENTITY seek.cantUseSeekMessage "Sorry, either Seek is not supported on this folder or something in Seek is broken.">
 
 <!ENTITY seek.startIndexingMessage "To use Seek on this folder, we need to index the folder first. This will just take a minute.">

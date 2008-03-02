@@ -81,6 +81,21 @@
     </popupset>
     
     <window id="messengerWindow">
+        <hbox id="seekStatusPane" insertbefore="mailContentWrapper" hidden="true">
+            <spacer flex="1" />
+            <label value="&seek.statusPane.message;" />
+            <spacer />
+            <label value="&seek.statusPane.disengageNow.label;"
+                class="seekPane-link"
+                onclick="Seek.disengageNow();"
+                />
+            <spacer />
+            <label value="&seek.statusPane.showSeek.label;"
+                class="seekPane-link"
+                onclick="Seek.onToggleSeek();"
+                />
+        </hbox>
+        
         <deck id="seekPane-deck" insertbefore="mailContentWrapper" hidden="true" height="250" persist="height">
             <hbox id="seekPane-noSupportLayer">
                 <spacer flex="1" />

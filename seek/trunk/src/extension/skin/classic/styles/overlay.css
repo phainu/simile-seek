@@ -32,6 +32,12 @@ label.seekPane-link {
   -moz-image-region: rect(24px 40px 40px 24px);
 }
 
+#seekStatusPane {
+    background:     #FFFFF0;
+    padding:        3px;
+    margin-bottom:  5px;
+}
+
 #seekPane-deck {
 }
 #seek-mainSplitter {
@@ -47,7 +53,7 @@ label.seekPane-link {
 }
 
 #seekPane-browsingLayer-controlPanel {
-    padding:    5px;
+    padding:    5px 10px;
     background: #eee;
 }
 

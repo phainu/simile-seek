@@ -128,7 +128,11 @@ Seek.ThreadTreeView.prototype._createSorter = function() {
     var sortType = "text";
     
     var dateGetter = function(record) {
-        return self.getMessageHeader(record.msgKey).date;
+        try {
+            return self.getMessageHeader(record.msgKey).date;
+        } catch (e) {
+            return Number.NEGATIVE_INFINITY;
+        }
     };
     var sortKeyGetter = function(record) {
         return "";
@@ -138,19 +142,31 @@ Seek.ThreadTreeView.prototype._createSorter = function() {
     switch (this.sortType) {
     case nsMsgViewSortType.bySubject:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedSubject || "";
+            try {
+                return self.getMessageHeader(record.msgKey).mime2DecodedSubject || "";
+            } catch (e) {
+                return "";
+            }
         };
         break;
         
     case nsMsgViewSortType.byAuthor:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedAuthor || "";
+            try {
+                return self.getMessageHeader(record.msgKey).mime2DecodedAuthor || "";
+            } catch (e) {
+                return "";
+            }
         };
         break;
         
     case nsMsgViewSortType.byRecipient:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).mime2DecodedRecipients || "";
+            try {
+                return self.getMessageHeader(record.msgKey).mime2DecodedRecipients || "";
+            } catch (e) {
+                return "";
+            }
         };
         break;
         
@@ -161,26 +177,42 @@ Seek.ThreadTreeView.prototype._createSorter = function() {
         
     case nsMsgViewSortType.byTags:
         sortKeyGetter = function(record) {
-            return Seek.Indexer.getTags(self.getMessageHeader(record.msgKey)).join(" ");
+            try {
+                return Seek.Indexer.getTags(self.getMessageHeader(record.msgKey)).join(" ");
+            } catch (e) {
+                return "";
+            }
         };
         break;
         
     case nsMsgViewSortType.bySize:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).messageSize;
+            try {
+                return self.getMessageHeader(record.msgKey).messageSize;
+            } catch (e) {
+                return 0;
+            }
         };
         sortType = "number";
         break;
         
     case nsMsgViewSortType.byStatus:
         sortKeyGetter = function(record) {
-            return Seek.ThreadTreeView._getStatusString(self.getMessageHeader(record.msgKey));
+            try {
+                return Seek.ThreadTreeView._getStatusString(self.getMessageHeader(record.msgKey));
+            } catch (e) {
+                return "";
+            }
         };
         break;
         
     case nsMsgViewSortType.byPriority:
         sortKeyGetter = function(record) {
-            return self.getMessageHeader(record.msgKey).priority;
+            try {
+                return self.getMessageHeader(record.msgKey).priority;
+            } catch (e) {
+                return 0;
+            }
         };
         sortType = "number";
         break;
@@ -194,28 +226,44 @@ Seek.ThreadTreeView.prototype._createSorter = function() {
         
     case nsMsgViewSortType.byFlagged:
         sortKeyGetter = function(record) {
-            return (self.getMessageHeader(record.msgKey).flags & 0x0004) != 0 ? 1 : -1;
+            try {
+                return (self.getMessageHeader(record.msgKey).flags & 0x0004) != 0 ? 1 : -1;
+            } catch (e) {
+                return -1;
+            }
         };
         sortType = "number";
         break;
         
     case nsMsgViewSortType.byUnread:
         sortKeyGetter = function(record) {
-            return (self.getMessageHeader(record.msgKey).flags & 0x0001) == 0 ? 1 : -1;
+            try {
+                return (self.getMessageHeader(record.msgKey).flags & 0x0001) == 0 ? 1 : -1;
+            } catch (e) {
+                return -1;
+            }
         };
         sortType = "number";
         break;
         
     case nsMsgViewSortType.byJunkStatus:
         sortKeyGetter = function(record) {
-            return Seek.ThreadTreeView.getJunkScore(self.getMessageHeader(record.msgKey));
+            try {
+                return Seek.ThreadTreeView.getJunkScore(self.getMessageHeader(record.msgKey));
+            } catch (e) {
+                return 0;
+            }
         };
         sortType = "number";
         break;
     
     case nsMsgViewSortType.byAttachments:
         sortKeyGetter = function(record) {
-            return (self.getMessageHeader(record.msgKey).flags & 0x10000000) != 0 ? 1 : -1;
+            try {
+                return (self.getMessageHeader(record.msgKey).flags & 0x10000000) != 0 ? 1 : -1;
+            } catch (e) {
+                return -1;
+            }
         };
         sortType = "number";
         break;

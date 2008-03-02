@@ -92,6 +92,15 @@ Seek.onToggleSeek = function() {
     
     deck.hidden = !Seek._visible;
     splitter.hidden = !Seek._visible;
+    
+    var statusPane = document.getElementById("seekStatusPane");
+    if (Seek._visible) {
+        statusPane.hidden = true;
+    } else {
+        if (Seek.isEngaged()) {
+            statusPane.hidden = false;
+        }
+    }
 }
 
 Seek._getCurrentlySelectedFolder = function() {
@@ -142,6 +151,17 @@ Seek.disengage = function() {
     
     var deck = document.getElementById("seekPane-deck");
     deck.selectedIndex = 1;
+};
+
+Seek.disengageNow = function() {
+    Seek.Indexer.cancelIndexingJob();
+    Seek.disengage();
+    
+    document.getElementById("seekStatusPane").hidden = true;
+};
+
+Seek.isEngaged = function() {
+    return document.getElementById("seekPane-deck").selectedIndex > 1;
 };
 
 Seek.onStartIndexingFolder = function() {
