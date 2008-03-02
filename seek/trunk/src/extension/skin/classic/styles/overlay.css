@@ -4,6 +4,16 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
     color: #888888;
 }
 
+label.seekPane-link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#seekPane-browsingLayer checkbox {
+    margin: 0;
+}
+
 #seek-toolbar-button
 {
   list-style-image: url("chrome://seek/skin/images/toolbar-button.png");
@@ -30,6 +40,9 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
 #seekPane-browsingLayer-facetContainer {
     padding-left: 5px;
     padding-top: 5px;
+}
+
+#seekPane-browsingLayer-toolContainer {
     background: url("chrome://seek/skin/images/drop-shadow.png") right repeat-y;
 }
 
@@ -75,6 +88,16 @@ splitter.seek-facetContainer-splitter {
     width:      16px;
     height:     16px;
     cursor:     pointer;
+}
+
+#seekPane-browsingLayer-count-number {
+    font-size:  200%;
+    margin:     0px;
+}
+
+#seekPane-browsingLayer-count-message {
+    color:      #888;
+    margin:     0px;
 }
 
 #seekPane-browsingLayer-textSearch-pastEntry-remove:hover {

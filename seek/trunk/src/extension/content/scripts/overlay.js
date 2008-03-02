@@ -271,6 +271,7 @@ Seek._onFinishIndexingJob = function() {
         }
     }
     Seek._rewireThreadPane();
+    Seek._setCounts();
 };
 
 Seek.appendFacet = function(name) {
@@ -315,11 +316,26 @@ Seek._onCollectionItemsChanged = function() {
     if (!Seek._processingUpdates) {
         try {
             Seek._rewireThreadPane();
+            Seek._setCounts();
         } catch (e) {
             alert(e);
         }
     }
 };
+
+Seek._setCounts = function() {
+    var totalCount = Seek._selectedFolder.getTotalMessages(false);
+    var restrictedCount = this._collection.countRestrictedItems();
+    
+    document.getElementById("seekPane-browsingLayer-count-number").value = restrictedCount;
+    document.getElementById("seekPane-browsingLayer-count-message").value =
+        (restrictedCount < totalCount) ?
+        String.substitute(
+            Seek.strings.getString("seek.filterStatus.withFilters"),
+            [ totalCount ]
+        ) : 
+        Seek.strings.getString("seek.filterStatus.noFilter")
+}
 
 Seek._relinquishThreadPaneOurselves = function() {
     if ("_oldDBView" in Seek) {
@@ -409,6 +425,8 @@ Seek._onHdrAdded = function(hdrChanged, parentKey, flags, instigator) {
             } else {
                 treeView.onHdrChange(hdrChanged);
             }
+            
+            Seek._setCounts();
         }
     Seek._processingUpdates = false;
 };

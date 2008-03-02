@@ -121,8 +121,28 @@
             <hbox id="seekPane-browsingLayer">
                 <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="seekPane-browsingLayer-facetContainer">
                 </scrollbox>
+                
+                <vbox id="seekPane-browsingLayer-toolContainer">
+                    <button id="seekPane-browsingLayer-addFacet"
+                        label="&seek.addFacetButton.label;" 
+                        popup="seekPane-addFacetPopup" />
+                        
+                    <spacer flex="1" />
+                </vbox>
+                
                 <vbox id="seekPane-browsingLayer-controlPanel">
-                    <label value="&seek.contentSearch.label;" class="seekPane-groupLabel" />
+                    <hbox>
+                        <label id="seekPane-browsingLayer-count-number" value=" " flex="1" />
+                        <label
+                            class="seekPane-link"
+                            tooltiptext="&seek.disengageButton.tooltip;" 
+                            onclick="Seek.disengage();" value="&seek.disengageButton.label;" 
+                            />
+                    </hbox>
+                    <label id="seekPane-browsingLayer-count-message" value=" " />
+                    
+                    <spacer style="height: 1em;"/>
+                    
                     <vbox class="seekPane-group">
                         <radiogroup id="seekPane-browsingLayer-textSearch-mode" orient="horizontal">
                             <radio id="seekPane-browsingLayer-textSearch-mode-all" value="all" label="&seek.contentSearch.all;" selected="true" />
@@ -136,31 +156,21 @@
                         </hbox>
                     </vbox>
                     
-                    <label value="&seek.alsoInclude.label;" class="seekPane-groupLabel" />
                     <hbox class="seekPane-group">
-                        <checkbox label="&seek.alsoInclude.wholeThreads.label;" id="seekPane-browsingLayer-showThreads" oncommand="Seek.toggleShowThreads()" />
-                        <checkbox label="&seek.alsoInclude.newMessages.label;" id="seekPane-browsingLayer-showNewMessages" oncommand="Seek.toggleShowNewMessages()" />
-                    </hbox>
-                    
-                
-                    <hbox>
-                        <button id="seekPane-browsingLayer-addFacet" flex="1"
-                            label="&seek.addFacetButton.label;" 
-                            popup="seekPane-addFacetPopup" />
-                            
-                        <button label="&seek.visualizeButton.label;" flex="1"
-                            tooltiptext="&seek.visualizeButton.tooltip;"
-                            oncommand="Seek.visualize();" />
+                        <label value="&seek.alsoInclude.label;" class="seekPane-groupLabel" />
+                        <vbox flex="1">
+                            <checkbox label="&seek.alsoInclude.wholeThreads.label;" id="seekPane-browsingLayer-showThreads" oncommand="Seek.toggleShowThreads()" />
+                            <checkbox label="&seek.alsoInclude.newMessages.label;" id="seekPane-browsingLayer-showNewMessages" oncommand="Seek.toggleShowNewMessages()" />
+                        </vbox>
                     </hbox>
                     
                     <spacer flex="1" />
-                    <separator class="groove" />
                     
                     <hbox>
                         <spacer flex="1" />
-                        <button label="&seek.disengageButton.label;"
-                            tooltiptext="&seek.disengageButton.tooltip;"
-                            oncommand="Seek.disengage();" />
+                        <label value="&seek.visualizeButton.label;" class="seekPane-link"
+                            tooltiptext="&seek.visualizeButton.tooltip;"
+                            onclick="Seek.visualize();" />
                     </hbox>
                 </vbox>
             </hbox>

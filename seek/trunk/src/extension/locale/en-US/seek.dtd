@@ -9,14 +9,14 @@
 <!ENTITY seek.indexingMessage "Indexing folder...">
 <!ENTITY seek.cancelIndexingButton.label "Cancel">
 
-<!ENTITY seek.addFacetButton.label "Add Facet">
+<!ENTITY seek.addFacetButton.label "Add">
 
 <!ENTITY seek.contentSearch.label "Content Search">
 <!ENTITY seek.contentSearch.all "all">
 <!ENTITY seek.contentSearch.any "any">
 <!ENTITY seek.contentSearch.phrase "phrase">
 
-<!ENTITY seek.alsoInclude.label "Also Include">
+<!ENTITY seek.alsoInclude.label "Include">
 <!ENTITY seek.alsoInclude.wholeThreads.label "whole threads">
 <!ENTITY seek.alsoInclude.newMessages.label "new messages">
 
