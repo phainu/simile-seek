@@ -3,16 +3,16 @@
  *==================================================
  */
 
-KeeperFinder.ListenerQueue = function(wildcardHandlerName) {
+Seek.ListenerQueue = function(wildcardHandlerName) {
     this._listeners = [];
     this._wildcardHandlerName = wildcardHandlerName;
 };
 
-KeeperFinder.ListenerQueue.prototype.add = function(listener) {
+Seek.ListenerQueue.prototype.add = function(listener) {
     this._listeners.push(listener);
 };
 
-KeeperFinder.ListenerQueue.prototype.remove = function(listener) {
+Seek.ListenerQueue.prototype.remove = function(listener) {
     var listeners = this._listeners;
     for (var i = 0; i < listeners.length; i++) {
         if (listeners[i] == listener) {
@@ -22,7 +22,7 @@ KeeperFinder.ListenerQueue.prototype.remove = function(listener) {
     }
 };
 
-KeeperFinder.ListenerQueue.prototype.fire = function(handlerName, args) {
+Seek.ListenerQueue.prototype.fire = function(handlerName, args) {
     var listeners = [].concat(this._listeners);
     for (var i = 0; i < listeners.length; i++) {
         var listener = listeners[i];
@@ -30,14 +30,14 @@ KeeperFinder.ListenerQueue.prototype.fire = function(handlerName, args) {
             try {
                 listener[handlerName].apply(listener, args);
             } catch (e) {
-                KeeperFinder.exception(e);
+                Seek.exception(e);
             }
         } else if (this._wildcardHandlerName != null &&
             this._wildcardHandlerName in listener) {
             try {
                 listener[this._wildcardHandlerName].apply(listener, [ handlerName ]);
             } catch (e) {
-                KeeperFinder.exception(e);
+                Seek.exception(e);
             }
         }
     }

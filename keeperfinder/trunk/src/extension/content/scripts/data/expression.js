@@ -1,14 +1,14 @@
 /*==================================================
- *  KeeperFinder.Expression
+ *  Seek.Expression
  *==================================================
  */
-KeeperFinder.Expression = new Object();
+Seek.Expression = new Object();
 
-KeeperFinder.Expression._Impl = function(rootNode) {
+Seek.Expression._Impl = function(rootNode) {
     this._rootNode = rootNode;
 };
 
-KeeperFinder.Expression._Impl.prototype.evaluate = function(
+Seek.Expression._Impl.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -22,7 +22,7 @@ KeeperFinder.Expression._Impl.prototype.evaluate = function(
     };
 };
 
-KeeperFinder.Expression._Impl.prototype.evaluateOnItem = function(itemID, database) {
+Seek.Expression._Impl.prototype.evaluateOnItem = function(itemID, database) {
     return this.evaluate(
         { "value" : itemID }, 
         { "value" : "item" }, 
@@ -31,7 +31,7 @@ KeeperFinder.Expression._Impl.prototype.evaluateOnItem = function(itemID, databa
     );
 };
 
-KeeperFinder.Expression._Impl.prototype.evaluateSingle = function(
+Seek.Expression._Impl.prototype.evaluateSingle = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -44,7 +44,7 @@ KeeperFinder.Expression._Impl.prototype.evaluateSingle = function(
     return result;
 };
 
-KeeperFinder.Expression._Impl.prototype.evaluateSingleOnItem = function(itemID, database) {
+Seek.Expression._Impl.prototype.evaluateSingleOnItem = function(itemID, database) {
     return this.evaluateSingle(
         { "value" : itemID }, 
         { "value" : "item" }, 
@@ -53,7 +53,7 @@ KeeperFinder.Expression._Impl.prototype.evaluateSingleOnItem = function(itemID, 
     );
 };
 
-KeeperFinder.Expression._Impl.prototype.testExists = function(
+Seek.Expression._Impl.prototype.testExists = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -64,40 +64,40 @@ KeeperFinder.Expression._Impl.prototype.testExists = function(
         this.evaluate(roots, rootValueTypes, defaultRootName, database).values.size() > 0;
 };
 
-KeeperFinder.Expression._Impl.prototype.isPath = function() {
-    return this._rootNode instanceof KeeperFinder.Expression.Path;
+Seek.Expression._Impl.prototype.isPath = function() {
+    return this._rootNode instanceof Seek.Expression.Path;
 };
 
-KeeperFinder.Expression._Impl.prototype.getPath = function() {
+Seek.Expression._Impl.prototype.getPath = function() {
     return this.isPath() ? this._rootNode : null;
 };
 
 /*==================================================
- *  KeeperFinder.Expression._Collection
+ *  Seek.Expression._Collection
  *==================================================
  */
-KeeperFinder.Expression._Collection = function(values, valueType) {
+Seek.Expression._Collection = function(values, valueType) {
     this._values = values;
     this.valueType = valueType;
     
     if (values instanceof Array) {
-        this.forEachValue = KeeperFinder.Expression._Collection._forEachValueInArray;
-        this.getSet = KeeperFinder.Expression._Collection._getSetFromArray;
-        this.contains = KeeperFinder.Expression._Collection._containsInArray;
+        this.forEachValue = Seek.Expression._Collection._forEachValueInArray;
+        this.getSet = Seek.Expression._Collection._getSetFromArray;
+        this.contains = Seek.Expression._Collection._containsInArray;
         this.size = values.length;
     } else {
-        this.forEachValue = KeeperFinder.Expression._Collection._forEachValueInSet;
-        this.getSet = KeeperFinder.Expression._Collection._getSetFromSet;
-        this.contains = KeeperFinder.Expression._Collection._containsInSet;
+        this.forEachValue = Seek.Expression._Collection._forEachValueInSet;
+        this.getSet = Seek.Expression._Collection._getSetFromSet;
+        this.contains = Seek.Expression._Collection._containsInSet;
         this.size = values.size();
     }
 };
 
-KeeperFinder.Expression._Collection._forEachValueInSet = function(f) {
+Seek.Expression._Collection._forEachValueInSet = function(f) {
     this._values.visit(f);
 };
 
-KeeperFinder.Expression._Collection._forEachValueInArray = function(f) {
+Seek.Expression._Collection._forEachValueInArray = function(f) {
     var a = this._values;
     for (var i = 0; i < a.length; i++) {
         if (f(a[i])) {
@@ -106,19 +106,19 @@ KeeperFinder.Expression._Collection._forEachValueInArray = function(f) {
     }
 };
 
-KeeperFinder.Expression._Collection._getSetFromSet = function() {
+Seek.Expression._Collection._getSetFromSet = function() {
     return this._values;
 };
 
-KeeperFinder.Expression._Collection._getSetFromArray = function() {
-    return new KeeperFinder.Set(this._values);
+Seek.Expression._Collection._getSetFromArray = function() {
+    return new Seek.Set(this._values);
 };
 
-KeeperFinder.Expression._Collection._containsInSet = function(v) {
+Seek.Expression._Collection._containsInSet = function(v) {
     this._values.contains(v);
 };
 
-KeeperFinder.Expression._Collection._containsInArray = function(v) {
+Seek.Expression._Collection._containsInArray = function(v) {
     var a = this._values;
     for (var i = 0; i < a.length; i++) {
         if (a[i] == v) {
@@ -129,25 +129,25 @@ KeeperFinder.Expression._Collection._containsInArray = function(v) {
 };
 
 /*==================================================
- *  KeeperFinder.Expression.Path
+ *  Seek.Expression.Path
  *==================================================
  */
-KeeperFinder.Expression.Path = function() {
+Seek.Expression.Path = function() {
     this._rootName = null;
     this._segments = [];
 };
 
-KeeperFinder.Expression.Path.create = function(property, forward) {
-    var path = new KeeperFinder.Expression.Path();
+Seek.Expression.Path.create = function(property, forward) {
+    var path = new Seek.Expression.Path();
     path._segments.push({ property: property, forward: forward, isArray: false });
     return path;
 };
 
-KeeperFinder.Expression.Path.prototype.setRootName = function(rootName) {
+Seek.Expression.Path.prototype.setRootName = function(rootName) {
     this._rootName = rootName;
 };
 
-KeeperFinder.Expression.Path.prototype.appendSegment = function(property, hopOperator) {
+Seek.Expression.Path.prototype.appendSegment = function(property, hopOperator) {
     this._segments.push({
         property:   property,
         forward:    hopOperator.charAt(0) == ".",
@@ -155,7 +155,7 @@ KeeperFinder.Expression.Path.prototype.appendSegment = function(property, hopOpe
     });
 };
 
-KeeperFinder.Expression.Path.prototype.getSegment = function(index) {
+Seek.Expression.Path.prototype.getSegment = function(index) {
     if (index < this._segments.length) {
         var segment = this._segments[index];
         return {
@@ -168,15 +168,15 @@ KeeperFinder.Expression.Path.prototype.getSegment = function(index) {
     }
 };
 
-KeeperFinder.Expression.Path.prototype.getLastSegment = function() {
+Seek.Expression.Path.prototype.getLastSegment = function() {
     return this.getSegment(this._segments.length - 1);
 };
 
-KeeperFinder.Expression.Path.prototype.getSegmentCount = function() {
+Seek.Expression.Path.prototype.getSegmentCount = function() {
     return this._segments.length;
 };
 
-KeeperFinder.Expression.Path.prototype.evaluate = function(
+Seek.Expression.Path.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -188,10 +188,10 @@ KeeperFinder.Expression.Path.prototype.evaluate = function(
     var collection = null;
     if (rootName in roots) {
         var root = roots[rootName];
-        if (root instanceof KeeperFinder.Set || root instanceof Array) {
-            collection = new KeeperFinder.Expression._Collection(root, valueType);
+        if (root instanceof Seek.Set || root instanceof Array) {
+            collection = new Seek.Expression._Collection(root, valueType);
         } else {
-            collection = new KeeperFinder.Expression._Collection([ root ], valueType);
+            collection = new Seek.Expression._Collection([ root ], valueType);
         }
         
         return this._walkForward(collection, database);
@@ -200,35 +200,35 @@ KeeperFinder.Expression.Path.prototype.evaluate = function(
     }
 };
 
-KeeperFinder.Expression.Path.prototype.evaluateBackward = function(
+Seek.Expression.Path.prototype.evaluateBackward = function(
     value,
     valueType,
     filter,
     database
 ) {
-    var collection = new KeeperFinder.Expression._Collection([ value ], valueType);
+    var collection = new Seek.Expression._Collection([ value ], valueType);
     
     return this._walkBackward(collection, filter, database);
 }
 
-KeeperFinder.Expression.Path.prototype.walkForward = function(
+Seek.Expression.Path.prototype.walkForward = function(
     values,
     valueType,
     database
 ) {
-    return this._walkForward(new KeeperFinder.Expression._Collection(values, valueType), database);
+    return this._walkForward(new Seek.Expression._Collection(values, valueType), database);
 };
 
-KeeperFinder.Expression.Path.prototype.walkBackward = function(
+Seek.Expression.Path.prototype.walkBackward = function(
     values,
     valueType,
     filter,
     database
 ) {
-    return this._walkBackward(new KeeperFinder.Expression._Collection(values, valueType), filter, database);
+    return this._walkBackward(new Seek.Expression._Collection(values, valueType), filter, database);
 };
 
-KeeperFinder.Expression.Path.prototype._walkForward = function(collection, database) {
+Seek.Expression.Path.prototype._walkForward = function(collection, database) {
     for (var i = 0; i < this._segments.length; i++) {
         var segment = this._segments[i];
         if (segment.isArray) {
@@ -247,16 +247,16 @@ KeeperFinder.Expression.Path.prototype._walkForward = function(collection, datab
                 });
                 valueType = "item";
             }
-            collection = new KeeperFinder.Expression._Collection(a, valueType);
+            collection = new Seek.Expression._Collection(a, valueType);
         } else {
             if (segment.forward) {
                 var values = database.getObjectsUnion(collection.getSet(), segment.property);
                 var property = database.getProperty(segment.property);
                 var valueType = property != null ? property.getValueType() : "text";
-                collection = new KeeperFinder.Expression._Collection(values, valueType);
+                collection = new Seek.Expression._Collection(values, valueType);
             } else {
                 var values = database.getSubjectsUnion(collection.getSet(), segment.property);
-                collection = new KeeperFinder.Expression._Collection(values, "item");
+                collection = new Seek.Expression._Collection(values, "item");
             }
         }
     }
@@ -264,7 +264,7 @@ KeeperFinder.Expression.Path.prototype._walkForward = function(collection, datab
     return collection;
 };
 
-KeeperFinder.Expression.Path.prototype._walkBackward = function(collection, filter, database) {
+Seek.Expression.Path.prototype._walkBackward = function(collection, filter, database) {
     for (var i = this._segments.length - 1; i >= 0; i--) {
         var segment = this._segments[i];
         if (segment.isArray) {
@@ -291,16 +291,16 @@ KeeperFinder.Expression.Path.prototype._walkBackward = function(collection, filt
                 });
                 valueType = "item";
             }
-            collection = new KeeperFinder.Expression._Collection(a, valueType);
+            collection = new Seek.Expression._Collection(a, valueType);
         } else {
             if (segment.forward) {
                 var values = database.getSubjectsUnion(collection.getSet(), segment.property, null, i == 0 ? filter : null);
-                collection = new KeeperFinder.Expression._Collection(values, "item");
+                collection = new Seek.Expression._Collection(values, "item");
             } else {
                 var values = database.getObjectsUnion(collection.getSet(), segment.property, null, i == 0 ? filter : null);
                 var property = database.getProperty(segment.property);
                 var valueType = property != null ? property.getValueType() : "text";
-                collection = new KeeperFinder.Expression._Collection(values, valueType);
+                collection = new Seek.Expression._Collection(values, valueType);
             }
         }
     }
@@ -308,13 +308,13 @@ KeeperFinder.Expression.Path.prototype._walkBackward = function(collection, filt
     return collection;
 };
 
-KeeperFinder.Expression.Path.prototype.rangeBackward = function(
+Seek.Expression.Path.prototype.rangeBackward = function(
     from,
     to,
     filter,
     database
 ) {
-    var set = new KeeperFinder.Set();
+    var set = new Seek.Set();
     var valueType = "item";
     if (this._segments.length > 0) {
         var segment = this._segments[this._segments.length - 1];
@@ -344,7 +344,7 @@ KeeperFinder.Expression.Path.prototype.rangeBackward = function(
     };
 };
 
-KeeperFinder.Expression.Path.prototype.testExists = function(
+Seek.Expression.Path.prototype.testExists = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -354,33 +354,33 @@ KeeperFinder.Expression.Path.prototype.testExists = function(
 };
 
 /*==================================================
- *  KeeperFinder.Expression._Constant
+ *  Seek.Expression._Constant
  *==================================================
  */
-KeeperFinder.Expression._Constant = function(value, valueType) {
+Seek.Expression._Constant = function(value, valueType) {
     this._value = value;
     this._valueType = valueType;
 };
 
-KeeperFinder.Expression._Constant.prototype.evaluate = function(
+Seek.Expression._Constant.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
     database
 ) {
-    return new KeeperFinder.Expression._Collection([ this._value ], this._valueType);
+    return new Seek.Expression._Collection([ this._value ], this._valueType);
 };
 
 /*==================================================
- *  KeeperFinder.Expression._Operator
+ *  Seek.Expression._Operator
  *==================================================
  */
-KeeperFinder.Expression._Operator = function(operator, args) {
+Seek.Expression._Operator = function(operator, args) {
     this._operator = operator;
     this._args = args;
 };
 
-KeeperFinder.Expression._Operator.prototype.evaluate = function(
+Seek.Expression._Operator.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -393,7 +393,7 @@ KeeperFinder.Expression._Operator.prototype.evaluate = function(
         args.push(this._args[i].evaluate(roots, rootValueTypes, defaultRootName, database));
     }
     
-    var operator = KeeperFinder.Expression._operators[this._operator];
+    var operator = Seek.Expression._operators[this._operator];
     var f = operator.f;
     if (operator.argumentType == "number") {
         args[0].forEachValue(function(v1) {
@@ -417,10 +417,10 @@ KeeperFinder.Expression._Operator.prototype.evaluate = function(
         });
     }
     
-    return new KeeperFinder.Expression._Collection(values, operator.valueType);
+    return new Seek.Expression._Collection(values, operator.valueType);
 };
 
-KeeperFinder.Expression._operators = {
+Seek.Expression._operators = {
     "+" : {
         argumentType: "number",
         valueType: "number",
@@ -476,15 +476,15 @@ KeeperFinder.Expression._operators = {
 }
 
 /*==================================================
- *  KeeperFinder.Expression._FunctionCall
+ *  Seek.Expression._FunctionCall
  *==================================================
  */
-KeeperFinder.Expression._FunctionCall = function(name, args) {
+Seek.Expression._FunctionCall = function(name, args) {
     this._name = name;
     this._args = args;
 };
 
-KeeperFinder.Expression._FunctionCall.prototype.evaluate = function(
+Seek.Expression._FunctionCall.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
@@ -495,27 +495,27 @@ KeeperFinder.Expression._FunctionCall.prototype.evaluate = function(
         args.push(this._args[i].evaluate(roots, rootValueTypes, defaultRootName, database));
     }
     
-    if (this._name in KeeperFinder.Functions) {
-        return KeeperFinder.Functions[this._name].f(args);
+    if (this._name in Seek.Functions) {
+        return Seek.Functions[this._name].f(args);
     } else {
         throw new Error("No such function named " + this._name);
     }
 };
 
 /*==================================================
- *  KeeperFinder.Expression._ControlCall
+ *  Seek.Expression._ControlCall
  *==================================================
  */
-KeeperFinder.Expression._ControlCall = function(name, args) {
+Seek.Expression._ControlCall = function(name, args) {
     this._name = name;
     this._args = args;
 };
 
-KeeperFinder.Expression._ControlCall.prototype.evaluate = function(
+Seek.Expression._ControlCall.prototype.evaluate = function(
     roots, 
     rootValueTypes, 
     defaultRootName, 
     database
 ) {
-    return KeeperFinder.Controls[this._name].f(this._args, roots, rootValueTypes, defaultRootName, database);
+    return Seek.Controls[this._name].f(this._args, roots, rootValueTypes, defaultRootName, database);
 };

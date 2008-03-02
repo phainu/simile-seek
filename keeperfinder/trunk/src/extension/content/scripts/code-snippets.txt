@@ -6,7 +6,7 @@ file.append("foo.sqlite");
 var storageService = Components.classes["@mozilla.org/storage/service;1"]
                         .getService(Components.interfaces.mozIStorageService);
 var mDBConn = storageService.openDatabase(file);
-KeeperFinder.log(mDBConn);
+Seek.log(mDBConn);
 
 
     /*
@@ -15,25 +15,25 @@ KeeperFinder.log(mDBConn);
         
     var folders = Components.classes["@mozilla.org/supports-array;1"].
         createInstance(Components.interfaces.nsISupportsArray);
-    folders.AppendElement(KeeperFinder._selectedFolder);
+    folders.AppendElement(Seek._selectedFolder);
     
-    var tempFilterList = filterService.getTempFilterList(KeeperFinder._selectedFolder);
-    tempFilterList.insertFilterAt(0, new KeeperFinder.MsgFilter(tempFilterList, items));
+    var tempFilterList = filterService.getTempFilterList(Seek._selectedFolder);
+    tempFilterList.insertFilterAt(0, new Seek.MsgFilter(tempFilterList, items));
     
-    KeeperFinder.log("here0");
+    Seek.log("here0");
     filterService.applyFiltersToFolders(tempFilterList, folders, msgWindow);
     
-    KeeperFinder.log("here1");
+    Seek.log("here1");
     */
     
 
-KeeperFinder.MsgFilter = function(filterList, items) {
+Seek.MsgFilter = function(filterList, items) {
     this.filterList = filterList;
     this._items = items;
     this.wrappedJSObject = this;
 };
 
-KeeperFinder.MsgFilter.prototype = {
+Seek.MsgFilter.prototype = {
     QueryInterface: function(iid) {
         if (iid.equals(Components.interfaces.nsIMsgFilter) ||
             iid.equals(Components.interfaces.nsISupports)) {
@@ -43,40 +43,40 @@ KeeperFinder.MsgFilter.prototype = {
     },
     
     //filterType:             null,
-    get filterType() { KeeperFinder.log("filterType"); return null },
+    get filterType() { Seek.log("filterType"); return null },
     temporary:              false,
     enabled:                true,
-    filterName:             "keeperFinder",
-    filterDesc:             "KeeperFinder faceted browsing filter",
+    filterName:             "seek",
+    filterDesc:             "Seek faceted browsing filter",
     unparsedBuffer:         "",
     unparseable:            false,
     
-    AddTerm:                function(attrib, op, value, and, arbitraryHeader) {KeeperFinder.log("AddTerm");},
-    GetTerm:                function(termIndex) { KeeperFinder.log("GetTerm"); return null; },
-    appendTerm:             function(term) { KeeperFinder.log("appendTerm"); },
-    createTerm:             function() { KeeperFinder.log("createTerm"); return null; },
+    AddTerm:                function(attrib, op, value, and, arbitraryHeader) {Seek.log("AddTerm");},
+    GetTerm:                function(termIndex) { Seek.log("GetTerm"); return null; },
+    appendTerm:             function(term) { Seek.log("appendTerm"); },
+    createTerm:             function() { Seek.log("createTerm"); return null; },
     //searchTerms:            null,
-    get searchTerms() { KeeperFinder.log("searchTerms"); return null },
+    get searchTerms() { Seek.log("searchTerms"); return null },
     //scope:                  null,
-    get scope() { KeeperFinder.log("scope"); return null },
+    get scope() { Seek.log("scope"); return null },
     
-    MatchHdr: function(msgHdr, folder, db, headers, headerSize) { KeeperFinder.log("MatchHdr"); return this._items.contains(msgHdr.messageId); },
-    logRuleHit: function(aFilterAction, aHeader) { KeeperFinder.log("logRuleHit"); },
+    MatchHdr: function(msgHdr, folder, db, headers, headerSize) { Seek.log("MatchHdr"); return this._items.contains(msgHdr.messageId); },
+    logRuleHit: function(aFilterAction, aHeader) { Seek.log("logRuleHit"); },
     
-    createAction:           function() { KeeperFinder.log("createAction"); return null; },
-    getActionAt:            function(index) { KeeperFinder.log("getActionAt"); return null; },
-    appendAction:           function(action) { KeeperFinder.log("appendAction"); },
-    clearActionList:        function() {KeeperFinder.log("clearActionList");},
-    getSortedActionList:    function(actionList) {KeeperFinder.log("getSortedActionList");},
+    createAction:           function() { Seek.log("createAction"); return null; },
+    getActionAt:            function(index) { Seek.log("getActionAt"); return null; },
+    appendAction:           function(action) { Seek.log("appendAction"); },
+    clearActionList:        function() {Seek.log("clearActionList");},
+    getSortedActionList:    function(actionList) {Seek.log("getSortedActionList");},
     //actionList:             null
-    get actionList() { KeeperFinder.log("actionList"); return null }
+    get actionList() { Seek.log("actionList"); return null }
 };
 
 
 
-KeeperFinder._reconfigureThreadPaneNatively = function() {
-    var collection = KeeperFinder._collection;
-    var items = KeeperFinder._collection.getRestrictedItems()
+Seek._reconfigureThreadPaneNatively = function() {
+    var collection = Seek._collection;
+    var items = Seek._collection.getRestrictedItems()
     
     initializeSearchBar();
     RerootThreadPane();
@@ -102,8 +102,8 @@ KeeperFinder._reconfigureThreadPaneNatively = function() {
         getService(Components.interfaces.nsIIOService);
         
     gSearchSession.addScopeTerm(
-        getScopeToUse(termsArray, KeeperFinder._selectedFolder, ioService.offline), 
-        KeeperFinder._selectedFolder
+        getScopeToUse(termsArray, Seek._selectedFolder, ioService.offline), 
+        Seek._selectedFolder
     );
     
     for (var i = 0; i < termsArray.Count(); i++) {

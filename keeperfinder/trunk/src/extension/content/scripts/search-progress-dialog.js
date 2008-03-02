@@ -1,19 +1,19 @@
-var KeeperFinderSearchProgressDialog = {
+var SeekSearchProgressDialog = {
 };
 
-KeeperFinderSearchProgressDialog.onLoad = function() {
+SeekSearchProgressDialog.onLoad = function() {
     var parameters = window.arguments[1];
     parameters.onDone = function() {
         window.close();
     };
     parameters.setMessage = function(s) {
-        document.getElementById("keeperFinder-searchProgressDialog-message").value = s;
+        document.getElementById("seek-searchProgressDialog-message").value = s;
     };
     
     parameters.onStart();
 };
 
-KeeperFinderSearchProgressDialog.onCancel = function() {
+SeekSearchProgressDialog.onCancel = function() {
     var parameters = window.arguments[1];
     parameters.onCancel();
 };

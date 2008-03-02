@@ -1,17 +1,17 @@
-KeeperFinder.Indexer = {
+Seek.Indexer = {
     _indexingTimerID:   null,
     _indexingJob:       null,
     accountAddresses:   {}
 };
 
 
-KeeperFinder.Indexer.startIndexingJob = function(database, msgFolder, onProgress, onDone) {
+Seek.Indexer.startIndexingJob = function(database, msgFolder, onProgress, onDone) {
     var msgDatabase = msgFolder.getMsgDatabase(msgWindow);
     
-    KeeperFinder.Indexer._retrieveAccounts();
-    KeeperFinder.Indexer._retrieveTags();
+    Seek.Indexer._retrieveAccounts();
+    Seek.Indexer._retrieveTags();
     
-    KeeperFinder.Indexer._indexingJob = {
+    Seek.Indexer._indexingJob = {
         database:       database,
         msgDatabase:    msgDatabase,
         totalCount:     msgFolder.getTotalMessages(false /* not deep */),
@@ -21,19 +21,19 @@ KeeperFinder.Indexer.startIndexingJob = function(database, msgFolder, onProgress
         onProgress:     onProgress,
         onDone:         onDone
     };
-    KeeperFinder.Indexer._startIndexingJob();
+    Seek.Indexer._startIndexingJob();
 };
 
-KeeperFinder.Indexer.cancelIndexingJob = function() {
-    if (KeeperFinder.Indexer._indexingTimerID != null) {
-        window.clearTimeout(KeeperFinder.Indexer._indexingTimerID);
-        KeeperFinder.Indexer._indexingTimerID = null;
+Seek.Indexer.cancelIndexingJob = function() {
+    if (Seek.Indexer._indexingTimerID != null) {
+        window.clearTimeout(Seek.Indexer._indexingTimerID);
+        Seek.Indexer._indexingTimerID = null;
     }
-    KeeperFinder.Indexer._indexingJob = null;
+    Seek.Indexer._indexingJob = null;
 };
 
 
-KeeperFinder.Indexer.getTags = function(msgHdr) {
+Seek.Indexer.getTags = function(msgHdr) {
     var keys = msgHdr.getStringProperty("keywords").split(" ");
     var label = msgHdr.label;
     if (label >= 0) {
@@ -52,16 +52,16 @@ KeeperFinder.Indexer.getTags = function(msgHdr) {
     return keys;
 };
 
-KeeperFinder.Indexer.getTagLabels = function(msgHdr) {
-    var r = KeeperFinder.Indexer.getTags(msgHdr);
+Seek.Indexer.getTagLabels = function(msgHdr) {
+    var r = Seek.Indexer.getTags(msgHdr);
     for (var i = 0; i < r.length; i++) {
         r[i] = this._tagKeys[r[i]];
     }
     return r;
 };
 
-KeeperFinder.Indexer._retrieveAccounts = function() {
-    KeeperFinder.Indexer.accountAddresses = {};
+Seek.Indexer._retrieveAccounts = function() {
+    Seek.Indexer.accountAddresses = {};
 
     var accountManager = Components.classes["@mozilla.org/messenger/account-manager;1"].getService(Components.interfaces.nsIMsgAccountManager);
     var accounts = accountManager.accounts;
@@ -73,12 +73,12 @@ KeeperFinder.Indexer._retrieveAccounts = function() {
         var identityCount = identities.Count();
         for (var j = 0; j < identityCount; j++) {
             var identity = identities.GetElementAt(j).QueryInterface(Components.interfaces.nsIMsgIdentity);
-            KeeperFinder.Indexer.accountAddresses[identity.email] = true;
+            Seek.Indexer.accountAddresses[identity.email] = true;
         }
     }
 };
 
-KeeperFinder.Indexer._retrieveTags = function() {
+Seek.Indexer._retrieveTags = function() {
     var tagService = Components.classes["@mozilla.org/messenger/tagservice;1"].
         getService(Components.interfaces.nsIMsgTagService);
         
@@ -93,16 +93,16 @@ KeeperFinder.Indexer._retrieveTags = function() {
     this._tagKeys = tagKeys;
 };
 
-KeeperFinder.Indexer._startIndexingJob = function() {
-    KeeperFinder.Indexer._indexingTimerID = window.setTimeout(function() {
-        KeeperFinder.Indexer._indexingTimerID = null;
-        KeeperFinder.Indexer._performIndexingJob();
+Seek.Indexer._startIndexingJob = function() {
+    Seek.Indexer._indexingTimerID = window.setTimeout(function() {
+        Seek.Indexer._indexingTimerID = null;
+        Seek.Indexer._performIndexingJob();
     }, 100);
 };
 
-KeeperFinder.Indexer._performIndexingJob = function() {
+Seek.Indexer._performIndexingJob = function() {
     var count = 0;
-    var job = KeeperFinder.Indexer._indexingJob;
+    var job = Seek.Indexer._indexingJob;
     var database = job.database;
     var entityMap = job.entityMap;
     var items = [];
@@ -111,7 +111,7 @@ KeeperFinder.Indexer._performIndexingJob = function() {
     while (e.hasMoreElements() && count < 25) {
         var o = e.getNext();
         var msgHdr = o.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-        KeeperFinder.Indexer.indexMsg(msgHdr, database, entityMap, items);
+        Seek.Indexer.indexMsg(msgHdr, database, entityMap, items);
         
         count++;
     }
@@ -121,18 +121,18 @@ KeeperFinder.Indexer._performIndexingJob = function() {
     job.onProgress(Math.floor(100 * job.processedCount / job.totalCount));
     
     if (e.hasMoreElements() /*&& job.processedCount < 500*/) {
-        KeeperFinder.Indexer._startIndexingJob();
+        Seek.Indexer._startIndexingJob();
     } else {
-        KeeperFinder.Indexer._onFinishIndexingJob();
+        Seek.Indexer._onFinishIndexingJob();
     }
 };
 
-KeeperFinder.Indexer.makeMessageID = function(msgKey) {
+Seek.Indexer.makeMessageID = function(msgKey) {
     return "urn:message:" + msgKey;
 };
 
-KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
-    var messageID = KeeperFinder.Indexer.makeMessageID(msgHdr.messageKey);
+Seek.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
+    var messageID = Seek.Indexer.makeMessageID(msgHdr.messageKey);
     var subject = msgHdr.mime2DecodedSubject;
     if (subject == null || subject.length == 0) {
         subject = msgHdr.subject;
@@ -151,9 +151,9 @@ KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     if (!msgHdr.isRead) {
         item.isNew = true;
     }
-    KeeperFinder.Indexer._addEntityList(item, "author", msgHdr.mime2DecodedAuthor /*.author*/, entityMap);
-    KeeperFinder.Indexer._addEntityList(item, "to", msgHdr.mime2DecodedRecipients /*.recipients*/, entityMap);
-    KeeperFinder.Indexer._addEntityList(item, "cc", msgHdr.ccList, entityMap);
+    Seek.Indexer._addEntityList(item, "author", msgHdr.mime2DecodedAuthor /*.author*/, entityMap);
+    Seek.Indexer._addEntityList(item, "to", msgHdr.mime2DecodedRecipients /*.recipients*/, entityMap);
+    Seek.Indexer._addEntityList(item, "cc", msgHdr.ccList, entityMap);
     
     if ("to" in item) {
         if ("cc" in item) {
@@ -169,7 +169,7 @@ KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     var toMe = false;
     if ("to" in item) {
         for (var i = 0; i < item.to.length; i++) {
-            if (item.to[i] in KeeperFinder.Indexer.accountAddresses) {
+            if (item.to[i] in Seek.Indexer.accountAddresses) {
                 toMe = true;
                 break;
             }
@@ -179,7 +179,7 @@ KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     var ccMe = false;
     if ("cc" in item) {
         for (var i = 0; i < item.cc.length; i++) {
-            if (item.cc[i] in KeeperFinder.Indexer.accountAddresses) {
+            if (item.cc[i] in Seek.Indexer.accountAddresses) {
                 ccMe = true;
                 break;
             }
@@ -200,18 +200,18 @@ KeeperFinder.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     }
     item.toOrCCToMe = me;
     
-    item.tag = KeeperFinder.Indexer.getTagLabels(msgHdr);
+    item.tag = Seek.Indexer.getTagLabels(msgHdr);
     
     items.push(item);
 };
 
-KeeperFinder.Indexer._addIfNotEmpty = function(item, name, value) {
+Seek.Indexer._addIfNotEmpty = function(item, name, value) {
     if (value != null && value.length > 0) {
         item[name] = value;
     }
 };
 
-KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
+Seek.Indexer._addEntityList = function(item, name, value, map) {
     var entities = [];
     
     var start = 0;
@@ -253,7 +253,7 @@ KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
         var entity;
         if (emailAddress in map) {
             entity = map[emailAddress];
-            KeeperFinder.Indexer._appendValue(entity, "label", label);
+            Seek.Indexer._appendValue(entity, "label", label);
         } else {
             map[emailAddress] = entity = {
                 id:     emailAddress,
@@ -270,7 +270,7 @@ KeeperFinder.Indexer._addEntityList = function(item, name, value, map) {
     }
 };
 
-KeeperFinder.Indexer._appendValue = function(item, name, value) {
+Seek.Indexer._appendValue = function(item, name, value) {
     if (name in item) {
         var a = item[name];
         if (typeof a == "array" || (typeof a == "object" && "concat" in a)) {
@@ -288,8 +288,8 @@ KeeperFinder.Indexer._appendValue = function(item, name, value) {
     }
 };
 
-KeeperFinder.Indexer._onFinishIndexingJob = function() {
-    var job = KeeperFinder.Indexer._indexingJob;
+Seek.Indexer._onFinishIndexingJob = function() {
+    var job = Seek.Indexer._indexingJob;
     var database = job.database;
     var entityMap = job.entityMap;
     
@@ -322,7 +322,7 @@ KeeperFinder.Indexer._onFinishIndexingJob = function() {
         }
     }, "");
     
-    KeeperFinder.Indexer._indexingJob = null;
+    Seek.Indexer._indexingJob = null;
     
     job.onDone();
 };

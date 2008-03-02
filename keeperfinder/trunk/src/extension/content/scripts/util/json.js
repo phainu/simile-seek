@@ -2,7 +2,7 @@
  *  Adapted from http://www.json.org/json.js.
  */
 
-KeeperFinder.JSON = {};
+Seek.JSON = {};
 
 (function () {
     var m = {
@@ -85,7 +85,7 @@ KeeperFinder.JSON = {};
             }
         };
 
-    KeeperFinder.JSON.toJSONString = function (o) {
+    Seek.JSON.toJSONString = function (o) {
         if (o instanceof Array) {
             return s.array(o);
         } else {

@@ -1,9 +1,9 @@
 /*==================================================
- *  KeeperFinder.RecencyFacet
+ *  Seek.RecencyFacet
  *==================================================
  */
 
-KeeperFinder.RecencyFacet = function(name, database, collection, box, settings) {
+Seek.RecencyFacet = function(name, database, collection, box, settings) {
     this.name = name;
     this._database = database;
     this._collection = collection;
@@ -11,7 +11,7 @@ KeeperFinder.RecencyFacet = function(name, database, collection, box, settings) 
     this._settings = settings;
     
     this._now = new Date().getTime();
-    this._expression = KeeperFinder.ExpressionParser.parse(settings.expression);
+    this._expression = Seek.ExpressionParser.parse(settings.expression);
     this._selection = null;
     
     var self = this;
@@ -23,17 +23,17 @@ KeeperFinder.RecencyFacet = function(name, database, collection, box, settings) 
         }
     };
     this._collection.addListener(this._listener);
-    this._cache = new KeeperFinder.FacetCache(database, collection, this._expression);
+    this._cache = new Seek.FacetCache(database, collection, this._expression);
     
     this._initializeUI();
     this._collection.addFacet(this);
 };
 
-KeeperFinder.RecencyFacet._settingSpecs = {
+Seek.RecencyFacet._settingSpecs = {
     "facetLabel":       { type: "text" }
 };
 
-KeeperFinder.RecencyFacet.prototype.dispose = function() {
+Seek.RecencyFacet.prototype.dispose = function() {
     this._cache.dispose();
     this._cache = null;
     
@@ -49,11 +49,11 @@ KeeperFinder.RecencyFacet.prototype.dispose = function() {
     this._settings = null;
 };
 
-KeeperFinder.RecencyFacet.prototype.hasRestrictions = function() {
+Seek.RecencyFacet.prototype.hasRestrictions = function() {
     return this._selection != null;
 };
 
-KeeperFinder.RecencyFacet.prototype.clearAllRestrictions = function() {
+Seek.RecencyFacet.prototype.clearAllRestrictions = function() {
     var restrictions = this._selection;
     if (this.hasRestrictions()) {
         this._selection = null;
@@ -62,39 +62,39 @@ KeeperFinder.RecencyFacet.prototype.clearAllRestrictions = function() {
     return restrictions;
 };
 
-KeeperFinder.RecencyFacet.prototype.applyRestrictions = function(restrictions) {
+Seek.RecencyFacet.prototype.applyRestrictions = function(restrictions) {
     this._selection = restrictions;
     this._notifyCollection();
 };
 
-KeeperFinder.RecencyFacet.prototype.restrict = function(items) {
+Seek.RecencyFacet.prototype.restrict = function(items) {
     if (!this.hasRestrictions()) {
         return items;
     }
     
     this._buildRangeIndex();
     
-    var recency = KeeperFinder.RecencyFacet.computeRecency();
+    var recency = Seek.RecencyFacet.computeRecency();
     var from = recency[this._selection];
     var to = new Date().getTime();
     
     return this._rangeIndex.getSubjectsInRange(from, to, false, null, items);
 };
 
-KeeperFinder.RecencyFacet.prototype.update = function(items) {
+Seek.RecencyFacet.prototype.update = function(items) {
     if (!this._changingSelection) {
         this._entries = this._computeFacet(items);
         this._constructBody();
     }
 };
 
-KeeperFinder.RecencyFacet.prototype._computeFacet = function(items) {
+Seek.RecencyFacet.prototype._computeFacet = function(items) {
     this._buildRangeIndex();
 
     var database = this._database;
     var entries = [];
     
-    var recency = KeeperFinder.RecencyFacet.computeRecency();
+    var recency = Seek.RecencyFacet.computeRecency();
     var to = new Date().getTime();
     var selection = this._selection;
     
@@ -118,12 +118,12 @@ KeeperFinder.RecencyFacet.prototype._computeFacet = function(items) {
     return entries;
 }
 
-KeeperFinder.RecencyFacet.prototype._notifyCollection = function() {
+Seek.RecencyFacet.prototype._notifyCollection = function() {
     this._collection.onFacetUpdated(this);
 };
 
-KeeperFinder.RecencyFacet.prototype._initializeUI = function() {
-    this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
+Seek.RecencyFacet.prototype._initializeUI = function() {
+    this._dom = Seek.FacetUtilities.constructFacetFrame(
         this._box,
         this._settings.facetLabel,
         false
@@ -132,15 +132,15 @@ KeeperFinder.RecencyFacet.prototype._initializeUI = function() {
     this._registerEventListeners();
 };
 
-KeeperFinder.RecencyFacet.prototype.refresh = function() { 
+Seek.RecencyFacet.prototype.refresh = function() { 
     this._registerEventListeners();  
     this._constructBody();
 };
 
-KeeperFinder.RecencyFacet.prototype._registerEventListeners = function() {
+Seek.RecencyFacet.prototype._registerEventListeners = function() {
     var self = this;
     this._dom.reset.onmousedown = function(event) {
-        return KeeperFinder.cancelEvent(event);
+        return Seek.cancelEvent(event);
     };
     this._dom.reset.onclick = function(event) {
         self.clearAllRestrictions();
@@ -152,19 +152,19 @@ KeeperFinder.RecencyFacet.prototype._registerEventListeners = function() {
         return true;
     };
     this._dom.headerLabel.onmousedown = function(e) {
-        KeeperFinder.startDraggingFacet(e, self, self._box);
+        Seek.startDraggingFacet(e, self, self._box);
     };
     this._dom.closeButton.onclick = function(e) {
-        KeeperFinder.removeFacet(self);
+        Seek.removeFacet(self);
     };
 };
 
-KeeperFinder.RecencyFacet.prototype._constructBody = function() {   
+Seek.RecencyFacet.prototype._constructBody = function() {   
     this._constructingBody = true;
     
     var entries = this._entries;
     var tree = this._dom.valuesContainer;
-    var treeView = KeeperFinder.RecencyFacet._createTreeView(this, entries);
+    var treeView = Seek.RecencyFacet._createTreeView(this, entries);
     tree.treeBoxObject.view = treeView;
     
     var selection = treeView.selection;
@@ -178,7 +178,7 @@ KeeperFinder.RecencyFacet.prototype._constructBody = function() {
     this._constructingBody = false;
 };
 
-KeeperFinder.RecencyFacet.prototype._onSelectionChange = function(view) {
+Seek.RecencyFacet.prototype._onSelectionChange = function(view) {
     var restrictions = null;
     var entries = view.wrappedJSObject._entries;
     
@@ -199,7 +199,7 @@ KeeperFinder.RecencyFacet.prototype._onSelectionChange = function(view) {
     this._changingSelection = false;
 };
 
-KeeperFinder.RecencyFacet.prototype._buildRangeIndex = function() {
+Seek.RecencyFacet.prototype._buildRangeIndex = function() {
     if (!("_rangeIndex" in this)) {
         var expression = this._expression;
         var database = this._database;
@@ -214,15 +214,15 @@ KeeperFinder.RecencyFacet.prototype._buildRangeIndex = function() {
             });
         };
     
-        this._rangeIndex = new KeeperFinder.Database._RangeIndex(
+        this._rangeIndex = new Seek.Database._RangeIndex(
             this._collection.getAllItems(),
             getter
         );    
     }
 };
 
-KeeperFinder.RecencyFacet._createTreeView = function(facet, entries) {
-    var treeView = new KeeperFinder.StaticListTreeView();
+Seek.RecencyFacet._createTreeView = function(facet, entries) {
+    var treeView = new Seek.StaticListTreeView();
     treeView._entries = entries;
     treeView.rowCount = entries.length;
     treeView.getCellText = function(row, column) {
@@ -242,7 +242,7 @@ KeeperFinder.RecencyFacet._createTreeView = function(facet, entries) {
     return treeView;
 };
 
-KeeperFinder.RecencyFacet.computeRecency = function() {
+Seek.RecencyFacet.computeRecency = function() {
     var result = {};
     
     var t = new Date();

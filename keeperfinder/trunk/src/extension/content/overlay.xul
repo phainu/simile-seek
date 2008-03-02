@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (c) 2008 David Huynh
+  -
+  - Permission to use, copy, modify, and distribute this software for any
+  - purpose with or without fee is hereby granted, provided that the above
+  - copyright notice and this permission notice appear in all copies.
+  -
+  - THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  - WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  - MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  - ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  - WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  - ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  - OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  - -->
+
+<?xml-stylesheet href="chrome://seek/skin/styles/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://seek/skin/styles/overlay-html.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://seek/locale/seek.dtd">
+<overlay id="seek-overlay" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    
+    <script src="scripts/overlay.js"/>
+    <script src="scripts/facet-dnd.js"/>
+    <script src="scripts/indexer.js"/>
+    <script src="scripts/facet-configurations.js"/>
+    
+    <script src="scripts/util/set.js"/>
+    <script src="scripts/util/json.js"/>
+    <script src="scripts/util/listener-queue.js"/>
+    <script src="scripts/util/string.js"/>
+    <script src="scripts/util/db-change-listener.js"/>
+    
+    <script src="scripts/data/expression-parser.js"/>
+    <script src="scripts/data/expression.js"/>
+    <script src="scripts/data/function.js"/>
+    <script src="scripts/data/database.js"/>
+    <script src="scripts/data/database-l10n.js"/>
+    <script src="scripts/data/collection.js"/>
+    
+    <script src="scripts/ui/facet-util.js"/>
+    <script src="scripts/ui/list-facet.js"/>
+    <script src="scripts/ui/recency-facet.js"/>
+    
+    <script src="scripts/ui/thread-tree-view.js"/>
+    <script src="scripts/ui/thread-tree-view-data.js"/>
+    <script src="scripts/ui/thread-tree-view-msgdbview.js"/>
+    
+    <stringbundleset id="stringbundleset">
+        <stringbundle id="seek-strings" src="chrome://seek/locale/seek.properties"/>
+    </stringbundleset>
+
+    <menupopup id="taskPopup">
+        <menuitem id="seek-theMenuItem" 
+            label="&seek.theMenuItem.label;" 
+            accesskey="&seek.theMenuItem.accesskey;"
+            oncommand="Seek.onToggleSeek()" 
+            type="checkbox" 
+            checked="false"
+            key="seek-theKey"
+            insertafter="applyFilters"
+            />
+        <menuseparator 
+            insertafter="applyFilters"
+            />
+    </menupopup>
+    
+    <keyset id="mailKeys">
+        <key id="seek-theKey"
+            key="&seek-theKey;"
+            oncommand="Seek.onToggleSeek(event.target)" 
+            modifiers="accel"
+            />
+    </keyset>
+    
+    <popupset>
+        <popup id="seekPane-addFacetPopup" />
+    </popupset>
+    
+    <window id="messengerWindow">
+        <deck id="seekPane-deck" insertbefore="mailContentWrapper" hidden="true" height="250" persist="height">
+            <hbox id="seekPane-noSupportLayer">
+                <spacer flex="1" />
+                <vbox style="width: 20em;">
+                    <spacer flex="1" />
+                    <description>&seek.cantUseSeekMessage;</description>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-startIndexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 25em;">
+                    <spacer flex="1" />
+                    <description>&seek.startIndexingMessage;</description>
+                    <hbox>
+                        <button label="&seek.startIndexingButton.label;" oncommand="Seek.onStartIndexingFolder();" />
+                        <spacer flex="1" />
+                    </hbox>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-indexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 25em;">
+                    <spacer flex="1" />
+                    <label value="&seek.indexingMessage;" />
+                    <progressmeter id="seekPane-indexingLayer-progress" mode="determined" value="0%" />
+                    <hbox>
+                        <label value="" id="seekPane-indexingLayer-remaining" flex="1" />
+                        <button label="&seek.cancelIndexingButton.label;" oncommand="Seek.onCancelIndexing()" />
+                    </hbox>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-browsingLayer">
+                <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="seekPane-browsingLayer-facetContainer">
+                </scrollbox>
+                <vbox id="seekPane-browsingLayer-controlPanel">
+                    <label value="&seek.contentSearch.label;" class="seekPane-groupLabel" />
+                    <vbox class="seekPane-group">
+                        <radiogroup id="seekPane-browsingLayer-textSearch-mode" orient="horizontal">
+                            <radio id="seekPane-browsingLayer-textSearch-mode-all" value="all" label="&seek.contentSearch.all;" selected="true" />
+                            <radio id="seekPane-browsingLayer-textSearch-mode-any" value="any" label="&seek.contentSearch.any;" />
+                            <radio id="seekPane-browsingLayer-textSearch-mode-phrase" value="phrase" label="&seek.contentSearch.phrase;" />
+                        </radiogroup>
+                        <textbox id="seekPane-browsingLayer-textSearch-input" />
+                        <hbox id="seekPane-browsingLayer-textSearch-pastEntry" hidden="true">
+                            <box id="seekPane-browsingLayer-textSearch-pastEntry-remove" />
+                            <description id="seekPane-browsingLayer-textSearch-pastEntry-description" />
+                        </hbox>
+                    </vbox>
+                    
+                    <label value="&seek.alsoInclude.label;" class="seekPane-groupLabel" />
+                    <hbox class="seekPane-group">
+                        <checkbox label="&seek.alsoInclude.wholeThreads.label;" id="seekPane-browsingLayer-showThreads" oncommand="Seek.toggleShowThreads()" />
+                        <checkbox label="&seek.alsoInclude.newMessages.label;" id="seekPane-browsingLayer-showNewMessages" oncommand="Seek.toggleShowNewMessages()" />
+                    </hbox>
+                    
+                
+                    <hbox>
+                        <button id="seekPane-browsingLayer-addFacet" flex="1"
+                            label="&seek.addFacetButton.label;" 
+                            popup="seekPane-addFacetPopup" />
+                            
+                        <button label="&seek.visualizeButton.label;" flex="1"
+                            tooltiptext="&seek.visualizeButton.tooltip;"
+                            oncommand="Seek.visualize();" />
+                    </hbox>
+                    
+                    <spacer flex="1" />
+                    <separator class="groove" />
+                    
+                    <hbox>
+                        <spacer flex="1" />
+                        <button label="&seek.disengageButton.label;"
+                            tooltiptext="&seek.disengageButton.tooltip;"
+                            oncommand="Seek.disengage();" />
+                    </hbox>
+                </vbox>
+            </hbox>
+            <box hidden="true">
+                <hbox id="seek-facet-header" class="seek-facet-header">
+                    <box class="seek-facet-header-closeButton" 
+                        tooltiptext="&seek.closeFacetButton.tooltip;" />
+                    <label value="" flex="1" />
+                    <html:div style="display: none;"><html:a href="javascript:{}">&seek.resetFacetLink.label;</html:a></html:div>
+                </hbox>
+                <html:div class="seek-facet-quickFilter" id="seek-facet-quickFilter">
+                    <html:input />
+                </html:div>
+                <tree id="seek-facet-valuesContainer" class="seek-facet-valuesContainer" flex="1" seltype="multiple">
+                    <treecols>
+                        <treecol id="value-column" label="value" flex="1" />
+                        <treecol id="count-column" label="#" flex="0" style="width: 4em; text-align: right;" />
+                    </treecols>
+                    <treechildren />
+                </tree>
+            </box>
+        </deck>
+        <splitter insertbefore="mailContentWrapper" id="seek-mainSplitter" hidden="true" />
+    </window>
+</overlay>

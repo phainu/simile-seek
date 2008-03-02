@@ -1,41 +1,41 @@
 /*==================================================
- *  KeeperFinder.ExpressionParser
+ *  Seek.ExpressionParser
  *==================================================
  */
-KeeperFinder.ExpressionParser = new Object();
+Seek.ExpressionParser = new Object();
 
-KeeperFinder.ExpressionParser.parse = function(s, startIndex, results) {
+Seek.ExpressionParser.parse = function(s, startIndex, results) {
     startIndex = startIndex || 0;
     results = results || {};
     
-    var scanner = new KeeperFinder.ExpressionScanner(s, startIndex);
+    var scanner = new Seek.ExpressionScanner(s, startIndex);
     try {
-        return KeeperFinder.ExpressionParser._internalParse(scanner, false);
+        return Seek.ExpressionParser._internalParse(scanner, false);
     } finally {
         results.index = scanner.token() != null ? scanner.token().start : scanner.index();
     }
 };
 
-KeeperFinder.ExpressionParser.parseSeveral = function(s, startIndex, results) {
+Seek.ExpressionParser.parseSeveral = function(s, startIndex, results) {
     startIndex = startIndex || 0;
     results = results || {};
     
-    var scanner = new KeeperFinder.ExpressionScanner(s, startIndex);
+    var scanner = new Seek.ExpressionScanner(s, startIndex);
     try {
-        return KeeperFinder.ExpressionParser._internalParse(scanner, true);
+        return Seek.ExpressionParser._internalParse(scanner, true);
     } finally {
         results.index = scanner.token() != null ? scanner.token().start : scanner.index();
     }
 };
 
-KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
-    var Scanner = KeeperFinder.ExpressionScanner;
+Seek.ExpressionParser._internalParse = function(scanner, several) {
+    var Scanner = Seek.ExpressionScanner;
     var token = scanner.token();
     var next = function() { scanner.next(); token = scanner.token(); };
     var makePosition = function() { return token != null ? token.start : scanner.index(); };
     
     var parsePath = function() {
-        var path = new KeeperFinder.Expression.Path();
+        var path = new Seek.Expression.Path();
         while (token != null && token.type == Scanner.PATH_OPERATOR) {
             var hopOperator = token.value;
             next();
@@ -59,11 +59,11 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
         
         switch (token.type) {
         case Scanner.NUMBER:
-            result = new KeeperFinder.Expression._Constant(token.value, "number");
+            result = new Seek.Expression._Constant(token.value, "number");
             next();
             break;
         case Scanner.STRING:
-            result = new KeeperFinder.Expression._Constant(token.value, "text");
+            result = new Seek.Expression._Constant(token.value, "text");
             next();
             break;
         case Scanner.PATH_OPERATOR:
@@ -73,7 +73,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
             var identifier = token.value;
             next();
             
-            if (identifier in KeeperFinder.Controls) {
+            if (identifier in Seek.Controls) {
                 if (token != null && token.type == Scanner.DELIMITER && token.value == "(") {
                     next();
                     
@@ -81,7 +81,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
                         [] :
                         parseExpressionList();
                         
-                    result = new KeeperFinder.Expression._ControlCall(identifier, args);
+                    result = new Seek.Expression._ControlCall(identifier, args);
                     
                     if (token != null && token.type == Scanner.DELIMITER && token.value == ")") {
                         next();
@@ -99,7 +99,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
                         [] :
                         parseExpressionList();
                         
-                    result = new KeeperFinder.Expression._FunctionCall(identifier, args);
+                    result = new Seek.Expression._FunctionCall(identifier, args);
                     
                     if (token != null && token.type == Scanner.DELIMITER && token.value == ")") {
                         next();
@@ -137,7 +137,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
             var operator = token.value;
             next();
             
-            term = new KeeperFinder.Expression._Operator(operator, [ term, parseFactor() ]);
+            term = new Seek.Expression._Operator(operator, [ term, parseFactor() ]);
         }
         return term;
     };
@@ -149,7 +149,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
             var operator = token.value;
             next();
             
-            subExpression = new KeeperFinder.Expression._Operator(operator, [ subExpression, parseTerm() ]);
+            subExpression = new Seek.Expression._Operator(operator, [ subExpression, parseTerm() ]);
         }
         return subExpression;
     };
@@ -163,7 +163,7 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
             var operator = token.value;
             next();
             
-            expression = new KeeperFinder.Expression._Operator(operator, [ expression, parseSubExpression() ]);
+            expression = new Seek.Expression._Operator(operator, [ expression, parseSubExpression() ]);
         }
         return expression;
     };
@@ -180,41 +180,41 @@ KeeperFinder.ExpressionParser._internalParse = function(scanner, several) {
         var roots = parseExpressionList();
         var expressions = [];
         for (var r = 0; r < roots.length; r++) {
-            expressions.push(new KeeperFinder.Expression._Impl(roots[r]));
+            expressions.push(new Seek.Expression._Impl(roots[r]));
         }
         return expressions;
     } else {
-        return new KeeperFinder.Expression._Impl(parseExpression());
+        return new Seek.Expression._Impl(parseExpression());
     }
 };
 
 /*==================================================
- *  KeeperFinder.ExpressionScanner
+ *  Seek.ExpressionScanner
  *==================================================
  */
-KeeperFinder.ExpressionScanner = function(text, startIndex) {
+Seek.ExpressionScanner = function(text, startIndex) {
     this._text = text + " "; // make it easier to parse
     this._maxIndex = text.length;
     this._index = startIndex;
     this.next();
 };
 
-KeeperFinder.ExpressionScanner.DELIMITER     = 0;
-KeeperFinder.ExpressionScanner.NUMBER        = 1;
-KeeperFinder.ExpressionScanner.STRING        = 2;
-KeeperFinder.ExpressionScanner.IDENTIFIER    = 3;
-KeeperFinder.ExpressionScanner.OPERATOR      = 4;
-KeeperFinder.ExpressionScanner.PATH_OPERATOR = 5;
+Seek.ExpressionScanner.DELIMITER     = 0;
+Seek.ExpressionScanner.NUMBER        = 1;
+Seek.ExpressionScanner.STRING        = 2;
+Seek.ExpressionScanner.IDENTIFIER    = 3;
+Seek.ExpressionScanner.OPERATOR      = 4;
+Seek.ExpressionScanner.PATH_OPERATOR = 5;
 
-KeeperFinder.ExpressionScanner.prototype.token = function() {
+Seek.ExpressionScanner.prototype.token = function() {
     return this._token;
 };
 
-KeeperFinder.ExpressionScanner.prototype.index = function() {
+Seek.ExpressionScanner.prototype.index = function() {
     return this._index;
 };
 
-KeeperFinder.ExpressionScanner.prototype.next = function() {
+Seek.ExpressionScanner.prototype.next = function() {
     this._token = null;
     
     while (this._index < this._maxIndex &&
@@ -229,7 +229,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
         if (".!".indexOf(c1) >= 0) {
             if (c2 == "@") {
                 this._token = {
-                    type:   KeeperFinder.ExpressionScanner.PATH_OPERATOR,
+                    type:   Seek.ExpressionScanner.PATH_OPERATOR,
                     value:  c1 + c2,
                     start:  this._index,
                     end:    this._index + 2
@@ -237,7 +237,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
                 this._index += 2;
             } else {
                 this._token = {
-                    type:   KeeperFinder.ExpressionScanner.PATH_OPERATOR,
+                    type:   Seek.ExpressionScanner.PATH_OPERATOR,
                     value:  c1,
                     start:  this._index,
                     end:    this._index + 1
@@ -247,7 +247,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
         } else if ("<>".indexOf(c1) >= 0) {
             if ((c2 == "=") || ("<>".indexOf(c2) >= 0 && c1 != c2)) {
                 this._token = {
-                    type:   KeeperFinder.ExpressionScanner.OPERATOR,
+                    type:   Seek.ExpressionScanner.OPERATOR,
                     value:  c1 + c2,
                     start:  this._index,
                     end:    this._index + 2
@@ -255,7 +255,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
                 this._index += 2;
             } else {
                 this._token = {
-                    type:   KeeperFinder.ExpressionScanner.OPERATOR,
+                    type:   Seek.ExpressionScanner.OPERATOR,
                     value:  c1,
                     start:  this._index,
                     end:    this._index + 1
@@ -264,7 +264,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
             }
         } else if ("+-*/=".indexOf(c1) >= 0) {
             this._token = {
-                type:   KeeperFinder.ExpressionScanner.OPERATOR,
+                type:   Seek.ExpressionScanner.OPERATOR,
                 value:  c1,
                 start:  this._index,
                 end:    this._index + 1
@@ -272,7 +272,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
             this._index++;
         } else if ("(),".indexOf(c1) >= 0) {
             this._token = {
-                type:   KeeperFinder.ExpressionScanner.DELIMITER,
+                type:   Seek.ExpressionScanner.DELIMITER,
                 value:  c1,
                 start:  this._index,
                 end:    this._index + 1
@@ -289,7 +289,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
             
             if (i < this._maxIndex) {
                 this._token = {
-                    type:   KeeperFinder.ExpressionScanner.STRING,
+                    type:   Seek.ExpressionScanner.STRING,
                     value:  this._text.substring(this._index + 1, i).replace(/\\'/g, "'").replace(/\\"/g, '"'),
                     start:  this._index,
                     end:    i + 1
@@ -312,7 +312,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
             }
             
             this._token = {
-                type:   KeeperFinder.ExpressionScanner.NUMBER,
+                type:   Seek.ExpressionScanner.NUMBER,
                 value:  parseFloat(this._text.substring(this._index, i)),
                 start:  this._index,
                 end:    i
@@ -329,7 +329,7 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
                 }
             }
             this._token = {
-                type:   KeeperFinder.ExpressionScanner.IDENTIFIER,
+                type:   Seek.ExpressionScanner.IDENTIFIER,
                 value:  this._text.substring(this._index, i),
                 start:  this._index,
                 end:    i
@@ -339,6 +339,6 @@ KeeperFinder.ExpressionScanner.prototype.next = function() {
     }
 };
 
-KeeperFinder.ExpressionScanner.prototype._isDigit = function(c) {
+Seek.ExpressionScanner.prototype._isDigit = function(c) {
     return "0123456789".indexOf(c) >= 0;
 };

@@ -1,5 +1,5 @@
-<!ENTITY prefwindow.title "Keeper Finder preferences">
-<!ENTITY pane1.title "Keeper Finder preferences">
+<!ENTITY prefwindow.title "Seek preferences">
+<!ENTITY pane1.title "Seek preferences">
 <!ENTITY checkboolpref.label "A Boolean Preference">
 <!ENTITY checkboolpref.accesskey "B">
 <!ENTITY intpref.label "An Integer Preference">

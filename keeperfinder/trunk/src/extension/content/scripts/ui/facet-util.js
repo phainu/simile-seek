@@ -1,31 +1,31 @@
 /*==================================================
- *  KeeperFinder.FacetUtilities
+ *  Seek.FacetUtilities
  *
  *  Utilities for facets' code.
  *==================================================
  */
-KeeperFinder.FacetUtilities = new Object();
+Seek.FacetUtilities = new Object();
 
-KeeperFinder.FacetUtilities.createFacetSplitter = function() {
+Seek.FacetUtilities.createFacetSplitter = function() {
     var splitter = document.createElement("splitter");
     splitter.setAttribute("resizeafter", "grow");
-    splitter.className = "keeperfinder-facetContainer-splitter";
+    splitter.className = "seek-facetContainer-splitter";
     return splitter;
 };
 
-KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, hasFilter) {
-    var header = document.getElementById("keeperFinder-facet-header").cloneNode(true);
+Seek.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, hasFilter) {
+    var header = document.getElementById("seek-facet-header").cloneNode(true);
     header.id = "";
     parentVbox.appendChild(header);
     header.childNodes[1].value = facetLabel;
     
     if (hasFilter) {
-        var textbox = document.getElementById("keeperfinder-facet-quickFilter").cloneNode(true);
+        var textbox = document.getElementById("seek-facet-quickFilter").cloneNode(true);
         textbox.id = "";
         parentVbox.appendChild(textbox);
     }
     
-    var valuesContainer = document.getElementById("keeperFinder-facet-valuesContainer").cloneNode(true);
+    var valuesContainer = document.getElementById("seek-facet-valuesContainer").cloneNode(true);
     valuesContainer.id = "";
     parentVbox.appendChild(valuesContainer);
     
@@ -47,7 +47,7 @@ KeeperFinder.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabe
     return r;
 };
 
-KeeperFinder.FacetUtilities.constructFacetItem = function(
+Seek.FacetUtilities.constructFacetItem = function(
     listbox,
     label, 
     value,
@@ -81,7 +81,7 @@ KeeperFinder.FacetUtilities.constructFacetItem = function(
  *======================================================================
  */
 
-KeeperFinder.FacetCache = function(database, collection, expression) {
+Seek.FacetCache = function(database, collection, expression) {
     var self = this;
     
     this._database = database;
@@ -104,7 +104,7 @@ KeeperFinder.FacetCache = function(database, collection, expression) {
     collection.addListener(this._listener);
 }
 
-KeeperFinder.FacetCache.prototype.dispose = function() {
+Seek.FacetCache.prototype.dispose = function() {
     this._collection.removeListener(this._listener);
     this._collection = null;
     this._listener = null;
@@ -114,7 +114,7 @@ KeeperFinder.FacetCache.prototype.dispose = function() {
     this._missingItems = null;
 }
 
-KeeperFinder.FacetCache.prototype.getItemsFromValues = function(values, filter) {
+Seek.FacetCache.prototype.getItemsFromValues = function(values, filter) {
     var set;
     if (this._expression.isPath()) {
         set = this._expression.getPath().walkBackward(
@@ -126,7 +126,7 @@ KeeperFinder.FacetCache.prototype.getItemsFromValues = function(values, filter) 
     } else {
         this._buildMaps();
         
-        set = new KeeperFinder.Set();
+        set = new Seek.Set();
         
         var valueToItem = this._valueToItem;
         values.visit(function(value) {
@@ -144,10 +144,10 @@ KeeperFinder.FacetCache.prototype.getItemsFromValues = function(values, filter) 
     return set;
 }
 
-KeeperFinder.FacetCache.prototype.getItemsMissingValue = function(filter, results) {
+Seek.FacetCache.prototype.getItemsMissingValue = function(filter, results) {
     this._buildMaps();
     
-    results = results || new KeeperFinder.Set();
+    results = results || new Seek.Set();
         
     var missingItems = this._missingItems;
     filter.visit(function(item) {
@@ -158,7 +158,7 @@ KeeperFinder.FacetCache.prototype.getItemsMissingValue = function(filter, result
     return results;
 }
 
-KeeperFinder.FacetCache.prototype.getValueCountsFromItems = function(items) {
+Seek.FacetCache.prototype.getValueCountsFromItems = function(items) {
     var entries = [];
     var database = this._database;
     var valueType = "text";
@@ -195,13 +195,13 @@ KeeperFinder.FacetCache.prototype.getValueCountsFromItems = function(items) {
     return { entries: entries, valueType: valueType };
 }
 
-KeeperFinder.FacetCache.prototype.getValuesFromItems = function(items) {
+Seek.FacetCache.prototype.getValuesFromItems = function(items) {
     if (this._expression.isPath()) {
         return this._expression.getPath().walkForward(items, "item", database).getSet();
     } else {
         this._buildMaps();
         
-        var set = new KeeperFinder.Set();
+        var set = new Seek.Set();
         var itemToValue = this._itemToValue;
         items.visit(function(item) {
             if (item in itemToValue) {
@@ -216,7 +216,7 @@ KeeperFinder.FacetCache.prototype.getValuesFromItems = function(items) {
     }
 }
 
-KeeperFinder.FacetCache.prototype.countItemsMissingValue = function(items) {
+Seek.FacetCache.prototype.countItemsMissingValue = function(items) {
     this._buildMaps();
     
     var count = 0;
@@ -228,7 +228,7 @@ KeeperFinder.FacetCache.prototype.countItemsMissingValue = function(items) {
     return count;
 }
 
-KeeperFinder.FacetCache.prototype._buildMaps = function() {
+Seek.FacetCache.prototype._buildMaps = function() {
     if (!("_itemToValue" in this)) {
         var itemToValue = {};
         var valueToItem = {};
@@ -271,11 +271,11 @@ KeeperFinder.FacetCache.prototype._buildMaps = function() {
  *  Static list tree view
  *======================================================================
  */
-KeeperFinder.StaticListTreeView = function() {
+Seek.StaticListTreeView = function() {
     this.wrappedJSObject = this;
 };
 
-KeeperFinder.StaticListTreeView.prototype = {
+Seek.StaticListTreeView.prototype = {
     setTree: function(treebox) {
         this.treebox = treebox;
     },

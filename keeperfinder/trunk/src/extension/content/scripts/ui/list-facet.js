@@ -1,18 +1,18 @@
 /*==================================================
- *  KeeperFinder.ListFacet
+ *  Seek.ListFacet
  *==================================================
  */
 
-KeeperFinder.ListFacet = function(name, database, collection, box, settings) {
+Seek.ListFacet = function(name, database, collection, box, settings) {
     this.name = name;
     this._database = database;
     this._collection = collection;
     this._box = box;
     this._settings = settings;
     
-    this._expression = KeeperFinder.ExpressionParser.parse(settings.expression);
+    this._expression = Seek.ExpressionParser.parse(settings.expression);
     this._selectMissing = ("selectMissing" in settings) && settings.selectMissing;
-    this._valueSet = new KeeperFinder.Set();
+    this._valueSet = new Seek.Set();
     
     if ("selection" in settings) {
         var selection = configuration.selection;
@@ -29,13 +29,13 @@ KeeperFinder.ListFacet = function(name, database, collection, box, settings) {
         this._orderMap = orderMap;
     }
     
-    this._cache = new KeeperFinder.FacetCache(database, collection, this._expression);
+    this._cache = new Seek.FacetCache(database, collection, this._expression);
     
     this._initializeUI();
     this._collection.addFacet(this);
 };
 
-KeeperFinder.ListFacet._settingSpecs = {
+Seek.ListFacet._settingSpecs = {
     "facetLabel":       { type: "text" },
     "fixedOrder":       { type: "text" },
     "filterable":       { type: "boolean", defaultValue: true },
@@ -47,7 +47,7 @@ KeeperFinder.ListFacet._settingSpecs = {
     "missingLabel":     { type: "text" }
 };
 
-KeeperFinder.ListFacet.prototype.dispose = function() {
+Seek.ListFacet.prototype.dispose = function() {
     this._cache.dispose();
     this._cache = null;
     
@@ -61,17 +61,17 @@ KeeperFinder.ListFacet.prototype.dispose = function() {
     this._settings = null;
 };
 
-KeeperFinder.ListFacet.prototype.hasRestrictions = function() {
+Seek.ListFacet.prototype.hasRestrictions = function() {
     return this._valueSet.size() > 0 || this._selectMissing;
 };
 
-KeeperFinder.ListFacet.prototype.clearAllRestrictions = function() {
+Seek.ListFacet.prototype.clearAllRestrictions = function() {
     var restrictions = { selection: [], selectMissing: false };
     if (this.hasRestrictions()) {
         this._valueSet.visit(function(v) {
             restrictions.selection.push(v);
         });
-        this._valueSet = new KeeperFinder.Set();
+        this._valueSet = new Seek.Set();
         
         restrictions.selectMissing = this._selectMissing;
         this._selectMissing = false;
@@ -81,8 +81,8 @@ KeeperFinder.ListFacet.prototype.clearAllRestrictions = function() {
     return restrictions;
 };
 
-KeeperFinder.ListFacet.prototype.applyRestrictions = function(restrictions) {
-    this._valueSet = new KeeperFinder.Set();
+Seek.ListFacet.prototype.applyRestrictions = function(restrictions) {
+    this._valueSet = new Seek.Set();
     for (var i = 0; i < restrictions.selection.length; i++) {
         this._valueSet.add(restrictions.selection[i]);
     }
@@ -91,7 +91,7 @@ KeeperFinder.ListFacet.prototype.applyRestrictions = function(restrictions) {
     this._notifyCollection();
 };
 
-KeeperFinder.ListFacet.prototype.setSelection = function(value, selected) {
+Seek.ListFacet.prototype.setSelection = function(value, selected) {
     if (selected) {
         this._valueSet.add(value);
     } else {
@@ -100,14 +100,14 @@ KeeperFinder.ListFacet.prototype.setSelection = function(value, selected) {
     this._notifyCollection();
 }
 
-KeeperFinder.ListFacet.prototype.setSelectMissing = function(selected) {
+Seek.ListFacet.prototype.setSelectMissing = function(selected) {
     if (selected != this._selectMissing) {
         this._selectMissing = selected;
         this._notifyCollection();
     }
 }
 
-KeeperFinder.ListFacet.prototype.restrict = function(items) {
+Seek.ListFacet.prototype.restrict = function(items) {
     if (this._valueSet.size() == 0 && !this._selectMissing) {
         return items;
     }
@@ -120,14 +120,14 @@ KeeperFinder.ListFacet.prototype.restrict = function(items) {
     return set;
 };
 
-KeeperFinder.ListFacet.prototype.update = function(items) {
+Seek.ListFacet.prototype.update = function(items) {
     if (!this._changingSelection) {
         this._entries = this._computeFacet(items);
         this._constructBody();
     }
 };
 
-KeeperFinder.ListFacet.prototype._computeFacet = function(items) {
+Seek.ListFacet.prototype._computeFacet = function(items) {
     var database = this._database;
     var r = this._cache.getValueCountsFromItems(items);
     var entries = r.entries;
@@ -163,12 +163,12 @@ KeeperFinder.ListFacet.prototype._computeFacet = function(items) {
     return entries;
 }
 
-KeeperFinder.ListFacet.prototype._notifyCollection = function() {
+Seek.ListFacet.prototype._notifyCollection = function() {
     this._collection.onFacetUpdated(this);
 };
 
-KeeperFinder.ListFacet.prototype._initializeUI = function() {
-    this._dom = KeeperFinder.FacetUtilities.constructFacetFrame(
+Seek.ListFacet.prototype._initializeUI = function() {
+    this._dom = Seek.FacetUtilities.constructFacetFrame(
         this._box,
         this._settings.facetLabel,
         this._settings.filterable
@@ -179,15 +179,15 @@ KeeperFinder.ListFacet.prototype._initializeUI = function() {
     this._registerEventListeners();
 };
 
-KeeperFinder.ListFacet.prototype.refresh = function() { 
+Seek.ListFacet.prototype.refresh = function() { 
     this._registerEventListeners();  
     this._constructBody();
 };
 
-KeeperFinder.ListFacet.prototype._registerEventListeners = function() {   
+Seek.ListFacet.prototype._registerEventListeners = function() {   
     var self = this;
     this._dom.reset.onmousedown = function(event) {
-        return KeeperFinder.cancelEvent(event);
+        return Seek.cancelEvent(event);
     };
     this._dom.reset.onclick = function(event) {
         if (self._settings.filterable) {
@@ -210,19 +210,19 @@ KeeperFinder.ListFacet.prototype._registerEventListeners = function() {
         };
     }
     this._dom.headerLabel.onmousedown = function(e) {
-        KeeperFinder.startDraggingFacet(e, self, self._box);
+        Seek.startDraggingFacet(e, self, self._box);
     };
     this._dom.closeButton.onclick = function(e) {
-        KeeperFinder.removeFacet(self);
+        Seek.removeFacet(self);
     };
 };
 
-KeeperFinder.ListFacet.prototype._constructBody = function() {   
+Seek.ListFacet.prototype._constructBody = function() {   
     this._constructingBody = true;
     
     var entries = this._entries;
     var tree = this._dom.valuesContainer;
-    var treeView = KeeperFinder.ListFacet._createTreeView(this, entries);
+    var treeView = Seek.ListFacet._createTreeView(this, entries);
     if (this._settings.filterable) {
         treeView.setFilter(this._dom.filterInput.value);
     }
@@ -287,7 +287,7 @@ KeeperFinder.ListFacet.prototype._constructBody = function() {
     this._constructingBody = false;
 };
 
-KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
+Seek.ListFacet.prototype._onSelectionChange = function(view) {
     var restrictions = { selection: [], selectMissing: false };
     
     var entries = view.wrappedJSObject._filteredEntries;
@@ -329,12 +329,12 @@ KeeperFinder.ListFacet.prototype._onSelectionChange = function(view) {
     this._changingSelection = false;
 };
 
-KeeperFinder.ListFacet.prototype._onFilterKeyUp = function() {
+Seek.ListFacet.prototype._onFilterKeyUp = function() {
     var text = this._dom.filterInput.value;
     this._dom.valuesContainer.treeBoxObject.view.wrappedJSObject.setFilter(text);
 };
 
-KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
+Seek.ListFacet.prototype._createSortFunction = function(valueType) {
     var sortValueFunction = function(a, b) {
         return a.selectionLabel.localeCompare(b.selectionLabel)
     };
@@ -380,8 +380,8 @@ KeeperFinder.ListFacet.prototype._createSortFunction = function(valueType) {
     return sortDirectionFunction;
 }
 
-KeeperFinder.ListFacet._createTreeView = function(facet, entries) {
-    var treeView = new KeeperFinder.StaticListTreeView();
+Seek.ListFacet._createTreeView = function(facet, entries) {
+    var treeView = new Seek.StaticListTreeView();
     treeView._entries = entries;
     treeView._filteredEntries = entries;
     treeView.rowCount = entries.length;

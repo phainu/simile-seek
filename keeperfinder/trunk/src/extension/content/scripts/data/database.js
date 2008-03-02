@@ -1,40 +1,40 @@
 /*======================================================================
- *  KeeperFinder.Database
+ *  Seek.Database
  *======================================================================
  */
 
-KeeperFinder.Database = new Object();
+Seek.Database = new Object();
 
-KeeperFinder.Database.create = function() {
-    return new KeeperFinder.Database._Impl();
+Seek.Database.create = function() {
+    return new Seek.Database._Impl();
 };
 
 /*==================================================
- *  KeeperFinder.Database._Impl
+ *  Seek.Database._Impl
  *==================================================
  */
-KeeperFinder.Database._Impl = function() {
+Seek.Database._Impl = function() {
     this._types = {};
     this._properties = {};
     this._propertyArray = {};
     
-    this._listeners = new KeeperFinder.ListenerQueue();
+    this._listeners = new Seek.ListenerQueue();
     
     this._spo = {};
     this._ops = {};
-    this._items = new KeeperFinder.Set();
+    this._items = new Seek.Set();
     
     /*
      *  Predefined types and properties
      */
      
-    var l10n = KeeperFinder.Database.l10n;
+    var l10n = Seek.Database.l10n;
     
-    var itemType = new KeeperFinder.Database._Type("Item");
-    itemType._custom = KeeperFinder.Database.l10n.itemType;
+    var itemType = new Seek.Database._Type("Item");
+    itemType._custom = Seek.Database.l10n.itemType;
     this._types["Item"] = itemType;
 
-    var labelProperty = new KeeperFinder.Database._Property("label");
+    var labelProperty = new Seek.Database._Property("label");
     labelProperty._uri                  = "http://www.w3.org/2000/01/rdf-schema#label";
     labelProperty._valueType            = "text";
     labelProperty._label                = l10n.labelProperty.label;
@@ -45,7 +45,7 @@ KeeperFinder.Database._Impl = function() {
     labelProperty._reverseGroupingLabel = l10n.labelProperty.reverseGroupingLabel;
     this._properties["label"]           = labelProperty;
     
-    var typeProperty = new KeeperFinder.Database._Property("type");
+    var typeProperty = new Seek.Database._Property("type");
     typeProperty._uri                   = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
     typeProperty._valueType             = "text";
     typeProperty._label                 = "type";
@@ -56,7 +56,7 @@ KeeperFinder.Database._Impl = function() {
     typeProperty._reverseGroupingLabel  = l10n.typeProperty.reverseGroupingLabel;
     this._properties["type"]            = typeProperty;
     
-    var uriProperty = new KeeperFinder.Database._Property("uri");
+    var uriProperty = new Seek.Database._Property("uri");
     uriProperty._uri                    = "http://simile.mit.edu/2006/11/exhibit#uri";
     uriProperty._valueType              = "url";
     uriProperty._label                  = "URI";
@@ -68,19 +68,19 @@ KeeperFinder.Database._Impl = function() {
     this._properties["uri"]             = uriProperty;
 };
 
-KeeperFinder.Database._Impl.prototype.createDatabase = function() {
-    return KeeperFinder.Database.create();
+Seek.Database._Impl.prototype.createDatabase = function() {
+    return Seek.Database.create();
 };
 
-KeeperFinder.Database._Impl.prototype.addListener = function(listener) {
+Seek.Database._Impl.prototype.addListener = function(listener) {
     this._listeners.add(listener);
 };
 
-KeeperFinder.Database._Impl.prototype.removeListener = function(listener) {
+Seek.Database._Impl.prototype.removeListener = function(listener) {
     this._listeners.remove(listener);
 };
 
-KeeperFinder.Database._Impl.prototype.loadDataLinks = function(fDone) {
+Seek.Database._Impl.prototype.loadDataLinks = function(fDone) {
     var links = [];
     var heads = document.documentElement.getElementsByTagName("head");
     for (var h = 0; h < heads.length; h++) {
@@ -96,7 +96,7 @@ KeeperFinder.Database._Impl.prototype.loadDataLinks = function(fDone) {
     this._loadLinks(links, fDone);
 };
 
-KeeperFinder.Database._Impl.prototype.loadData = function(o, baseURI) {
+Seek.Database._Impl.prototype.loadData = function(o, baseURI) {
     if (typeof baseURI == "undefined") {
         baseURI = location.href;
     }
@@ -111,7 +111,7 @@ KeeperFinder.Database._Impl.prototype.loadData = function(o, baseURI) {
     }
 };
 
-KeeperFinder.Database._Impl.prototype.loadTypes = function(typeEntries, baseURI) {
+Seek.Database._Impl.prototype.loadTypes = function(typeEntries, baseURI) {
     this._listeners.fire("onBeforeLoadingTypes", []);
     try {
         var lastChar = baseURI.substr(baseURI.length - 1)
@@ -135,7 +135,7 @@ KeeperFinder.Database._Impl.prototype.loadTypes = function(typeEntries, baseURI)
             if (typeID in this._types) {
                 type = this._types[typeID];
             } else {
-                type = new KeeperFinder.Database._Type(typeID);
+                type = new Seek.Database._Type(typeID);
                 this._types[typeID] = type;
             };
             
@@ -153,11 +153,11 @@ KeeperFinder.Database._Impl.prototype.loadTypes = function(typeEntries, baseURI)
         
         this._listeners.fire("onAfterLoadingTypes", []);
     } catch(e) {
-        KeeperFinder.exception(e);
+        Seek.exception(e);
     }
 };
 
-KeeperFinder.Database._Impl.prototype.loadProperties = function(propertyEntries, baseURI) {
+Seek.Database._Impl.prototype.loadProperties = function(propertyEntries, baseURI) {
     this._listeners.fire("onBeforeLoadingProperties", []);
     try {
         var lastChar = baseURI.substr(baseURI.length - 1)
@@ -181,7 +181,7 @@ KeeperFinder.Database._Impl.prototype.loadProperties = function(propertyEntries,
             if (propertyID in this._properties) {
                 property = this._properties[propertyID];
             } else {
-                property = new KeeperFinder.Database._Property(propertyID, this);
+                property = new Seek.Database._Property(propertyID, this);
                 this._properties[propertyID] = property;
             };
             
@@ -206,11 +206,11 @@ KeeperFinder.Database._Impl.prototype.loadProperties = function(propertyEntries,
         
         this._listeners.fire("onAfterLoadingProperties", []);
     } catch(e) {
-        KeeperFinder.exception(e);
+        Seek.exception(e);
     }
 };
 
-KeeperFinder.Database._Impl.prototype.loadItems = function(itemEntries, baseURI) {
+Seek.Database._Impl.prototype.loadItems = function(itemEntries, baseURI) {
     this._listeners.fire("onBeforeLoadingItems", []);
     try {
         var lastChar = baseURI.substr(baseURI.length - 1);
@@ -222,8 +222,8 @@ KeeperFinder.Database._Impl.prototype.loadItems = function(itemEntries, baseURI)
         
         var spo = this._spo;
         var ops = this._ops;
-        var indexPut = KeeperFinder.Database._indexPut;
-        var indexPut2 = KeeperFinder.Database._indexPut2; // subject will always be unique; so this is an optimization
+        var indexPut = Seek.Database._indexPut;
+        var indexPut2 = Seek.Database._indexPut2; // subject will always be unique; so this is an optimization
         var indexTriple = function(s, p, o) {
             indexPut(spo, s, p, o);
             indexPut2(ops, o, p, s);
@@ -240,22 +240,22 @@ KeeperFinder.Database._Impl.prototype.loadItems = function(itemEntries, baseURI)
         
         this._listeners.fire("onAfterLoadingItems", []);
     } catch(e) {
-        KeeperFinder.exception(e);
+        Seek.exception(e);
     }
 };
 
-KeeperFinder.Database._Impl.prototype.getType = function(typeID) {
+Seek.Database._Impl.prototype.getType = function(typeID) {
     return this._types[typeID];
 };
 
-KeeperFinder.Database._Impl.prototype.getProperty = function(propertyID) {
+Seek.Database._Impl.prototype.getProperty = function(propertyID) {
     return propertyID in this._properties ? this._properties[propertyID] : null;
 };
 
 /**
  * Get an array of all property names known to this database.
  */
-KeeperFinder.Database._Impl.prototype.getAllProperties = function() {
+Seek.Database._Impl.prototype.getAllProperties = function() {
     if (this._propertyArray == null) {
         this._propertyArray = [];
         for (var propertyID in this._properties) {
@@ -266,22 +266,22 @@ KeeperFinder.Database._Impl.prototype.getAllProperties = function() {
     return [].concat(this._propertyArray);
 };
 
-KeeperFinder.Database._Impl.prototype.getAllItems = function() {
-    var items = new KeeperFinder.Set();
+Seek.Database._Impl.prototype.getAllItems = function() {
+    var items = new Seek.Set();
     items.addSet(this._items);
     
     return items;
 };
 
-KeeperFinder.Database._Impl.prototype.getAllItemsCount = function() {
+Seek.Database._Impl.prototype.getAllItemsCount = function() {
     return this._items.size();
 };
 
-KeeperFinder.Database._Impl.prototype.containsItem = function(itemID) {
+Seek.Database._Impl.prototype.containsItem = function(itemID) {
     return this._items.contains(itemID);
 };
 
-KeeperFinder.Database._Impl.prototype.getNamespaces = function(idToQualifiedName, prefixToBase) {
+Seek.Database._Impl.prototype.getNamespaces = function(idToQualifiedName, prefixToBase) {
     var bases = {};
     for (var propertyID in this._properties) {
         var property = this._properties[propertyID];
@@ -328,9 +328,9 @@ KeeperFinder.Database._Impl.prototype.getNamespaces = function(idToQualifiedName
     }
 };
 
-KeeperFinder.Database._Impl.prototype._loadItem = function(itemEntry, indexFunction, baseURI) {
+Seek.Database._Impl.prototype._loadItem = function(itemEntry, indexFunction, baseURI) {
     if (!("label" in itemEntry) && !("id" in itemEntry)) {
-        KeeperFinder.warn("Item entry has no label and no id: " +
+        Seek.warn("Item entry has no label and no id: " +
                               SimileAjax.JSON.toJSONString( itemEntry ));
         return;
     }
@@ -339,7 +339,7 @@ KeeperFinder.Database._Impl.prototype._loadItem = function(itemEntry, indexFunct
     if (!("label" in itemEntry)) {
         id = itemEntry.id;
         if (!this._items.contains(id)) {
-            KeeperFinder.warn("Cannot add new item containing no label: " +
+            Seek.warn("Cannot add new item containing no label: " +
                                   SimileAjax.JSON.toJSONString( itemEntry ));
         }
     } else {
@@ -394,9 +394,9 @@ KeeperFinder.Database._Impl.prototype._loadItem = function(itemEntry, indexFunct
     }
 };
 
-KeeperFinder.Database._Impl.prototype._ensureTypeExists = function(typeID, baseURI) {
+Seek.Database._Impl.prototype._ensureTypeExists = function(typeID, baseURI) {
     if (!(typeID in this._types)) {
-        var type = new KeeperFinder.Database._Type(typeID);
+        var type = new Seek.Database._Type(typeID);
         
         type._custom["uri"] = baseURI + "type#" + encodeURIComponent(typeID);
         type._custom["label"] = typeID;
@@ -405,9 +405,9 @@ KeeperFinder.Database._Impl.prototype._ensureTypeExists = function(typeID, baseU
     }
 };
 
-KeeperFinder.Database._Impl.prototype._ensurePropertyExists = function(propertyID, baseURI) {
+Seek.Database._Impl.prototype._ensurePropertyExists = function(propertyID, baseURI) {
     if (!(propertyID in this._properties)) {
-        var property = new KeeperFinder.Database._Property(propertyID);
+        var property = new Seek.Database._Property(propertyID);
         
         property._uri = baseURI + "property#" + encodeURIComponent(propertyID);
         property._valueType = "text";
@@ -429,7 +429,7 @@ KeeperFinder.Database._Impl.prototype._ensurePropertyExists = function(propertyI
     }
 };
 
-KeeperFinder.Database._indexPut = function(index, x, y, z) {
+Seek.Database._indexPut = function(index, x, y, z) {
     var hash = index[x];
     if (!hash) {
         hash = {};
@@ -450,7 +450,7 @@ KeeperFinder.Database._indexPut = function(index, x, y, z) {
     array.push(z);
 };
 
-KeeperFinder.Database._indexPut2 = function(index, x, y, z) {
+Seek.Database._indexPut2 = function(index, x, y, z) {
     var hash = index[x];
     if (!hash) {
         hash = {};
@@ -465,7 +465,7 @@ KeeperFinder.Database._indexPut2 = function(index, x, y, z) {
     }
 };
 
-KeeperFinder.Database._indexPutList = function(index, x, y, list) {
+Seek.Database._indexPutList = function(index, x, y, list) {
     var hash = index[x];
     if (!hash) {
         hash = {};
@@ -480,7 +480,7 @@ KeeperFinder.Database._indexPutList = function(index, x, y, list) {
     }
 };
 
-KeeperFinder.Database._indexRemove = function(index, x, y, z) {
+Seek.Database._indexRemove = function(index, x, y, z) {
     var hash = index[x];
     if (!hash) {
         return false;
@@ -502,7 +502,7 @@ KeeperFinder.Database._indexRemove = function(index, x, y, z) {
     }
 };
 
-KeeperFinder.Database._indexRemoveList = function(index, x, y) {
+Seek.Database._indexRemoveList = function(index, x, y) {
     var hash = index[x];
     if (!hash) {
         return null;
@@ -517,7 +517,7 @@ KeeperFinder.Database._indexRemoveList = function(index, x, y) {
     return array;
 };
 
-KeeperFinder.Database._Impl.prototype._indexFillSet = function(index, x, y, set, filter) {
+Seek.Database._Impl.prototype._indexFillSet = function(index, x, y, set, filter) {
     var hash = index[x];
     if (hash) {
         var array = hash[y];
@@ -538,7 +538,7 @@ KeeperFinder.Database._Impl.prototype._indexFillSet = function(index, x, y, set,
     }
 };
 
-KeeperFinder.Database._Impl.prototype._indexCountDistinct = function(index, x, y, filter) {
+Seek.Database._Impl.prototype._indexCountDistinct = function(index, x, y, filter) {
     var count = 0;
     var hash = index[x];
     if (hash) {
@@ -558,17 +558,17 @@ KeeperFinder.Database._Impl.prototype._indexCountDistinct = function(index, x, y
     return count;
 };
 
-KeeperFinder.Database._Impl.prototype._get = function(index, x, y, set, filter) {
+Seek.Database._Impl.prototype._get = function(index, x, y, set, filter) {
     if (!set) {
-        set = new KeeperFinder.Set();
+        set = new Seek.Set();
     }
     this._indexFillSet(index, x, y, set, filter);
     return set;
 };
 
-KeeperFinder.Database._Impl.prototype._getUnion = function(index, xSet, y, set, filter) {
+Seek.Database._Impl.prototype._getUnion = function(index, xSet, y, set, filter) {
     if (!set) {
-        set = new KeeperFinder.Set();
+        set = new Seek.Set();
     }
     
     var database = this;
@@ -578,7 +578,7 @@ KeeperFinder.Database._Impl.prototype._getUnion = function(index, xSet, y, set, 
     return set;
 };
 
-KeeperFinder.Database._Impl.prototype._countDistinctUnion = function(index, xSet, y, filter) {
+Seek.Database._Impl.prototype._countDistinctUnion = function(index, xSet, y, filter) {
     var count = 0;
     var database = this;
     xSet.visit(function(x) {
@@ -587,11 +587,11 @@ KeeperFinder.Database._Impl.prototype._countDistinctUnion = function(index, xSet
     return count;
 };
 
-KeeperFinder.Database._Impl.prototype._countDistinct = function(index, x, y, filter) {
+Seek.Database._Impl.prototype._countDistinct = function(index, x, y, filter) {
     return this._indexCountDistinct(index, x, y, filter);
 };
 
-KeeperFinder.Database._Impl.prototype._getProperties = function(index, x) {
+Seek.Database._Impl.prototype._getProperties = function(index, x) {
     var hash = index[x];
     var properties = []
     if (hash) {
@@ -602,39 +602,39 @@ KeeperFinder.Database._Impl.prototype._getProperties = function(index, x) {
     return properties;
 };
 
-KeeperFinder.Database._Impl.prototype.getObjects = function(s, p, set, filter) {
+Seek.Database._Impl.prototype.getObjects = function(s, p, set, filter) {
     return this._get(this._spo, s, p, set, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.countDistinctObjects = function(s, p, filter) {
+Seek.Database._Impl.prototype.countDistinctObjects = function(s, p, filter) {
     return this._countDistinct(this._spo, s, p, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.getObjectsUnion = function(subjects, p, set, filter) {
+Seek.Database._Impl.prototype.getObjectsUnion = function(subjects, p, set, filter) {
     return this._getUnion(this._spo, subjects, p, set, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.countDistinctObjectsUnion = function(subjects, p, filter) {
+Seek.Database._Impl.prototype.countDistinctObjectsUnion = function(subjects, p, filter) {
     return this._countDistinctUnion(this._spo, subjects, p, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.getSubjects = function(o, p, set, filter) {
+Seek.Database._Impl.prototype.getSubjects = function(o, p, set, filter) {
     return this._get(this._ops, o, p, set, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.countDistinctSubjects = function(o, p, filter) {
+Seek.Database._Impl.prototype.countDistinctSubjects = function(o, p, filter) {
     return this._countDistinct(this._ops, o, p, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.getSubjectsUnion = function(objects, p, set, filter) {
+Seek.Database._Impl.prototype.getSubjectsUnion = function(objects, p, set, filter) {
     return this._getUnion(this._ops, objects, p, set, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.countDistinctSubjectsUnion = function(objects, p, filter) {
+Seek.Database._Impl.prototype.countDistinctSubjectsUnion = function(objects, p, filter) {
     return this._countDistinctUnion(this._ops, objects, p, filter);
 };
 
-KeeperFinder.Database._Impl.prototype.getObject = function(s, p) {
+Seek.Database._Impl.prototype.getObject = function(s, p) {
     var hash = this._spo[s];
     if (hash) {
         var array = hash[p];
@@ -645,7 +645,7 @@ KeeperFinder.Database._Impl.prototype.getObject = function(s, p) {
     return null;
 };
 
-KeeperFinder.Database._Impl.prototype.getSubject = function(o, p) {
+Seek.Database._Impl.prototype.getSubject = function(o, p) {
     var hash = this._ops[o];
     if (hash) {
         var array = hash[p];
@@ -656,15 +656,15 @@ KeeperFinder.Database._Impl.prototype.getSubject = function(o, p) {
     return null;
 };
 
-KeeperFinder.Database._Impl.prototype.getForwardProperties = function(s) {
+Seek.Database._Impl.prototype.getForwardProperties = function(s) {
     return this._getProperties(this._spo, s);
 };
 
-KeeperFinder.Database._Impl.prototype.getBackwardProperties = function(o) {
+Seek.Database._Impl.prototype.getBackwardProperties = function(o) {
     return this._getProperties(this._ops, o);
 };
 
-KeeperFinder.Database._Impl.prototype.getSubjectsInRange = function(p, min, max, inclusive, set, filter) {
+Seek.Database._Impl.prototype.getSubjectsInRange = function(p, min, max, inclusive, set, filter) {
     var property = this.getProperty(p);
     if (property != null) {
         var rangeIndex = property.getRangeIndex();
@@ -672,29 +672,29 @@ KeeperFinder.Database._Impl.prototype.getSubjectsInRange = function(p, min, max,
             return rangeIndex.getSubjectsInRange(min, max, inclusive, set, filter);
         }
     }
-    return (!set) ? new KeeperFinder.Set() : set;
+    return (!set) ? new Seek.Set() : set;
 };
 
-KeeperFinder.Database._Impl.prototype.getTypeIDs = function(set) {
+Seek.Database._Impl.prototype.getTypeIDs = function(set) {
     return this.getObjectsUnion(set, "type", null, null);
 };
 
-KeeperFinder.Database._Impl.prototype.addStatement = function(s, p, o) {
-    var indexPut = KeeperFinder.Database._indexPut;
+Seek.Database._Impl.prototype.addStatement = function(s, p, o) {
+    var indexPut = Seek.Database._indexPut;
     indexPut(this._spo, s, p, o);
     indexPut(this._ops, o, p, s);
 };
 
-KeeperFinder.Database._Impl.prototype.removeStatement = function(s, p, o) {
-    var indexRemove = KeeperFinder.Database._indexRemove;
+Seek.Database._Impl.prototype.removeStatement = function(s, p, o) {
+    var indexRemove = Seek.Database._indexRemove;
     var removedObject = indexRemove(this._spo, s, p, o);
     var removedSubject = indexRemove(this._ops, o, p, s);
     return removedObject || removedSubject;
 };
 
-KeeperFinder.Database._Impl.prototype.removeObjects = function(s, p) {
-    var indexRemove = KeeperFinder.Database._indexRemove;
-    var indexRemoveList = KeeperFinder.Database._indexRemoveList;
+Seek.Database._Impl.prototype.removeObjects = function(s, p) {
+    var indexRemove = Seek.Database._indexRemove;
+    var indexRemoveList = Seek.Database._indexRemoveList;
     var objects = indexRemoveList(this._spo, s, p);
     if (objects == null) {
         return false;
@@ -706,7 +706,7 @@ KeeperFinder.Database._Impl.prototype.removeObjects = function(s, p) {
     }
 };
 
-KeeperFinder.Database._Impl.prototype.removeItem = function(itemID) {
+Seek.Database._Impl.prototype.removeItem = function(itemID) {
     var properties = this._spo[itemID];
     if (properties) {
         for (var p in properties) {
@@ -715,9 +715,9 @@ KeeperFinder.Database._Impl.prototype.removeItem = function(itemID) {
     }
 };
 
-KeeperFinder.Database._Impl.prototype.removeSubjects = function(o, p) {
-    var indexRemove = KeeperFinder.Database._indexRemove;
-    var indexRemoveList = KeeperFinder.Database._indexRemoveList;
+Seek.Database._Impl.prototype.removeSubjects = function(o, p) {
+    var indexRemove = Seek.Database._indexRemove;
+    var indexRemoveList = Seek.Database._indexRemoveList;
     var subjects = indexRemoveList(this._ops, o, p);
     if (subjects == null) {
         return false;
@@ -729,12 +729,12 @@ KeeperFinder.Database._Impl.prototype.removeSubjects = function(o, p) {
     }
 };
 
-KeeperFinder.Database._Impl.prototype.removeAllStatements = function() {
+Seek.Database._Impl.prototype.removeAllStatements = function() {
     this._listeners.fire("onBeforeRemovingAllStatements", []);
     try {
         this._spo = {};
         this._ops = {};
-        this._items = new KeeperFinder.Set();
+        this._items = new Seek.Set();
     
         for (var propertyID in this._properties) {
             this._properties[propertyID]._onNewData();
@@ -743,20 +743,20 @@ KeeperFinder.Database._Impl.prototype.removeAllStatements = function() {
         
         this._listeners.fire("onAfterRemovingAllStatements", []);
     } catch(e) {
-        KeeperFinder.exception(e);
+        Seek.exception(e);
     }
 };
 
 /*==================================================
- *  KeeperFinder.Database._Type
+ *  Seek.Database._Type
  *==================================================
  */
-KeeperFinder.Database._Type = function(id) {
+Seek.Database._Type = function(id) {
     this._id = id;
     this._custom = {};
 };
 
-KeeperFinder.Database._Type.prototype = {
+Seek.Database._Type.prototype = {
     getID:          function()  { return this._id; },
     getURI:         function()  { return this._custom["uri"]; },
     getLabel:       function()  { return this._custom["label"]; },
@@ -765,16 +765,16 @@ KeeperFinder.Database._Type.prototype = {
 };
 
 /*==================================================
- *  KeeperFinder.Database._Property
+ *  Seek.Database._Property
  *==================================================
  */
-KeeperFinder.Database._Property = function(id, database) {
+Seek.Database._Property = function(id, database) {
     this._id = id;
     this._database = database;
     this._rangeIndex = null;
 };
 
-KeeperFinder.Database._Property.prototype = {
+Seek.Database._Property.prototype = {
     getID:          function() { return this._id; },
     getURI:         function() { return this._uri; },
     getValueType:   function() { return this._valueType; },
@@ -788,18 +788,18 @@ KeeperFinder.Database._Property.prototype = {
     getOrigin:              function() { return this._origin; }
 };
 
-KeeperFinder.Database._Property.prototype._onNewData = function() {
+Seek.Database._Property.prototype._onNewData = function() {
     this._rangeIndex = null;
 };
 
-KeeperFinder.Database._Property.prototype.getRangeIndex = function() {
+Seek.Database._Property.prototype.getRangeIndex = function() {
     if (this._rangeIndex == null) {
         this._buildRangeIndex();
     }
     return this._rangeIndex;
 };
 
-KeeperFinder.Database._Property.prototype._buildRangeIndex = function() {
+Seek.Database._Property.prototype._buildRangeIndex = function() {
     var getter;
     var database = this._database;
     var p = this._id;
@@ -833,17 +833,17 @@ KeeperFinder.Database._Property.prototype._buildRangeIndex = function() {
         getter = function(item, f) {};
     }
     
-    this._rangeIndex = new KeeperFinder.Database._RangeIndex(
+    this._rangeIndex = new Seek.Database._RangeIndex(
         this._database.getAllItems(),
         getter
     );
 };
 
 /*==================================================
- *  KeeperFinder.Database._RangeIndex
+ *  Seek.Database._RangeIndex
  *==================================================
  */
-KeeperFinder.Database._RangeIndex = function(items, getter) {
+Seek.Database._RangeIndex = function(items, getter) {
     pairs = [];
     items.visit(function(item) {
         getter(item, function(value) {
@@ -859,23 +859,23 @@ KeeperFinder.Database._RangeIndex = function(items, getter) {
     this._pairs = pairs;
 };
 
-KeeperFinder.Database._RangeIndex.prototype.getCount = function() {
+Seek.Database._RangeIndex.prototype.getCount = function() {
     return this._pairs.count();
 };
 
-KeeperFinder.Database._RangeIndex.prototype.getMin = function() {
+Seek.Database._RangeIndex.prototype.getMin = function() {
     return this._pairs.length > 0 ? 
         this._pairs[0].value : 
         Number.POSITIVE_INFINITY;
 };
 
-KeeperFinder.Database._RangeIndex.prototype.getMax = function() {
+Seek.Database._RangeIndex.prototype.getMax = function() {
     return this._pairs.length > 0 ? 
         this._pairs[this._pairs.length - 1].value : 
         Number.NEGATIVE_INFINITY;
 };
 
-KeeperFinder.Database._RangeIndex.prototype.getRange = function(visitor, min, max, inclusive) {
+Seek.Database._RangeIndex.prototype.getRange = function(visitor, min, max, inclusive) {
     var startIndex = this._indexOf(min);
     var pairs = this._pairs;
     var l = pairs.length;
@@ -892,9 +892,9 @@ KeeperFinder.Database._RangeIndex.prototype.getRange = function(visitor, min, ma
     }
 };
 
-KeeperFinder.Database._RangeIndex.prototype.getSubjectsInRange = function(min, max, inclusive, set, filter) {
+Seek.Database._RangeIndex.prototype.getSubjectsInRange = function(min, max, inclusive, set, filter) {
     if (!set) {
-        set = new KeeperFinder.Set();
+        set = new Seek.Set();
     }
     
     var f = (filter != null) ?
@@ -912,7 +912,7 @@ KeeperFinder.Database._RangeIndex.prototype.getSubjectsInRange = function(min, m
     return set;
 };
 
-KeeperFinder.Database._RangeIndex.prototype.countRange = function(min, max, inclusive) {
+Seek.Database._RangeIndex.prototype.countRange = function(min, max, inclusive) {
     var startIndex = this._indexOf(min);
     var endIndex = this._indexOf(max);
     
@@ -930,7 +930,7 @@ KeeperFinder.Database._RangeIndex.prototype.countRange = function(min, max, incl
     return endIndex - startIndex;
 };
 
-KeeperFinder.Database._RangeIndex.prototype._indexOf = function(v) {
+Seek.Database._RangeIndex.prototype._indexOf = function(v) {
     var pairs = this._pairs;
     if (pairs.length == 0 || pairs[0].value >= v) {
         return 0;

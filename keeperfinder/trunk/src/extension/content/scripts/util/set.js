@@ -1,9 +1,9 @@
 /*==================================================
- *  KeeperFinder.Set
+ *  Seek.Set
  *==================================================
  */
  
-KeeperFinder.Set = function(a) {
+Seek.Set = function(a) {
     this._hash = {};
     this._count = 0;
     
@@ -11,12 +11,12 @@ KeeperFinder.Set = function(a) {
         for (var i = 0; i < a.length; i++) {
             this.add(a[i]);
         }
-    } else if (a instanceof KeeperFinder.Set) {
+    } else if (a instanceof Seek.Set) {
         this.addSet(a);
     }
 }
 
-KeeperFinder.Set.prototype.add = function(o) {
+Seek.Set.prototype.add = function(o) {
     if (!(o in this._hash)) {
         this._hash[o] = true;
         this._count++;
@@ -25,13 +25,13 @@ KeeperFinder.Set.prototype.add = function(o) {
     return false;
 }
 
-KeeperFinder.Set.prototype.addSet = function(set) {
+Seek.Set.prototype.addSet = function(set) {
     for (var o in set._hash) {
         this.add(o);
     }
 }
 
-KeeperFinder.Set.prototype.remove = function(o) {
+Seek.Set.prototype.remove = function(o) {
     if (o in this._hash) {
         delete this._hash[o];
         this._count--;
@@ -40,13 +40,13 @@ KeeperFinder.Set.prototype.remove = function(o) {
     return false;
 }
 
-KeeperFinder.Set.prototype.removeSet = function(set) {
+Seek.Set.prototype.removeSet = function(set) {
     for (var o in set._hash) {
         this.remove(o);
     }
 }
 
-KeeperFinder.Set.prototype.retainSet = function(set) {
+Seek.Set.prototype.retainSet = function(set) {
     for (var o in this._hash) {
         if (!set.contains(o)) {
             delete this._hash[o];
@@ -55,15 +55,15 @@ KeeperFinder.Set.prototype.retainSet = function(set) {
     }
 }
 
-KeeperFinder.Set.prototype.contains = function(o) {
+Seek.Set.prototype.contains = function(o) {
     return (o in this._hash);
 }
 
-KeeperFinder.Set.prototype.size = function() {
+Seek.Set.prototype.size = function() {
     return this._count;
 }
 
-KeeperFinder.Set.prototype.toArray = function() {
+Seek.Set.prototype.toArray = function() {
     var a = [];
     for (var o in this._hash) {
         a.push(o);
@@ -71,7 +71,7 @@ KeeperFinder.Set.prototype.toArray = function() {
     return a;
 }
 
-KeeperFinder.Set.prototype.visit = function(f) {
+Seek.Set.prototype.visit = function(f) {
     for (var o in this._hash) {
         if (f(o) == true) {
             break;
@@ -79,8 +79,8 @@ KeeperFinder.Set.prototype.visit = function(f) {
     }
 }
 
-KeeperFinder.Set.createIntersection = function(set1, set2, result) {
-    var set = (result) ? result : new KeeperFinder.Set();
+Seek.Set.createIntersection = function(set1, set2, result) {
+    var set = (result) ? result : new Seek.Set();
     var setA, setB;
     if (set1.size() < set2.size()) {
         setA = set1;

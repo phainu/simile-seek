@@ -1,6 +1,6 @@
-KeeperFinder.FacetConfigurations = {};
+Seek.FacetConfigurations = {};
 
-KeeperFinder.FacetConfigurations.possibleFacets = {
+Seek.FacetConfigurations.possibleFacets = {
     "recency" : {
         showInitially: true,
         config: {
@@ -100,46 +100,46 @@ KeeperFinder.FacetConfigurations.possibleFacets = {
     }
 };
 
-KeeperFinder.FacetConfigurations._constructListFacet = function(database, collection, box, name) {
-    return new KeeperFinder.ListFacet(
+Seek.FacetConfigurations._constructListFacet = function(database, collection, box, name) {
+    return new Seek.ListFacet(
         name,
         database, 
         collection, 
         box, 
-        KeeperFinder.FacetConfigurations.possibleFacets[name].config
+        Seek.FacetConfigurations.possibleFacets[name].config
     );
 };
 
-KeeperFinder.FacetConfigurations["to/cc"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc");
+Seek.FacetConfigurations["to/cc"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc");
 };
 
-KeeperFinder.FacetConfigurations["to/cc domain"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc domain");
+Seek.FacetConfigurations["to/cc domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc domain");
 };
 
-KeeperFinder.FacetConfigurations["to/cc me"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "to/cc me");
+Seek.FacetConfigurations["to/cc me"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc me");
 };
 
-KeeperFinder.FacetConfigurations["from"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "from");
+Seek.FacetConfigurations["from"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "from");
 };
 
-KeeperFinder.FacetConfigurations["from domain"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "from domain");
+Seek.FacetConfigurations["from domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "from domain");
 };
 
-KeeperFinder.FacetConfigurations["tag"] = function(database, collection, box) {
-    return KeeperFinder.FacetConfigurations._constructListFacet(database, collection, box, "tag");
+Seek.FacetConfigurations["tag"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "tag");
 };
 
-KeeperFinder.FacetConfigurations["recency"] = function(database, collection, box) {
-    return new KeeperFinder.RecencyFacet(
+Seek.FacetConfigurations["recency"] = function(database, collection, box) {
+    return new Seek.RecencyFacet(
         "recency",
         database, 
         collection, 
         box, 
-        KeeperFinder.FacetConfigurations.possibleFacets["recency"].config
+        Seek.FacetConfigurations.possibleFacets["recency"].config
     );
 };

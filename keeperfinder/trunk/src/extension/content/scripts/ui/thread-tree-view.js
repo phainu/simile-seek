@@ -2,7 +2,7 @@
  *  Thread Tree View
  *======================================================================
  */
-KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, settings) {
+Seek.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, settings) {
     this.wrappedJSObject = this;
     
     this.dbView = dbView;
@@ -38,7 +38,7 @@ KeeperFinder.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, setti
         getService(Components.interfaces.nsIScriptableDateFormat);
 };
 
-KeeperFinder.ThreadTreeView._priorityLabels = [
+Seek.ThreadTreeView._priorityLabels = [
     "", //"notset",
     "", //"none",
     "Lowest",
@@ -48,7 +48,7 @@ KeeperFinder.ThreadTreeView._priorityLabels = [
     "Highest"
 ];
 
-KeeperFinder.ThreadTreeView.prototype = {
+Seek.ThreadTreeView.prototype = {
     QueryInterface: function(iid) {
         if (iid.equals(Components.interfaces.nsIMsgDBView) ||
             iid.equals(Components.interfaces.nsITreeView) ||
@@ -150,7 +150,7 @@ KeeperFinder.ThreadTreeView.prototype = {
     performActionOnCell :  function(action, row, col) {}
 };
 
-KeeperFinder.ThreadTreeView.prototype.setSelection = function(selection) {
+Seek.ThreadTreeView.prototype.setSelection = function(selection) {
     selection.clearSelection();
     
     this.selection = selection;
@@ -158,7 +158,7 @@ KeeperFinder.ThreadTreeView.prototype.setSelection = function(selection) {
     gCurrentFolderUri = null;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getMessageHeader = function(msgKey) {
+Seek.ThreadTreeView.prototype.getMessageHeader = function(msgKey) {
     try {
         return this.msgFolder.GetMessageHeader(msgKey);
     } catch (e) {
@@ -166,19 +166,19 @@ KeeperFinder.ThreadTreeView.prototype.getMessageHeader = function(msgKey) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype.getRecordForRow = function(row) {
+Seek.ThreadTreeView.prototype.getRecordForRow = function(row) {
     return this._flattenedRecords[row];
 };
 
-KeeperFinder.ThreadTreeView.prototype.getMsgKeyForRow = function(row) {
+Seek.ThreadTreeView.prototype.getMsgKeyForRow = function(row) {
     return this.getRecordForRow(row).msgKey;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getMsgHdrForRow = function(row) {
+Seek.ThreadTreeView.prototype.getMsgHdrForRow = function(row) {
     return this.getMessageHeader(this.getRecordForRow(row).msgKey);
 };
 
-KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
+Seek.ThreadTreeView.prototype.selectionChanged = function() {
     if (this.selection.count == 1) {
         var row = this.selection.currentIndex;
         var msgKey = this.getMsgKeyForRow(row);
@@ -207,11 +207,11 @@ KeeperFinder.ThreadTreeView.prototype.selectionChanged = function() {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype.getLevel = function(row) {
+Seek.ThreadTreeView.prototype.getLevel = function(row) {
     return this.getRecordForRow(row).level;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getParentIndex = function(row) {
+Seek.ThreadTreeView.prototype.getParentIndex = function(row) {
     var level = this.getRecordForRow(row).level;
     if (level == 0) {
         return -1;
@@ -224,19 +224,19 @@ KeeperFinder.ThreadTreeView.prototype.getParentIndex = function(row) {
     return parentRow;
 };
 
-KeeperFinder.ThreadTreeView.prototype.isContainer = function(row) {
+Seek.ThreadTreeView.prototype.isContainer = function(row) {
     return this.getRecordForRow(row).hasChildren;
 };
 
-KeeperFinder.ThreadTreeView.prototype.isContainerOpen = function(row) {
+Seek.ThreadTreeView.prototype.isContainerOpen = function(row) {
     return this.getRecordForRow(row).opened;
 };
 
-KeeperFinder.ThreadTreeView.prototype.isContainerEmpty = function(row) {
+Seek.ThreadTreeView.prototype.isContainerEmpty = function(row) {
     return this.getRecordForRow(row).children.length == 0;
 };
 
-KeeperFinder.ThreadTreeView.prototype.hasNextSibling = function(row, after) {
+Seek.ThreadTreeView.prototype.hasNextSibling = function(row, after) {
     var level = this.getLevel(row);
     for (var r = after + 1; r < this._flattenedRecords.length; r++) {
         var level2 = this.getLevel(r);
@@ -249,7 +249,7 @@ KeeperFinder.ThreadTreeView.prototype.hasNextSibling = function(row, after) {
     return false;
 };
 
-KeeperFinder.ThreadTreeView.prototype.toggleOpenState = function(row) {
+Seek.ThreadTreeView.prototype.toggleOpenState = function(row) {
     if (this.isContainerEmpty(row))
         return;
         
@@ -303,7 +303,7 @@ KeeperFinder.ThreadTreeView.prototype.toggleOpenState = function(row) {
     this.treebox.endUpdateBatch();
 };
 
-KeeperFinder.ThreadTreeView.prototype.cycleCell = function(row, col) {
+Seek.ThreadTreeView.prototype.cycleCell = function(row, col) {
     switch (col.id) {
     case "unreadCol":
     case "unreadButtonColHeader":
@@ -322,7 +322,7 @@ KeeperFinder.ThreadTreeView.prototype.cycleCell = function(row, col) {
         
     case "junkStatusCol":
         this._applyCommandToIndices(
-            (KeeperFinder.ThreadTreeView.getJunkScore(this.getMsgHdrForRow(row)) < 50) ?
+            (Seek.ThreadTreeView.getJunkScore(this.getMsgHdrForRow(row)) < 50) ?
                 Components.interfaces.nsMsgViewCommandType.junkMessages :
                 Components.interfaces.nsMsgViewCommandType.unjunkMessages, 
             [ row ]
@@ -334,7 +334,7 @@ KeeperFinder.ThreadTreeView.prototype.cycleCell = function(row, col) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._initialize = function() {
+Seek.ThreadTreeView.prototype._initialize = function() {
     var self = this;
     var sorter = this._createSorter();
     
@@ -367,7 +367,7 @@ KeeperFinder.ThreadTreeView.prototype._initialize = function() {
     this._reroot();
 };
 
-KeeperFinder.ThreadTreeView.prototype._reroot = function() {
+Seek.ThreadTreeView.prototype._reroot = function() {
     if (this._settings.showThreads) {
         this._expandAll();
     } else {
@@ -386,14 +386,14 @@ KeeperFinder.ThreadTreeView.prototype._reroot = function() {
     }, 0); 
 };
 
-KeeperFinder.ThreadTreeView.prototype._expandAll = function() {
+Seek.ThreadTreeView.prototype._expandAll = function() {
     var flattenedRecords = this._flattenedRecords = [];
     for (var i = 0; i < this._rootRecords.length; i++) {
-        KeeperFinder.ThreadTreeView._expandRootRecord(this._rootRecords[i], flattenedRecords);
+        Seek.ThreadTreeView._expandRootRecord(this._rootRecords[i], flattenedRecords);
     }
 }
 
-KeeperFinder.ThreadTreeView._expandRootRecord = function(rootRecord, into) {
+Seek.ThreadTreeView._expandRootRecord = function(rootRecord, into) {
     var pushRecordAndChildren = function(record) {
         into.push(record);
         
@@ -410,7 +410,7 @@ KeeperFinder.ThreadTreeView._expandRootRecord = function(rootRecord, into) {
     rootRecord.expandedDescendantCount = into.length - c - 1;
 }
 
-KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey, isMatch) {
+Seek.ThreadTreeView.prototype._makeRecord = function(msgKey, isMatch) {
     if (msgKey in this._msgKeyToRecord) {
         return this._msgKeyToRecord[msgKey];
     }
@@ -428,7 +428,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecord = function(msgKey, isMatch) {
     return record;
 };
 
-KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads, isMatch) {
+Seek.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThreads, isMatch) {
     if (msgKey in this._msgKeyToRecord) {
         this._msgKeyToRecord[msgKey].isMatch = true;
         return null; // processed message already
@@ -450,7 +450,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRootRecord = function(msgKey, showThr
     return rootRecord;
 };
 
-KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, msgThread, level) {
+Seek.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, msgThread, level) {
     var msgKey = msgHdr.messageKey;
     var record = {
         msgKey:         msgKey,
@@ -468,7 +468,7 @@ KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, 
         try {
             var childThread = child.QueryInterface(Components.interfaces.nsIMsgThread);
             if (childThread != null) {
-                KeeperFinder.log("child thread " + childThread);
+                Seek.log("child thread " + childThread);
                 continue;
             }
         } catch (e) {
@@ -489,18 +489,18 @@ KeeperFinder.ThreadTreeView.prototype._makeRecordAndChildren = function(msgHdr, 
     return record;
 };
 
-KeeperFinder.ThreadTreeView.prototype._getMsgThread = function(msgHdr) {
+Seek.ThreadTreeView.prototype._getMsgThread = function(msgHdr) {
     return this.msgDatabase.GetThreadContainingMsgHdr(msgHdr);
 };
 
-KeeperFinder.ThreadTreeView.prototype.onNewMatch = function(msgKey) {
+Seek.ThreadTreeView.prototype.onNewMatch = function(msgKey) {
     var rootRecord = this._makeRootRecord(msgKey, this._settings.showThreads, true);
     if (rootRecord != null) {
         this._insertRootRecord(rootRecord);
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
+Seek.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
     var msgKey = msgHdr.messageKey;
     
     // existing message
@@ -526,7 +526,7 @@ KeeperFinder.ThreadTreeView.prototype.onHdrChange = function(msgHdr) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._updateExistingRecord = function(record) {
+Seek.ThreadTreeView.prototype._updateExistingRecord = function(record) {
     var first = this.treebox.getFirstVisibleRow();
     var last = this.treebox.getLastVisibleRow();
     for (var i = first; i <= last; i++) {
@@ -537,7 +537,7 @@ KeeperFinder.ThreadTreeView.prototype._updateExistingRecord = function(record) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._insertRecordIntoExistingThread = function(newRecord, msgHdr, msgThread) {
+Seek.ThreadTreeView.prototype._insertRecordIntoExistingThread = function(newRecord, msgHdr, msgThread) {
     var rootRecord = this._processedThreadKeys[msgThread.threadKey];
     var rootRecordRow = this._rootRecordToRow(rootRecord);
     var row = rootRecordRow;
@@ -589,12 +589,12 @@ KeeperFinder.ThreadTreeView.prototype._insertRecordIntoExistingThread = function
     f(rootRecord, true);
 };
 
-KeeperFinder.ThreadTreeView.prototype._insertRootRecord = function(rootRecord) {
+Seek.ThreadTreeView.prototype._insertRootRecord = function(rootRecord) {
     var sorter = this._createSorter()
     sorter.prepare(rootRecord);
     
     var rowToInsert = [];
-    KeeperFinder.ThreadTreeView._expandRootRecord(rootRecord, rowToInsert);
+    Seek.ThreadTreeView._expandRootRecord(rootRecord, rowToInsert);
     
     var insert = 0;
     var flattenedRecords = this._flattenedRecords;
@@ -617,7 +617,7 @@ KeeperFinder.ThreadTreeView.prototype._insertRootRecord = function(rootRecord) {
     this.treebox.endUpdateBatch();
 };
 
-KeeperFinder.ThreadTreeView.prototype._collapseAll = function(rootRecord) {
+Seek.ThreadTreeView.prototype._collapseAll = function(rootRecord) {
     var collapse = function(r) {
         if (r.hasChildren) {
             r.opened = false;
@@ -631,7 +631,7 @@ KeeperFinder.ThreadTreeView.prototype._collapseAll = function(rootRecord) {
     rootRecord.expandedDescendantCount = 0;
 };
 
-KeeperFinder.ThreadTreeView.prototype._rootRecordToRow = function(rootRecord) {
+Seek.ThreadTreeView.prototype._rootRecordToRow = function(rootRecord) {
     if (this._settings.showThreads) {
         var records = this._flattenedRecords;
         for (var r = 0; r < records.length; ) {

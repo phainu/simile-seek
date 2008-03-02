@@ -1,24 +1,24 @@
-var KeeperFinderVisualizeWindow = {
+var SeekVisualizeWindow = {
 };
 
-KeeperFinderVisualizeWindow.log = function(msg) {
+SeekVisualizeWindow.log = function(msg) {
     Components.classes["@mozilla.org/consoleservice;1"]
         .getService(Components.interfaces.nsIConsoleService)
             .logStringMessage(msg);
 };
 
-KeeperFinderVisualizeWindow.onLoad = function() {
+SeekVisualizeWindow.onLoad = function() {
     window.parameters = {
         database: window.arguments[1].database
     };
 };
 
-KeeperFinderVisualizeWindow.browse = function() {
-    var browser = KeeperFinderVisualizeWindow._getBrowser();
-    var url = document.getElementById("keeperFinder-visualizeWindow-url").value;
+SeekVisualizeWindow.browse = function() {
+    var browser = SeekVisualizeWindow._getBrowser();
+    var url = document.getElementById("seek-visualizeWindow-url").value;
     browser.loadURI(url);
 }
 
-KeeperFinderVisualizeWindow._getBrowser = function() {
-    return document.getElementById("keeperFinder-visualizeWindow-browser");
+SeekVisualizeWindow._getBrowser = function() {
+    return document.getElementById("seek-visualizeWindow-browser");
 };

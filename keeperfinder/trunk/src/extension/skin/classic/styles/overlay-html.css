@@ -4,12 +4,12 @@ a {
     cursor: pointer;
 }
 
-div.keeperfinder-facet-quickFilter {
+div.seek-facet-quickFilter {
     padding:    2px;
     margin:     2px 0px;
     background: white;
 }
-.keeperfinder-facet-quickFilter input {
+.seek-facet-quickFilter input {
     border:     none;
     font-size:  8pt;
     width:      100%;

@@ -3,18 +3,18 @@
  *======================================================================
  */
 
-KeeperFinder.ThreadTreeView.prototype.addColumnHandler = function(column, msgCustomColumnHandler) {
+Seek.ThreadTreeView.prototype.addColumnHandler = function(column, msgCustomColumnHandler) {
 };
 
-KeeperFinder.ThreadTreeView.prototype.cloneDBView = function(messengerInstance, msgWindow, commandUpdater) {
+Seek.ThreadTreeView.prototype.cloneDBView = function(messengerInstance, msgWindow, commandUpdater) {
     return null;
 };
 
-KeeperFinder.ThreadTreeView.prototype.close = function() {
+Seek.ThreadTreeView.prototype.close = function() {
     this.dbView.close();
 };
 
-KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
+Seek.ThreadTreeView.prototype.doCommand = function(command) {
     var nsMsgViewCommandType = Components.interfaces.nsMsgViewCommandType;
     
     switch (command) {
@@ -120,48 +120,48 @@ KeeperFinder.ThreadTreeView.prototype.doCommand = function(command) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype.doCommandWithFolder = function(command, msgFolder) {
+Seek.ThreadTreeView.prototype.doCommandWithFolder = function(command, msgFolder) {
     alert(command);
 };
 
-KeeperFinder.ThreadTreeView.prototype.ExpandAndSelectThreadByIndex = function(index, augment) {
+Seek.ThreadTreeView.prototype.ExpandAndSelectThreadByIndex = function(index, augment) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.findIndexFromKey = function(msgKey, expand) {
+Seek.ThreadTreeView.prototype.findIndexFromKey = function(msgKey, expand) {
     return -1;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getColumnHandler = function(column) {
+Seek.ThreadTreeView.prototype.getColumnHandler = function(column) {
     return null;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getCommandStatus = function(command, selectable, selected) {
+Seek.ThreadTreeView.prototype.getCommandStatus = function(command, selectable, selected) {
     // TODO: there are other cases
     var hasSelection = this.selection.count > 0;
     selectable.value = hasSelection;
     selected.value = false;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getFolderForViewIndex = function(index) {
+Seek.ThreadTreeView.prototype.getFolderForViewIndex = function(index) {
     return this.msgFolder;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getIndicesForSelection = function(indices, count) {
+Seek.ThreadTreeView.prototype.getIndicesForSelection = function(indices, count) {
     var a = this._getSelectedIndices();
     indices.value = a;
     count.value = a.length;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getKeyAt = function(index) {
+Seek.ThreadTreeView.prototype.getKeyAt = function(index) {
     return this.getMsgKeyForRow(index);
 };
 
-KeeperFinder.ThreadTreeView.prototype.getURIForViewIndex = function(index) {
+Seek.ThreadTreeView.prototype.getURIForViewIndex = function(index) {
     return this.msgFolder.generateMessageURI(this.getMsgKeyForRow(index));
 };
 
-KeeperFinder.ThreadTreeView.prototype.getURIsForSelection = function(uris, count) {
+Seek.ThreadTreeView.prototype.getURIsForSelection = function(uris, count) {
     var a = this._getSelectedIndices();
     for (var i = 0; i < a.length; i++) {
         a[i] = this.getURIForViewIndex(a[i]);
@@ -170,59 +170,59 @@ KeeperFinder.ThreadTreeView.prototype.getURIsForSelection = function(uris, count
     count.value = a.length;
 };
 
-KeeperFinder.ThreadTreeView.prototype.init = function(messengerInstance, msgWindow, commandUpdater) {
+Seek.ThreadTreeView.prototype.init = function(messengerInstance, msgWindow, commandUpdater) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.loadMessageByMsgKey = function(msgKey) {
+Seek.ThreadTreeView.prototype.loadMessageByMsgKey = function(msgKey) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.loadMessageByUrl = function(url) {
+Seek.ThreadTreeView.prototype.loadMessageByUrl = function(url) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.loadMessageByViewIndex = function(index) {
+Seek.ThreadTreeView.prototype.loadMessageByViewIndex = function(index) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.navigateStatus = function(motion) {
+Seek.ThreadTreeView.prototype.navigateStatus = function(motion) {
     return true;
 };
 
-KeeperFinder.ThreadTreeView.prototype.onDeleteCompleted = function(succeeded) {
+Seek.ThreadTreeView.prototype.onDeleteCompleted = function(succeeded) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.open = function(msgFolder, sortType, sortOrder, viewFlags, count) {
+Seek.ThreadTreeView.prototype.open = function(msgFolder, sortType, sortOrder, viewFlags, count) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.openWithHdrs = function(headers, sortType, sortOrder, viewFlags, count) {
+Seek.ThreadTreeView.prototype.openWithHdrs = function(headers, sortType, sortOrder, viewFlags, count) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.reloadMessage = function() {
+Seek.ThreadTreeView.prototype.reloadMessage = function() {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.reloadMessageWithAllParts = function() {
+Seek.ThreadTreeView.prototype.reloadMessageWithAllParts = function() {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.removeColumnHandler = function(column) {
+Seek.ThreadTreeView.prototype.removeColumnHandler = function(column) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.selectFolderMsgByKey = function(msgFolder, msgKey) {
+Seek.ThreadTreeView.prototype.selectFolderMsgByKey = function(msgFolder, msgKey) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.selectMsgByKey = function(msgKey) {
+Seek.ThreadTreeView.prototype.selectMsgByKey = function(msgKey) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype.sort = function(sortType, sortOrder) {
+Seek.ThreadTreeView.prototype.sort = function(sortType, sortOrder) {
     var sorter = null; 
     
     if (sortType != this.sortType) {
@@ -249,11 +249,11 @@ KeeperFinder.ThreadTreeView.prototype.sort = function(sortType, sortOrder) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype.viewNavigate = function(motion, resultId, resultIndex, threadIndex, wrap) {
+Seek.ThreadTreeView.prototype.viewNavigate = function(motion, resultId, resultIndex, threadIndex, wrap) {
     
 };
 
-KeeperFinder.ThreadTreeView.prototype._getSelectedIndices = function() {
+Seek.ThreadTreeView.prototype._getSelectedIndices = function() {
     var rangeCount = this.selection.getRangeCount();
     var indices = [];
     var start = {};
@@ -267,7 +267,7 @@ KeeperFinder.ThreadTreeView.prototype._getSelectedIndices = function() {
     return indices;
 };
 
-KeeperFinder.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices) {
+Seek.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices) {
     if (indices.length == 0) {
         return;
     }
@@ -392,7 +392,7 @@ KeeperFinder.ThreadTreeView.prototype._applyCommandToIndices = function(command,
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indices, deleteStorage) {
+Seek.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indices, deleteStorage) {
     /*
     var headers = Components.classes["@mozilla.org/supports-array;1"].
         createInstance(Components.interfaces.nsISupportsArray);
@@ -405,7 +405,7 @@ KeeperFinder.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indi
     alert("Not implemented yet");
 };
 
-KeeperFinder.ThreadTreeView.prototype._noteChange = function(firstLineChanged, numChanged, changeType) {
+Seek.ThreadTreeView.prototype._noteChange = function(firstLineChanged, numChanged, changeType) {
     if (!this._suppressChangeNotification) {
         switch (changeType) {
         case Components.interfaces.nsMsgViewNotificationCode.changed:
@@ -423,10 +423,10 @@ KeeperFinder.ThreadTreeView.prototype._noteChange = function(firstLineChanged, n
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._noteStartChange = function(firstLineChanged, numChanged, changeType) {
+Seek.ThreadTreeView.prototype._noteStartChange = function(firstLineChanged, numChanged, changeType) {
 };
 
-KeeperFinder.ThreadTreeView.prototype._noteEndChange = function(firstLineChanged, numChanged, changeType) {
+Seek.ThreadTreeView.prototype._noteEndChange = function(firstLineChanged, numChanged, changeType) {
     this._noteChange(firstLineChanged, numChanged, changeType);
 };
 

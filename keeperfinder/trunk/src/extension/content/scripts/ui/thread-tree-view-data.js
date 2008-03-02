@@ -1,4 +1,4 @@
-KeeperFinder.ThreadTreeView.prototype.getCellText = function(row, column) {
+Seek.ThreadTreeView.prototype.getCellText = function(row, column) {
     var columnId = column.id;
     var msgKey = this.getMsgKeyForRow(row);
     if (columnId == "idCol") {
@@ -49,16 +49,16 @@ KeeperFinder.ThreadTreeView.prototype.getCellText = function(row, column) {
         //return .toLocaleString();
         
     case "tagsCol" :
-        return KeeperFinder.Indexer.getTagLabels(msgHdr);
+        return Seek.Indexer.getTagLabels(msgHdr);
         
     case "sizeCol" :
         return Math.ceil(msgHdr.messageSize / 1024) + "KB";
         
     case "statusCol" :
-        return KeeperFinder.ThreadTreeView._getStatusString(msgHdr);
+        return Seek.ThreadTreeView._getStatusString(msgHdr);
         
     case "priorityCol" :
-        return KeeperFinder.ThreadTreeView._priorityLabels[msgHdr.priority];
+        return Seek.ThreadTreeView._priorityLabels[msgHdr.priority];
     /*
     case "threadCol" :
     case "attachmentCol" :
@@ -74,14 +74,14 @@ KeeperFinder.ThreadTreeView.prototype.getCellText = function(row, column) {
     return null;
 };
 
-KeeperFinder.ThreadTreeView.prototype.getRowProperties = function(row, props) {
+Seek.ThreadTreeView.prototype.getRowProperties = function(row, props) {
     var msgKey = this.getMsgKeyForRow(row);
     var msgHdr = this.getMessageHeader(msgKey);
     
     this._getTagProperties(msgHdr, props, false);
 };
 
-KeeperFinder.ThreadTreeView.prototype.getCellProperties = function(row, col, props) {
+Seek.ThreadTreeView.prototype.getCellProperties = function(row, col, props) {
     var columnId = col.id;
     var msgKey = this.getMsgKeyForRow(row);
     var msgHdr = this.getMessageHeader(msgKey);
@@ -103,7 +103,7 @@ KeeperFinder.ThreadTreeView.prototype.getCellProperties = function(row, col, pro
     }
 };
 
-KeeperFinder.ThreadTreeView._getStatusString = function(msgHdr) {
+Seek.ThreadTreeView._getStatusString = function(msgHdr) {
     var flags = msgHdr.flags;
     
     // Constants are in mailnews/base/public/nsMsgMessageFlags.h
@@ -120,7 +120,7 @@ KeeperFinder.ThreadTreeView._getStatusString = function(msgHdr) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
+Seek.ThreadTreeView.prototype._createSorter = function() {
     var self = this;
     
     var sortColumnId = this._settings.sortColumnId;
@@ -161,7 +161,7 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
         
     case nsMsgViewSortType.byTags:
         sortKeyGetter = function(record) {
-            return KeeperFinder.Indexer.getTags(self.getMessageHeader(record.msgKey)).join(" ");
+            return Seek.Indexer.getTags(self.getMessageHeader(record.msgKey)).join(" ");
         };
         break;
         
@@ -174,7 +174,7 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
         
     case nsMsgViewSortType.byStatus:
         sortKeyGetter = function(record) {
-            return KeeperFinder.ThreadTreeView._getStatusString(self.getMessageHeader(record.msgKey));
+            return Seek.ThreadTreeView._getStatusString(self.getMessageHeader(record.msgKey));
         };
         break;
         
@@ -208,7 +208,7 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
         
     case nsMsgViewSortType.byJunkStatus:
         sortKeyGetter = function(record) {
-            return KeeperFinder.ThreadTreeView.getJunkScore(self.getMessageHeader(record.msgKey));
+            return Seek.ThreadTreeView.getJunkScore(self.getMessageHeader(record.msgKey));
         };
         sortType = "number";
         break;
@@ -248,12 +248,12 @@ KeeperFinder.ThreadTreeView.prototype._createSorter = function() {
     };
 };
 
-KeeperFinder.ThreadTreeView.prototype._getTagProperties = function(msgHdr, props, addSelectedTextProperty) {
+Seek.ThreadTreeView.prototype._getTagProperties = function(msgHdr, props, addSelectedTextProperty) {
     /*
      *  The logic in this function is adapted from thunderbird's source code,
      *  mailnews/base/src/nsMsgDBView.cpp function AppendKeywordProperties.
      */
-    var keys = KeeperFinder.Indexer.getTags(msgHdr);
+    var keys = Seek.Indexer.getTags(msgHdr);
     if (keys.length > 0) {
         keys = keys.join(" ");
         
@@ -276,7 +276,7 @@ KeeperFinder.ThreadTreeView.prototype._getTagProperties = function(msgHdr, props
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._getFlagProperties = function(msgHdr, props, columnId, viewThreads) {
+Seek.ThreadTreeView.prototype._getFlagProperties = function(msgHdr, props, columnId, viewThreads) {
     var flags = msgHdr.flags;
     if (flags & 0x0001) { // read
         props.AppendElement(this._atomService.getAtom("read"));
@@ -314,7 +314,7 @@ KeeperFinder.ThreadTreeView.prototype._getFlagProperties = function(msgHdr, prop
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._getPriorityProperties = function(msgHdr, props) {
+Seek.ThreadTreeView.prototype._getPriorityProperties = function(msgHdr, props) {
     var a = [
         "", //"priority-notset",
         "", //"priority-none",
@@ -331,7 +331,7 @@ KeeperFinder.ThreadTreeView.prototype._getPriorityProperties = function(msgHdr, 
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
+Seek.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
     var addresses = {};
     var fullNames = {};
     var names = {};
@@ -345,7 +345,7 @@ KeeperFinder.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
     return names.value;
 };
 
-KeeperFinder.ThreadTreeView.prototype._setReadByIndex = function(index, read) {
+Seek.ThreadTreeView.prototype._setReadByIndex = function(index, read) {
     if (read) {
         this._orExtraFlag(index, 0x0001); // MSG_FLAG_READ
         this._andExtraFlag(index, ~0x10000); // MSG_FLAG_NEW
@@ -365,13 +365,13 @@ KeeperFinder.ThreadTreeView.prototype._setReadByIndex = function(index, read) {
     }
 };
 
-KeeperFinder.ThreadTreeView.prototype._toggleReadByIndex = function(index) {
+Seek.ThreadTreeView.prototype._toggleReadByIndex = function(index) {
     var msgKey = this.getMsgKeyForRow(index);
     var msgHdr = this.getMessageHeader(msgKey);
     this._setReadByIndex(index, !(msgHdr.flags & 0x0001)); // MSG_FLAG_READ
 };
 
-KeeperFinder.ThreadTreeView.prototype._setFlaggedByIndex = function(index, mark) {
+Seek.ThreadTreeView.prototype._setFlaggedByIndex = function(index, mark) {
     if (mark) {
         this._orExtraFlag(index, 0x0004); // MSG_FLAG_MARKED
     } else {
@@ -384,7 +384,7 @@ KeeperFinder.ThreadTreeView.prototype._setFlaggedByIndex = function(index, mark)
     this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
 };
 
-KeeperFinder.ThreadTreeView.prototype._orExtraFlag = function(index, flag) {
+Seek.ThreadTreeView.prototype._orExtraFlag = function(index, flag) {
     var msgKey = this.getMsgKeyForRow(index);
     var msgHdr = this.getMessageHeader(msgKey);
     var flags = msgHdr.flags | flag;
@@ -393,7 +393,7 @@ KeeperFinder.ThreadTreeView.prototype._orExtraFlag = function(index, flag) {
     this._onExtraFlagChanged(index, flags);
 };
 
-KeeperFinder.ThreadTreeView.prototype._andExtraFlag = function(index, flag) {
+Seek.ThreadTreeView.prototype._andExtraFlag = function(index, flag) {
     var msgKey = this.getMsgKeyForRow(index);
     var msgHdr = this.getMessageHeader(msgKey);
     var flags = msgHdr.flags & flag;
@@ -402,11 +402,11 @@ KeeperFinder.ThreadTreeView.prototype._andExtraFlag = function(index, flag) {
     this._onExtraFlagChanged(index, flags);
 };
 
-KeeperFinder.ThreadTreeView.prototype._onExtraFlagChanged = function(index, flags) {
+Seek.ThreadTreeView.prototype._onExtraFlagChanged = function(index, flags) {
     // not sure what to do here; presumably there's work to do if we're showing threads
 };
 
-KeeperFinder.ThreadTreeView.getJunkScore = function(msgHdr) {
+Seek.ThreadTreeView.getJunkScore = function(msgHdr) {
     var s = msgHdr.getStringProperty("junkscore");
     var junkScore = 0;
     if (s != null && s.length > 0) {

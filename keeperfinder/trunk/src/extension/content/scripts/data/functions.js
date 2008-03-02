@@ -1,12 +1,12 @@
 /*==================================================
- *  KeeperFinder.Functions
+ *  Seek.Functions
  *==================================================
  */
-KeeperFinder.Functions = {};
+Seek.Functions = {};
 
-KeeperFinder.Functions["union"] = {
+Seek.Functions["union"] = {
     f: function(args) {
-        var set = new KeeperFinder.Set();
+        var set = new Seek.Set();
         var valueType = null;
         
         if (args.length > 0) {
@@ -21,11 +21,11 @@ KeeperFinder.Functions["union"] = {
                 }
             }
         }
-        return new KeeperFinder.Expression._Collection(set, valueType != null ? valueType : "text");
+        return new Seek.Expression._Collection(set, valueType != null ? valueType : "text");
     }
 };
 
-KeeperFinder.Functions["contains"] = {
+Seek.Functions["contains"] = {
     f: function(args) {
         var result = args[0].size > 0;
         var set = args[0].getSet();
@@ -37,29 +37,29 @@ KeeperFinder.Functions["contains"] = {
             }
         });
         
-        return new KeeperFinder.Expression._Collection([ result ], "boolean");
+        return new Seek.Expression._Collection([ result ], "boolean");
     }
 };
 
-KeeperFinder.Functions["exists"] = {
+Seek.Functions["exists"] = {
     f: function(args) {
-        return new KeeperFinder.Expression._Collection([ args[0].size > 0 ], "boolean");
+        return new Seek.Expression._Collection([ args[0].size > 0 ], "boolean");
     }
 };
 
-KeeperFinder.Functions["count"] = {
+Seek.Functions["count"] = {
     f: function(args) {
-        return new KeeperFinder.Expression._Collection([ args[0].size ], "number");
+        return new Seek.Expression._Collection([ args[0].size ], "number");
     }
 };
 
-KeeperFinder.Functions["not"] = {
+Seek.Functions["not"] = {
     f: function(args) {
-        return new KeeperFinder.Expression._Collection([ !args[0].contains(true) ], "boolean");
+        return new Seek.Expression._Collection([ !args[0].contains(true) ], "boolean");
     }
 };
 
-KeeperFinder.Functions["add"] = {
+Seek.Functions["add"] = {
     f: function(args) {
         var total = 0;
         for (var i = 0; i < args.length; i++) {
@@ -77,12 +77,12 @@ KeeperFinder.Functions["add"] = {
             });
         }
         
-        return new KeeperFinder.Expression._Collection([ total ], "number");
+        return new Seek.Expression._Collection([ total ], "number");
     }
 };
 
 // Note: arguments expanding to multiple items get concatenated in random order
-KeeperFinder.Functions["concat"] = {
+Seek.Functions["concat"] = {
     f: function(args) {
         var result = [];
         for (var i = 0; i < args.length; i++) {
@@ -93,11 +93,11 @@ KeeperFinder.Functions["concat"] = {
             });
         }
 
-        return new KeeperFinder.Expression._Collection([ result.join('') ], "text");
+        return new Seek.Expression._Collection([ result.join('') ], "text");
     }
 };
 
-KeeperFinder.Functions["multiply"] = {
+Seek.Functions["multiply"] = {
     f: function(args) {
         var product = 1;
         for (var i = 0; i < args.length; i++) {
@@ -115,11 +115,11 @@ KeeperFinder.Functions["multiply"] = {
             });
         }
         
-        return new KeeperFinder.Expression._Collection([ product ], "number");
+        return new Seek.Expression._Collection([ product ], "number");
     }
 };
 
-KeeperFinder.Functions["date-range"] = {
+Seek.Functions["date-range"] = {
     _parseDate: function (v) {
         if (v == null) {
             return Number.NEGATIVE_INFINITY;
@@ -174,11 +174,11 @@ KeeperFinder.Functions["date-range"] = {
         });
             
         var range = this._computeRange(from, to, interval);
-        return new KeeperFinder.Expression._Collection(range != null ? [ range ] : [], "number");
+        return new Seek.Expression._Collection(range != null ? [ range ] : [], "number");
     }
 };
 
-KeeperFinder.Functions["distance"] = {
+Seek.Functions["distance"] = {
     _units: {
         km:         1e3,
         mile:       1609.344
@@ -190,7 +190,7 @@ KeeperFinder.Functions["distance"] = {
             if (this._units.hasOwnProperty(unit)) {
                 range = range / this._units[unit];
             }
-            return KeeperFinder.Util.round(range, roundTo);
+            return Seek.Util.round(range, roundTo);
         }
         return null;
     },
@@ -207,11 +207,11 @@ KeeperFinder.Functions["distance"] = {
         var to = new GLatLng( data.lat, data.lng );
         
         var range = this._computeDistance(from, to, data.unit, data.round);
-        return new KeeperFinder.Expression._Collection(range != null ? [ range ] : [], "number");
+        return new Seek.Expression._Collection(range != null ? [ range ] : [], "number");
     }
 };
 
-KeeperFinder.Functions["min"] = {
+Seek.Functions["min"] = {
     f: function(args) {
         var returnMe = function (val) { return val; };
         var min = Number.POSITIVE_INFINITY;
@@ -220,7 +220,7 @@ KeeperFinder.Functions["min"] = {
         for (var i = 0; i < args.length; i++) {
             var arg = args[i];
             var currentValueType = arg.valueType ? arg.valueType : 'text';
-            var parser = KeeperFinder.SettingsUtilities._typeToParser(currentValueType);
+            var parser = Seek.SettingsUtilities._typeToParser(currentValueType);
                 
             arg.forEachValue(function(v) {
                 parsedV = parser(v, returnMe);
@@ -232,11 +232,11 @@ KeeperFinder.Functions["min"] = {
             });
         }
         
-        return new KeeperFinder.Expression._Collection([ min ], valueType != null ? valueType : "text");
+        return new Seek.Expression._Collection([ min ], valueType != null ? valueType : "text");
     }
 };
 
-KeeperFinder.Functions["max"] = {
+Seek.Functions["max"] = {
     f: function(args) {
         var returnMe = function (val) { return val; };
         var max = Number.NEGATIVE_INFINITY;
@@ -245,7 +245,7 @@ KeeperFinder.Functions["max"] = {
         for (var i = 0; i < args.length; i++) {
             var arg = args[i];
             var currentValueType = arg.valueType ? arg.valueType : 'text';
-            var parser = KeeperFinder.SettingsUtilities._typeToParser(currentValueType);
+            var parser = Seek.SettingsUtilities._typeToParser(currentValueType);
             
             arg.forEachValue(function(v) {
                 parsedV = parser(v, returnMe);
@@ -256,11 +256,11 @@ KeeperFinder.Functions["max"] = {
                }
             });
         }
-        return new KeeperFinder.Expression._Collection([ max ],  valueType != null ? valueType : "text");
+        return new Seek.Expression._Collection([ max ],  valueType != null ? valueType : "text");
     }
 };
 
-KeeperFinder.Functions["remove"] = {
+Seek.Functions["remove"] = {
     f: function(args) {
         var set = args[0].getSet();
         var valueType = args[0].valueType;
@@ -270,12 +270,12 @@ KeeperFinder.Functions["remove"] = {
                 set.removeSet(arg.getSet());
             }
         }
-        return new KeeperFinder.Expression._Collection(set, valueType);
+        return new Seek.Expression._Collection(set, valueType);
     }
 };
 
-KeeperFinder.Functions["now"] = {
+Seek.Functions["now"] = {
     f: function(args) {
-        return new KeeperFinder.Expression._Collection([ new Date() ], "date");
+        return new Seek.Expression._Collection([ new Date() ], "date");
     }
 };

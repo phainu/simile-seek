@@ -1,20 +1,20 @@
-KeeperFinder._draggingFacet = {
+Seek._draggingFacet = {
     dragging: false
 };
 
-KeeperFinder.startDraggingFacet = function(event, facet, box) {
-    KeeperFinder._calculateFacetOffsets(box);
+Seek.startDraggingFacet = function(event, facet, box) {
+    Seek._calculateFacetOffsets(box);
     
-    KeeperFinder._draggingFacet.facet = facet;
-    KeeperFinder._draggingFacet.box = box;
-    KeeperFinder._draggingFacet.mouseDownX = event.screenX - box.boxObject.screenX;
-    KeeperFinder._draggingFacet.mouseDownY = event.screenY - box.boxObject.screenY;
+    Seek._draggingFacet.facet = facet;
+    Seek._draggingFacet.box = box;
+    Seek._draggingFacet.mouseDownX = event.screenX - box.boxObject.screenX;
+    Seek._draggingFacet.mouseDownY = event.screenY - box.boxObject.screenY;
     
     var facetWidth = box.boxObject.width;
     var facetHeight = box.boxObject.height;
-    KeeperFinder._draggingFacet.facetWidth = facetWidth;
+    Seek._draggingFacet.facetWidth = facetWidth;
     
-    var facetContainer = KeeperFinder._getFacetContainer();
+    var facetContainer = Seek._getFacetContainer();
     var scrollBoxObject = facetContainer.boxObject.QueryInterface(Components.interfaces.nsIScrollBoxObject);
     var x = {}; var y = {};
     scrollBoxObject.getPosition(x, y);
@@ -33,146 +33,146 @@ KeeperFinder.startDraggingFacet = function(event, facet, box) {
     
     box.style.width = "100%";
     box.style.height = "100%";
-    KeeperFinder._draggingFacet.outerBox = outerBox;
+    Seek._draggingFacet.outerBox = outerBox;
     
     document.getElementById("messengerWindow").appendChild(outerBox);
     
     facet.refresh();
     
-    KeeperFinder._positionDraggedFacet(event);
+    Seek._positionDraggedFacet(event);
     
-    KeeperFinder._insertDropTarget();
+    Seek._insertDropTarget();
     scrollBoxObject.scrollTo(x.value, y.value);
     
-    KeeperFinder._draggingFacet.dragging = true;
+    Seek._draggingFacet.dragging = true;
 }
 
-KeeperFinder.onWindowMouseMove = function(event) {
-    if (KeeperFinder._draggingFacet.dragging) {
-        KeeperFinder._positionDraggedFacet(event);
+Seek.onWindowMouseMove = function(event) {
+    if (Seek._draggingFacet.dragging) {
+        Seek._positionDraggedFacet(event);
         
-        var newTargetIndex = KeeperFinder._hittestFacet(event);
-        if (newTargetIndex != KeeperFinder._draggingFacet.targetIndex) {
-            var facetContainer = KeeperFinder._getFacetContainer();
+        var newTargetIndex = Seek._hittestFacet(event);
+        if (newTargetIndex != Seek._draggingFacet.targetIndex) {
+            var facetContainer = Seek._getFacetContainer();
             var scrollBoxObject = facetContainer.boxObject.QueryInterface(Components.interfaces.nsIScrollBoxObject);
             var x = {}; var y = {};
             scrollBoxObject.getPosition(x, y);
             
-            KeeperFinder._removeDropTarget();
+            Seek._removeDropTarget();
             
-            KeeperFinder._draggingFacet.targetIndex = newTargetIndex;
+            Seek._draggingFacet.targetIndex = newTargetIndex;
                 
-            KeeperFinder._insertDropTarget();
+            Seek._insertDropTarget();
             
             scrollBoxObject.scrollTo(x.value, y.value);
         }
     }
 }
 
-KeeperFinder.onWindowMouseUp = function(event) {
-    if (KeeperFinder._draggingFacet.dragging) {
-        KeeperFinder._draggingFacet.dragging = false;
+Seek.onWindowMouseUp = function(event) {
+    if (Seek._draggingFacet.dragging) {
+        Seek._draggingFacet.dragging = false;
         
-        var newTargetIndex = KeeperFinder._hittestFacet(event);
+        var newTargetIndex = Seek._hittestFacet(event);
         
-        KeeperFinder._removeDropTarget();
+        Seek._removeDropTarget();
         
-        document.getElementById("messengerWindow").removeChild(KeeperFinder._draggingFacet.outerBox);
-        KeeperFinder._draggingFacet.outerBox.removeChild(KeeperFinder._draggingFacet.box);
-        KeeperFinder._draggingFacet.outerBox = null;
+        document.getElementById("messengerWindow").removeChild(Seek._draggingFacet.outerBox);
+        Seek._draggingFacet.outerBox.removeChild(Seek._draggingFacet.box);
+        Seek._draggingFacet.outerBox = null;
         
-        var facetContainer = KeeperFinder._getFacetContainer();
+        var facetContainer = Seek._getFacetContainer();
         var insertIndex = 
-            (newTargetIndex > KeeperFinder._draggingFacet.sourceIndex) ?
+            (newTargetIndex > Seek._draggingFacet.sourceIndex) ?
                 (newTargetIndex - 1) :
                 newTargetIndex;
                 
         var before = facetContainer.childNodes[insertIndex * 2];
-        facetContainer.insertBefore(KeeperFinder._draggingFacet.box, before);
-        facetContainer.insertBefore(KeeperFinder.FacetUtilities.createFacetSplitter(), before);
-        KeeperFinder._draggingFacet.box.style.width = KeeperFinder._draggingFacet.facetWidth + "px";
-        KeeperFinder._draggingFacet.box = null;
+        facetContainer.insertBefore(Seek._draggingFacet.box, before);
+        facetContainer.insertBefore(Seek.FacetUtilities.createFacetSplitter(), before);
+        Seek._draggingFacet.box.style.width = Seek._draggingFacet.facetWidth + "px";
+        Seek._draggingFacet.box = null;
         
-        if (KeeperFinder._draggingFacet.sourceIndex != newTargetIndex) {
-            KeeperFinder._facets.splice(KeeperFinder._draggingFacet.sourceIndex, 1);
-            KeeperFinder._facets.splice(insertIndex, 0, KeeperFinder._draggingFacet.facet);
-            KeeperFinder._saveSettings();
+        if (Seek._draggingFacet.sourceIndex != newTargetIndex) {
+            Seek._facets.splice(Seek._draggingFacet.sourceIndex, 1);
+            Seek._facets.splice(insertIndex, 0, Seek._draggingFacet.facet);
+            Seek._saveSettings();
         }
         
-        KeeperFinder._draggingFacet.facet.refresh();
-        KeeperFinder._draggingFacet.facet = null;
+        Seek._draggingFacet.facet.refresh();
+        Seek._draggingFacet.facet = null;
     }
 }
 
-KeeperFinder._insertDropTarget = function() {
-    var facetContainer = KeeperFinder._getFacetContainer();
+Seek._insertDropTarget = function() {
+    var facetContainer = Seek._getFacetContainer();
     var insertIndex = 
-        (KeeperFinder._draggingFacet.targetIndex > KeeperFinder._draggingFacet.sourceIndex) ?
-            (KeeperFinder._draggingFacet.targetIndex - 1) :
-            KeeperFinder._draggingFacet.targetIndex;
+        (Seek._draggingFacet.targetIndex > Seek._draggingFacet.sourceIndex) ?
+            (Seek._draggingFacet.targetIndex - 1) :
+            Seek._draggingFacet.targetIndex;
             
     var before = facetContainer.childNodes[insertIndex * 2];
     
     var dropTarget = document.createElement("box");
-    dropTarget.style.width = KeeperFinder._draggingFacet.box.boxObject.width + "px";
+    dropTarget.style.width = Seek._draggingFacet.box.boxObject.width + "px";
     dropTarget.style.background = "#ccc";
     facetContainer.insertBefore(dropTarget, before);
     
-    facetContainer.insertBefore(KeeperFinder.FacetUtilities.createFacetSplitter(), before);
+    facetContainer.insertBefore(Seek.FacetUtilities.createFacetSplitter(), before);
 }
 
-KeeperFinder._removeDropTarget = function() {
-    var facetContainer = KeeperFinder._getFacetContainer();
+Seek._removeDropTarget = function() {
+    var facetContainer = Seek._getFacetContainer();
     var index = 
-        (KeeperFinder._draggingFacet.targetIndex > KeeperFinder._draggingFacet.sourceIndex) ?
-            (KeeperFinder._draggingFacet.targetIndex - 1) :
-            KeeperFinder._draggingFacet.targetIndex;
+        (Seek._draggingFacet.targetIndex > Seek._draggingFacet.sourceIndex) ?
+            (Seek._draggingFacet.targetIndex - 1) :
+            Seek._draggingFacet.targetIndex;
             
     var dropTarget = facetContainer.childNodes[index * 2];
     facetContainer.removeChild(dropTarget.nextSibling);
     facetContainer.removeChild(dropTarget);
 }
 
-KeeperFinder._calculateFacetOffsets = function(box) {
+Seek._calculateFacetOffsets = function(box) {
     var widths = [];
-    var facetContainer = KeeperFinder._getFacetContainer();
+    var facetContainer = Seek._getFacetContainer();
     
     for (var i = 0; i < facetContainer.childNodes.length - 1; i += 2) {
         var childNode = facetContainer.childNodes[i];
         widths.push(childNode.boxObject.width);
         if (childNode == box) {
-            KeeperFinder._draggingFacet.sourceIndex = 
-                KeeperFinder._draggingFacet.targetIndex = 
+            Seek._draggingFacet.sourceIndex = 
+                Seek._draggingFacet.targetIndex = 
                     (i / 2);
         }
     }
     
-    KeeperFinder._draggingFacet.widths = widths;
-    KeeperFinder._draggingFacet.resizerWidth = 
+    Seek._draggingFacet.widths = widths;
+    Seek._draggingFacet.resizerWidth = 
         (facetContainer.childNodes.length > 1) ?
         facetContainer.childNodes[1].boxObject.width :
         0;
 }
 
-KeeperFinder._positionDraggedFacet = function(event) {
-    var outerBox = KeeperFinder._draggingFacet.outerBox;
-    var x = event.clientX - KeeperFinder._draggingFacet.mouseDownX;
-    var y = event.clientY - KeeperFinder._draggingFacet.mouseDownY;
+Seek._positionDraggedFacet = function(event) {
+    var outerBox = Seek._draggingFacet.outerBox;
+    var x = event.clientX - Seek._draggingFacet.mouseDownX;
+    var y = event.clientY - Seek._draggingFacet.mouseDownY;
     
     outerBox.style.left = x + "px";
     outerBox.style.top = y + "px";
 }
 
-KeeperFinder._hittestFacet = function(event) {
-    var facetContainer = KeeperFinder._getFacetContainer();
+Seek._hittestFacet = function(event) {
+    var facetContainer = Seek._getFacetContainer();
     var firstChild = facetContainer.firstChild;
     var scrollLeft = firstChild.boxObject.screenX - facetContainer.boxObject.screenX;
-    var offset = ((event.clientX - KeeperFinder._draggingFacet.mouseDownX) - scrollLeft) - facetContainer.boxObject.x;
+    var offset = ((event.clientX - Seek._draggingFacet.mouseDownX) - scrollLeft) - facetContainer.boxObject.x;
     
     var index = 0;
-    while (index < KeeperFinder._facets.length) {
-        var width = KeeperFinder._draggingFacet.widths[index] + KeeperFinder._draggingFacet.resizerWidth;
-        if (index != KeeperFinder._draggingFacet.sourceIndex) {
+    while (index < Seek._facets.length) {
+        var width = Seek._draggingFacet.widths[index] + Seek._draggingFacet.resizerWidth;
+        if (index != Seek._draggingFacet.sourceIndex) {
             if (offset < width / 2) {
                 break;
             }

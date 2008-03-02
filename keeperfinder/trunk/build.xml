@@ -1,12 +1,12 @@
 <!--+
     |
     |           +=======================================+
-    |           |  Keeper Finder Build System  |
+    |           |           Seek Build System           |
     |           +=======================================+
     |
     +-->
 
-<project default="xpi" basedir="." name="Keeper Finder">
+<project default="xpi" basedir="." name="Seek">
 
     <target name="init">
         <!-- Set the timestamps -->

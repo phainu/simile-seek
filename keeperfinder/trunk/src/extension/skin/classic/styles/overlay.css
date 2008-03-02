@@ -4,41 +4,41 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
     color: #888888;
 }
 
-#keeperfinder-toolbar-button
+#seek-toolbar-button
 {
-  list-style-image: url("chrome://keeperfinder/skin/images/toolbar-button.png");
+  list-style-image: url("chrome://seek/skin/images/toolbar-button.png");
   -moz-image-region: rect(0px 24px 24px 0px);
 }
-#keeperfinder-toolbar-button:hover
+#seek-toolbar-button:hover
 {
   -moz-image-region: rect(24px 24px 48px  0px);
 }
-[iconsize="small"] #keeperfinder-toolbar-button
+[iconsize="small"] #seek-toolbar-button
 {
   -moz-image-region: rect( 0px 40px 16px 24px);
 }
-[iconsize="small"] #keeperfinder-toolbar-button:hover
+[iconsize="small"] #seek-toolbar-button:hover
 {
   -moz-image-region: rect(24px 40px 40px 24px);
 }
 
-#keeperFinderPane-deck {
+#seekPane-deck {
 }
-#keeperFinder-mainSplitter {
+#seek-mainSplitter {
     border-top: none;
 }
-#keeperFinderPane-browsingLayer-facetContainer {
+#seekPane-browsingLayer-facetContainer {
     padding-left: 5px;
     padding-top: 5px;
-    background: url("chrome://keeperfinder/skin/images/drop-shadow.png") right repeat-y;
+    background: url("chrome://seek/skin/images/drop-shadow.png") right repeat-y;
 }
 
-#keeperFinderPane-browsingLayer-controlPanel {
+#seekPane-browsingLayer-controlPanel {
     padding:    5px;
     background: #eee;
 }
 
-tree.keeperfinder-facet-valuesContainer {
+tree.seek-facet-valuesContainer {
     margin: 0;
     padding: 0;
     border-top-style: none;
@@ -47,52 +47,52 @@ tree.keeperfinder-facet-valuesContainer {
     border-right-style: none;
 }
 
-splitter.keeperfinder-facetContainer-splitter {
+splitter.seek-facetContainer-splitter {
     border-left: none;
     border-right: none;
 }
 
-.keeperFinder-facet-header label {
+.seek-facet-header label {
     cursor: move;
-    background: url("chrome://keeperfinder/skin/images/grip.png") center right no-repeat;
+    background: url("chrome://seek/skin/images/grip.png") center right no-repeat;
 }
 
-.keeperFinder-facet-header-closeButton {
-    background: url("chrome://keeperfinder/skin/images/cross.png") center center no-repeat;
+.seek-facet-header-closeButton {
+    background: url("chrome://seek/skin/images/cross.png") center center no-repeat;
     width:      20px;
     cursor:     pointer;
 }
-.keeperFinder-facet-header-closeButton:hover {
-    background: url("chrome://keeperfinder/skin/images/cross_over.png") center center no-repeat;
+.seek-facet-header-closeButton:hover {
+    background: url("chrome://seek/skin/images/cross_over.png") center center no-repeat;
     border: none;
 }
-.keeperFinder-facet-header-closeButton:active {
-    background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
+.seek-facet-header-closeButton:active {
+    background: url("chrome://seek/skin/images/cross_pressed.png") center center no-repeat;
 }
 
-#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove {
-    background: url("chrome://keeperfinder/skin/images/cross.png") center center no-repeat;
+#seekPane-browsingLayer-textSearch-pastEntry-remove {
+    background: url("chrome://seek/skin/images/cross.png") center center no-repeat;
     width:      16px;
     height:     16px;
     cursor:     pointer;
 }
 
-#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove:hover {
-    background: url("chrome://keeperfinder/skin/images/cross_over.png") center center no-repeat;
+#seekPane-browsingLayer-textSearch-pastEntry-remove:hover {
+    background: url("chrome://seek/skin/images/cross_over.png") center center no-repeat;
     cursor:     pointer;
 }
 
-#keeperFinderPane-browsingLayer-textSearch-pastEntry-remove:active {
-    background: url("chrome://keeperfinder/skin/images/cross_pressed.png") center center no-repeat;
+#seekPane-browsingLayer-textSearch-pastEntry-remove:active {
+    background: url("chrome://seek/skin/images/cross_pressed.png") center center no-repeat;
     cursor:     pointer;
 }
 
-.keeperFinderPane-group {
+.seekPane-group {
     background:     #ddd;
     margin-bottom:  7px;
     padding:        3px;
 }
 
-.keeperFinderPane-groupLabel {
+.seekPane-groupLabel {
     font-weight: bold;
 }

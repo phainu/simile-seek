@@ -9,9 +9,9 @@ build.sh script located in this folder.  For development
 you should do the following:
   1. Unzip the entire contents of this package to somewhere,
 	       e.g, c:\dev or /home/user/dev
-  2. Put the full path to the folder (e.g. c:\dev\keeperfinder on
-     Windows, /home/user/dev/keeperfinder on Linux) in a file named
-     keeperfinder@david.huynh and copy that file to
+  2. Put the full path to the folder (e.g. c:\dev\seek on
+     Windows, /home/user/dev/seek on Linux) in a file named
+     seek@david.huynh and copy that file to
      [your profile folder]\extensions\
   3. Restart Firefox.
 
