@@ -71,7 +71,7 @@ Seek.FacetConfigurations.possibleFacets = {
         }
     },
     "from top level domain" : {
-        showInitially: true,
+        showInitially: false,
         config: {
             facetLabel:     "From top level domain",
             expression:     ".author.tld",
@@ -85,7 +85,7 @@ Seek.FacetConfigurations.possibleFacets = {
         }
     },
     "from 2nd top level domain" : {
-        showInitially: true,
+        showInitially: false,
         config: {
             facetLabel:     "From 2nd top level domain",
             expression:     ".author.stld",
