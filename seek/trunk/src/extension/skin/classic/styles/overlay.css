@@ -50,6 +50,7 @@ label.seekPane-link {
 
 #seekPane-browsingLayer-toolContainer {
     background: url("chrome://seek/skin/images/drop-shadow.png") right repeat-y;
+    padding:    5px;
 }
 
 #seekPane-browsingLayer-controlPanel {
@@ -125,3 +126,21 @@ splitter.seek-facetContainer-splitter {
 .seekPane-groupLabel {
     font-weight: bold;
 }
+
+.seekPane-toolButton {
+    margin: 1px;
+    cursor: pointer;
+}
+.seekPane-toolButton:hover {
+}
+
+#seekPane-browsingLayer-addFacet {
+    list-style-image:   url("chrome://seek/skin/images/plus.png");
+}
+#seekPane-browsingLayer-addFacet:hover {
+    list-style-image:   url("chrome://seek/skin/images/plus_over.png");
+}
+#seekPane-browsingLayer-addFacet:active {
+    list-style-image:   url("chrome://seek/skin/images/plus_pressed.png");
+}
+

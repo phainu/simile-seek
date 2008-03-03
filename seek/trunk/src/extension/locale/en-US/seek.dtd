@@ -13,7 +13,7 @@
 <!ENTITY seek.indexingMessage "Indexing folder...">
 <!ENTITY seek.cancelIndexingButton.label "Cancel">
 
-<!ENTITY seek.addFacetButton.label "Add">
+<!ENTITY seek.addFacetButton.tooltip "Add more facets">
 
 <!ENTITY seek.contentSearch.label "Content Search">
 <!ENTITY seek.contentSearch.all "all">

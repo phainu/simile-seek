@@ -138,8 +138,9 @@
                 </scrollbox>
                 
                 <vbox id="seekPane-browsingLayer-toolContainer">
-                    <button id="seekPane-browsingLayer-addFacet"
-                        label="&seek.addFacetButton.label;" 
+                    <image id="seekPane-browsingLayer-addFacet"
+                        class="seekPane-toolButton"
+                        tooltiptext="&seek.addFacetButton.tooltip;" 
                         popup="seekPane-addFacetPopup" />
                         
                     <spacer flex="1" />
