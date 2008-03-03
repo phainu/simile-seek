@@ -70,6 +70,34 @@ Seek.FacetConfigurations.possibleFacets = {
             missingLabel:   "(No domain)"
         }
     },
+    "from top level domain" : {
+        showInitially: true,
+        config: {
+            facetLabel:     "From top level domain",
+            expression:     ".author.tld",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No top level domain)"
+        }
+    },
+    "from 2nd top level domain" : {
+        showInitially: true,
+        config: {
+            facetLabel:     "From 2nd top level domain",
+            expression:     ".author.stld",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No 2nd top level domain)"
+        }
+    },
     "to/cc" : {
         showInitially: false,
         config: {
@@ -97,6 +125,48 @@ Seek.FacetConfigurations.possibleFacets = {
             showMissing:    false,
             missingLabel:   "(No domain)"
         }
+    },
+    "to/cc top level domain" : {
+        showInitially: false,
+        config: {
+            facetLabel:     "To/CC top level domain",
+            expression:     ".recipient.tld",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No top level domain)"
+        }
+    },
+    "to/cc 2nd top level domain" : {
+        showInitially: false,
+        config: {
+            facetLabel:     "To/CC 2nd top level domain",
+            expression:     ".recipient.stld",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    false,
+            missingLabel:   "(No 2nd top level domain)"
+        }
+    },
+    "priority" : {
+        showInitially: false,
+        config: {
+            facetLabel:     "Priority",
+            expression:     ".priority",
+            filterable:     true,
+            selectMultiple: true,
+            sortable:       true,
+            sortMode:       "value",
+            sortDirection:  "forward",
+            showMissing:    true,
+            missingLabel:   "(No priority set)"
+        }
     }
 };
 
@@ -118,6 +188,14 @@ Seek.FacetConfigurations["to/cc domain"] = function(database, collection, box) {
     return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc domain");
 };
 
+Seek.FacetConfigurations["to/cc top level domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc top level domain");
+};
+
+Seek.FacetConfigurations["to/cc 2nd top level domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc 2nd top level domain");
+};
+
 Seek.FacetConfigurations["to/cc me"] = function(database, collection, box) {
     return Seek.FacetConfigurations._constructListFacet(database, collection, box, "to/cc me");
 };
@@ -130,8 +208,20 @@ Seek.FacetConfigurations["from domain"] = function(database, collection, box) {
     return Seek.FacetConfigurations._constructListFacet(database, collection, box, "from domain");
 };
 
+Seek.FacetConfigurations["from top level domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "from top level domain");
+};
+
+Seek.FacetConfigurations["from 2nd top level domain"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "from 2nd top level domain");
+};
+
 Seek.FacetConfigurations["tag"] = function(database, collection, box) {
     return Seek.FacetConfigurations._constructListFacet(database, collection, box, "tag");
+};
+
+Seek.FacetConfigurations["priority"] = function(database, collection, box) {
+    return Seek.FacetConfigurations._constructListFacet(database, collection, box, "priority");
 };
 
 Seek.FacetConfigurations["recency"] = function(database, collection, box) {

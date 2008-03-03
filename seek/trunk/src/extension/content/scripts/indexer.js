@@ -4,6 +4,15 @@ Seek.Indexer = {
     accountAddresses:   {}
 };
 
+Seek.Indexer._priorityLabels = [
+    "", //"notset",
+    "", //"none",
+    "Lowest",
+    "Low",
+    "Normal",
+    "High",
+    "Highest"
+];
 
 Seek.Indexer.startIndexingJob = function(database, msgFolder, onProgress, onDone) {
     var msgDatabase = msgFolder.getMsgDatabase(msgWindow);
@@ -58,6 +67,10 @@ Seek.Indexer.getTagLabels = function(msgHdr) {
         r[i] = this._tagKeys[r[i]];
     }
     return r;
+};
+
+Seek.Indexer.getPriority = function(msgHdr) {
+    return Seek.Indexer._priorityLabels[msgHdr.priority];
 };
 
 Seek.Indexer._retrieveAccounts = function() {
@@ -154,6 +167,11 @@ Seek.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
     Seek.Indexer._addEntityList(item, "author", msgHdr.mime2DecodedAuthor /*.author*/, entityMap);
     Seek.Indexer._addEntityList(item, "to", msgHdr.mime2DecodedRecipients /*.recipients*/, entityMap);
     Seek.Indexer._addEntityList(item, "cc", msgHdr.ccList, entityMap);
+    
+    var priority = Seek.Indexer.getPriority(msgHdr);
+    if (priority.length > 0) {
+        item.priority = priority;
+    }
     
     if ("to" in item) {
         if ("cc" in item) {

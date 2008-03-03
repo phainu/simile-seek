@@ -58,7 +58,7 @@ Seek.ThreadTreeView.prototype.getCellText = function(row, column) {
         return Seek.ThreadTreeView._getStatusString(msgHdr);
         
     case "priorityCol" :
-        return Seek.ThreadTreeView._priorityLabels[msgHdr.priority];
+        return Seek.Indexer.getPriority(msgHdr);
     /*
     case "threadCol" :
     case "attachmentCol" :

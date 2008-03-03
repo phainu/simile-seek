@@ -33,7 +33,7 @@ label.seekPane-link {
 }
 
 #seekStatusPane {
-    background:     #FFFFF0;
+    background:     #FFFFF0 url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
     padding:        3px;
     margin-bottom:  5px;
 }

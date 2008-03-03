@@ -38,16 +38,6 @@ Seek.ThreadTreeView = function(dbView, msgFolder, baseMsgKeyArray, settings) {
         getService(Components.interfaces.nsIScriptableDateFormat);
 };
 
-Seek.ThreadTreeView._priorityLabels = [
-    "", //"notset",
-    "", //"none",
-    "Lowest",
-    "Low",
-    "Normal",
-    "High",
-    "Highest"
-];
-
 Seek.ThreadTreeView.prototype = {
     QueryInterface: function(iid) {
         if (iid.equals(Components.interfaces.nsIMsgDBView) ||
