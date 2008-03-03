@@ -48,6 +48,9 @@ label.seekPane-link {
 #seekPane-startIndexingLayer {
     background: url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
 }
+#seekPane-indexingLayer {
+    background: url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
+}
 
 #seekPane-browsingLayer-facetContainer {
     padding-left: 5px;
