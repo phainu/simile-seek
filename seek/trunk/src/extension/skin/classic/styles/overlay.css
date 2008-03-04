@@ -5,9 +5,13 @@ treechildren::-moz-tree-cell-text(kf-nonmatch) {
 }
 
 label.seekPane-link {
-    color: blue;
-    text-decoration: underline;
-    cursor: pointer;
+    color:              blue;
+    text-decoration:    underline;
+    cursor:             pointer;
+}
+
+textbox.seekPane-hintedTextbox-empty {
+    color:  #aaa;
 }
 
 #seekPane-browsingLayer checkbox {

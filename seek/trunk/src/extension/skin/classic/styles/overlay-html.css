@@ -14,3 +14,7 @@ div.seek-facet-quickFilter {
     font-size:  8pt;
     width:      100%;
 }
+
+.seek-facet-quickFilter input.seekPane-hintedTextbox-empty {
+    color:  #aaa;
+}

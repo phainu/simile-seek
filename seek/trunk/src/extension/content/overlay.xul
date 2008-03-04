@@ -33,6 +33,7 @@
     <script src="scripts/util/listener-queue.js"/>
     <script src="scripts/util/string.js"/>
     <script src="scripts/util/db-change-listener.js"/>
+    <script src="scripts/util/hinted-textbox.js"/>
     
     <script src="scripts/data/expression-parser.js"/>
     <script src="scripts/data/expression.js"/>
@@ -179,6 +180,7 @@
                             <radio id="seekPane-browsingLayer-textSearch-mode-all" value="all" label="&seek.contentSearch.all;" selected="true" />
                             <radio id="seekPane-browsingLayer-textSearch-mode-any" value="any" label="&seek.contentSearch.any;" />
                             <radio id="seekPane-browsingLayer-textSearch-mode-phrase" value="phrase" label="&seek.contentSearch.phrase;" />
+                            <spacer flex="1" />
                         </radiogroup>
                         <textbox id="seekPane-browsingLayer-textSearch-input" />
                         <hbox id="seekPane-browsingLayer-textSearch-pastEntry" hidden="true">

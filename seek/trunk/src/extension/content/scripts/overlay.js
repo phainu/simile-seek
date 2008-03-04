@@ -79,6 +79,12 @@ Seek.onLoad = function() {
     
     document.getElementById("seekPane-browsingLayer-textSearch-pastEntry-remove").
         addEventListener('click', Seek.onClearContentSearch, false);
+        
+    Seek._contentSearchHintedTextbox = 
+        new Seek.HintedTextbox(
+            document.getElementById("seekPane-browsingLayer-textSearch-input"),
+            Seek.strings.getString("seek.contentSearch.hint")
+        );
 };
 window.addEventListener("load", Seek.onLoad, false);
 
@@ -290,8 +296,10 @@ Seek._onFinishIndexingJob = function() {
             }
         }
     }
+    
     Seek._rewireThreadPane();
     Seek._setCounts();
+    Seek._contentSearchHintedTextbox.setValue("");
 };
 
 Seek.appendFacet = function(name) {
@@ -547,8 +555,7 @@ Seek.createSearchSession = function() {
 
 Seek.onContentSearchInputKeyUp = function(event) {
     if (event.keyCode == 13) {
-        var contentSearchInput = document.getElementById("seekPane-browsingLayer-textSearch-input");
-        var text = contentSearchInput.value.trim();
+        var text = Seek._contentSearchHintedTextbox.getValue().trim();
         
         if (text.length == 0) {
             document.getElementById("seekPane-browsingLayer-textSearch-pastEntry").hidden = true;

@@ -42,6 +42,10 @@ Seek.FacetUtilities.constructFacetFrame = function(parentVbox, facetLabel, hasFi
     
     if (hasFilter) {
         r.filterInput = textbox.getElementsByTagName("input")[0];
+        r.filterHintedTextbox = new Seek.HintedTextbox(
+            r.filterInput,
+            Seek.strings.getString("seek.facet.filterHint")
+        );
     }
     
     return r;

@@ -180,7 +180,7 @@ Seek.ListFacet.prototype._initializeUI = function() {
 };
 
 Seek.ListFacet.prototype.refresh = function() { 
-    this._registerEventListeners();  
+    this._registerEventListeners();
     this._constructBody();
 };
 
@@ -191,22 +191,19 @@ Seek.ListFacet.prototype._registerEventListeners = function() {
     };
     this._dom.reset.onclick = function(event) {
         if (self._settings.filterable) {
-            self._dom.filterInput.value = "";
+            self._dom.filterHintedTextbox.setValue("");
         }
         self.clearAllRestrictions();
     };
     this._dom.valuesContainer.onselect = function() {
         if (!self._constructingBody) {
-            if (self._settings.filterable) {
-                self._dom.filterInput.value = "";
-            }
             self._onSelectionChange(self._dom.valuesContainer.treeBoxObject.view.wrappedJSObject);
         }
         return true;
     };
     if (this._settings.filterable) {
-        this._dom.filterInput.onkeyup = function() {
-            self._onFilterKeyUp();
+        this._dom.filterInput.onkeyup = function(event) {
+            self._onFilterKeyUp(event);
         };
     }
     this._dom.headerLabel.onmousedown = function(e) {
@@ -224,7 +221,7 @@ Seek.ListFacet.prototype._constructBody = function() {
     var tree = this._dom.valuesContainer;
     var treeView = Seek.ListFacet._createTreeView(this, entries);
     if (this._settings.filterable) {
-        treeView.setFilter(this._dom.filterInput.value);
+        treeView.setFilter(this._dom.filterHintedTextbox.getValue());
     }
     tree.treeBoxObject.view = treeView;
     
@@ -329,9 +326,19 @@ Seek.ListFacet.prototype._onSelectionChange = function(view) {
     this._changingSelection = false;
 };
 
-Seek.ListFacet.prototype._onFilterKeyUp = function() {
-    var text = this._dom.filterInput.value;
-    this._dom.valuesContainer.treeBoxObject.view.wrappedJSObject.setFilter(text);
+Seek.ListFacet.prototype._onFilterKeyUp = function(event) {
+    var tree = this._dom.valuesContainer;
+    var view = tree.treeBoxObject.view;
+    var text = this._dom.filterHintedTextbox.getValue().trim();
+    
+    if (event.keyCode == 13 && view.rowCount > 0 && text.length > 0) {
+        var selection = view.selection;
+        selection.clearSelection();
+        selection.select(0);
+        tree.focus();
+    } else {
+        view.wrappedJSObject.setFilter(text);
+    }
 };
 
 Seek.ListFacet.prototype._createSortFunction = function(valueType) {
