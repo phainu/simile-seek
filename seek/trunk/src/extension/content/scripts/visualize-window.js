@@ -11,6 +11,7 @@ SeekVisualizeWindow.onLoad = function() {
     window.parameters = {
         database: window.arguments[1].database
     };
+    SeekVisualizeWindow._getBrowser().loadURI("chrome://seek/locale/visualize-intro.html");
 };
 
 SeekVisualizeWindow.browse = function() {

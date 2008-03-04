@@ -24,8 +24,8 @@
 <!ENTITY seek.alsoInclude.wholeThreads.label "whole threads">
 <!ENTITY seek.alsoInclude.newMessages.label "new messages">
 
-<!ENTITY seek.visualizeButton.label "Visualize">
-<!ENTITY seek.visualizeButton.tooltip "Visualize email messages in novel ways">
+<!ENTITY seek.moreButton.label "More">
+<!ENTITY seek.moreButton.tooltip "More things to do with Seek">
 
 <!ENTITY seek.disengageButton.label "Disengage">
 <!ENTITY seek.disengageButton.tooltip "Disengage Seek from this folder">
@@ -33,3 +33,8 @@
 <!ENTITY seek.resetFacetLink.label "reset">
 <!ENTITY seek.closeFacetButton.tooltip "Remove this facet">
 
+<!ENTITY seek.morePopup.visualize.label "Visualize">
+<!ENTITY seek.morePopup.export.label "Export">
+<!ENTITY seek.morePopup.export.rdfxml.label "RDF/XML">
+<!ENTITY seek.morePopup.export.n3.label "N3">
+<!ENTITY seek.morePopup.export.exhibitJson.label "Exhibit/JSON">

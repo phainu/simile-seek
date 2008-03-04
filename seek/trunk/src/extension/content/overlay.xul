@@ -78,6 +78,21 @@
     
     <popupset>
         <popup id="seekPane-addFacetPopup" />
+        <popup id="seekPane-morePopup">
+            <menuitem label="&seek.morePopup.visualize.label;"
+                oncommand="Seek.visualize();" />
+                
+            <menu label="&seek.morePopup.export.label;">
+                <menupopup>
+                    <menuitem label="&seek.morePopup.export.rdfxml.label;"
+                        />
+                    <menuitem label="&seek.morePopup.export.n3.label;"
+                        />
+                    <menuitem label="&seek.morePopup.export.exhibitJson.label;"
+                        />
+                </menupopup>
+            </menu>
+        </popup>
     </popupset>
     
     <window id="messengerWindow">
@@ -184,9 +199,9 @@
                     
                     <hbox>
                         <spacer flex="1" />
-                        <label value="&seek.visualizeButton.label;" class="seekPane-link"
-                            tooltiptext="&seek.visualizeButton.tooltip;"
-                            onclick="Seek.visualize();" />
+                        <label value="&seek.moreButton.label;" class="seekPane-link"
+                            tooltiptext="&seek.moreButton.tooltip;"
+                            popup="seekPane-morePopup" />
                     </hbox>
                 </vbox>
             </hbox>
