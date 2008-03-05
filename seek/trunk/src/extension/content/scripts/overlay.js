@@ -55,6 +55,12 @@ Seek.onLoad = function() {
     Seek.initialized = true;
     Seek.strings = document.getElementById("seek-strings");
     
+    Seek.exporters = {
+        "exhibit/json" :    Seek.ExhibitJsonExporter,
+        "rdf/xml" :         Seek.RdfXmlExporter,
+        "tsv" :             Seek.TSVExporter
+    };
+    
     window.addEventListener("mousemove", Seek.onWindowMouseMove, false);
     window.addEventListener("mouseup", Seek.onWindowMouseUp, false);
     
@@ -437,7 +443,7 @@ Seek._onHdrAdded = function(hdrChanged, parentKey, flags, instigator) {
     
         var entityMap = {};
         var items = [];
-        Seek.Indexer.indexMsg(hdrChanged, Seek._database, entityMap, items);
+        Seek.Indexer.indexMsg(Seek._selectedFolder, hdrChanged, Seek._database, entityMap, items);
         Seek._database.loadItems(items, "");
         
         if (Seek._hasOurOwnTreeView()) {
@@ -587,3 +593,47 @@ Seek.visualize = function() {
         { database: Seek._database }
     );
 }
+
+Seek.exportData = function(format) {
+    var exporter = Seek.exporters[format];
+    
+    var filePicker = Components.classes["@mozilla.org/filepicker;1"].createInstance(Components.interfaces.nsIFilePicker);
+    filePicker.init(window, Seek.strings.getString("seek.export.dialogTitle"), Components.interfaces.nsIFilePicker.modeSave);
+    filePicker.appendFilter(exporter.getFileLabel(), exporter.getFileFilter());
+    filePicker.appendFilters(Components.interfaces.nsIFilePicker.filterAll);
+    
+    var r = filePicker.show();
+    if (r == Components.interfaces.nsIFilePicker.returnOK || 
+        r == Components.interfaces.nsIFilePicker.returnReplace) {
+        
+        var fileOutputStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
+            createInstance(Components.interfaces.nsIFileOutputStream);
+            
+        fileOutputStream.init(
+            filePicker.file, 
+            0x02 | 0x08 | 0x20, // write | create | truncate
+            00777,              // permissions
+            0
+        );
+        try {
+            var writer = { write: function(s) { fileOutputStream.write(s, s.length); } };
+            
+            var database = Seek._database;
+            var messages = Seek._collection.getRestrictedItems();
+            var people = new Seek.Set();
+            database.getObjectsUnion(messages, "author", people);
+            database.getObjectsUnion(messages, "recipient", people);
+            
+            if (exporter.exportPeopleSeparately) {
+                exporter.exportMany(messages, database, writer);
+                writer.write("\n\n");
+                exporter.exportMany(people, database, writer);
+            } else {
+                messages.addSet(people);
+                exporter.exportMany(messages, database, writer);
+            }
+        } finally {
+            fileOutputStream.close();
+        }
+    }
+};

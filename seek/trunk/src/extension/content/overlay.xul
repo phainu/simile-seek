@@ -32,6 +32,7 @@
     <script src="scripts/util/json.js"/>
     <script src="scripts/util/listener-queue.js"/>
     <script src="scripts/util/string.js"/>
+    <script src="scripts/util/date.js"/>
     <script src="scripts/util/db-change-listener.js"/>
     <script src="scripts/util/hinted-textbox.js"/>
     
@@ -41,6 +42,10 @@
     <script src="scripts/data/database.js"/>
     <script src="scripts/data/database-l10n.js"/>
     <script src="scripts/data/collection.js"/>
+    
+    <script src="scripts/data/exporters/exhibit-json-exporter.js"/>
+    <script src="scripts/data/exporters/tsv-exporter.js"/>
+    <script src="scripts/data/exporters/rdf-xml-exporter.js"/>
     
     <script src="scripts/ui/facet-util.js"/>
     <script src="scripts/ui/list-facet.js"/>
@@ -85,11 +90,14 @@
                 
             <menu label="&seek.morePopup.export.label;">
                 <menupopup>
-                    <menuitem label="&seek.morePopup.export.rdfxml.label;"
-                        />
-                    <menuitem label="&seek.morePopup.export.n3.label;"
-                        />
                     <menuitem label="&seek.morePopup.export.exhibitJson.label;"
+                        oncommand="Seek.exportData('exhibit/json');"
+                        />
+                    <menuitem label="&seek.morePopup.export.tsv.label;"
+                        oncommand="Seek.exportData('tsv');"
+                        />
+                    <menuitem label="&seek.morePopup.export.rdfxml.label;"
+                        oncommand="Seek.exportData('rdf/xml');"
                         />
                 </menupopup>
             </menu>

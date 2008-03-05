@@ -36,5 +36,5 @@
 <!ENTITY seek.morePopup.visualize.label "Visualize">
 <!ENTITY seek.morePopup.export.label "Export">
 <!ENTITY seek.morePopup.export.rdfxml.label "RDF/XML">
-<!ENTITY seek.morePopup.export.n3.label "N3">
+<!ENTITY seek.morePopup.export.tsv.label "Tab-Separated Values">
 <!ENTITY seek.morePopup.export.exhibitJson.label "Exhibit/JSON">

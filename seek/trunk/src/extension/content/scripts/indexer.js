@@ -22,6 +22,7 @@ Seek.Indexer.startIndexingJob = function(database, msgFolder, onProgress, onDone
     
     Seek.Indexer._indexingJob = {
         database:       database,
+        msgFolder:      msgFolder,
         msgDatabase:    msgDatabase,
         totalCount:     msgFolder.getTotalMessages(false /* not deep */),
         processedCount: 0,
@@ -116,6 +117,7 @@ Seek.Indexer._startIndexingJob = function() {
 Seek.Indexer._performIndexingJob = function() {
     var count = 0;
     var job = Seek.Indexer._indexingJob;
+    var msgFolder = job.msgFolder;
     var database = job.database;
     var entityMap = job.entityMap;
     var items = [];
@@ -124,7 +126,7 @@ Seek.Indexer._performIndexingJob = function() {
     while (e.hasMoreElements() && count < 25) {
         var o = e.getNext();
         var msgHdr = o.QueryInterface(Components.interfaces.nsIMsgDBHdr);
-        Seek.Indexer.indexMsg(msgHdr, database, entityMap, items);
+        Seek.Indexer.indexMsg(msgFolder, msgHdr, database, entityMap, items);
         
         count++;
     }
@@ -144,7 +146,7 @@ Seek.Indexer.makeMessageID = function(msgKey) {
     return "urn:message:" + msgKey;
 };
 
-Seek.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
+Seek.Indexer.indexMsg = function(msgFolder, msgHdr, database, entityMap, items) {
     var messageID = Seek.Indexer.makeMessageID(msgHdr.messageKey);
     var subject = msgHdr.mime2DecodedSubject;
     if (subject == null || subject.length == 0) {
@@ -158,6 +160,7 @@ Seek.Indexer.indexMsg = function(msgHdr, database, entityMap, items) {
         type:       "Message",
         label:      subject,
         id:         messageID,
+        uri:        msgFolder.generateMessageURI(msgHdr.messageKey),
         msgKey:     msgHdr.messageKey,
         date:       msgHdr.dateInSeconds * 1000
     };
@@ -323,9 +326,7 @@ Seek.Indexer._onFinishIndexingJob = function() {
                 entity.tld = entity.domain.substr(dot + 1);
                 
                 var secondDot = entity.domain.lastIndexOf(".", dot - 1);
-                if (secondDot > 0) {
-                    entity.stld = entity.domain.substr(secondDot + 1);
-                }
+                entity.stld = (secondDot > 0) ? entity.domain.substr(secondDot + 1) : entity.domain.substr(1);
             }
         }
         entities.push(entity);
