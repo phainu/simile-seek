@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  - Copyright (c) 2008 David Huynh
-  -
-  - Permission to use, copy, modify, and distribute this software for any
-  - purpose with or without fee is hereby granted, provided that the above
-  - copyright notice and this permission notice appear in all copies.
-  -
-  - THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  - WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  - MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  - ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  - WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  - ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  - OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-  - -->
-
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE dialog SYSTEM "chrome://seek/locale/about.dtd">
-<dialog title="&about; Seek" orient="vertical" autostretch="always" onload="sizeToContent()" buttons="accept" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-<!-- Original template by Jed Brown -->
-<groupbox align="center" orient="horizontal">
-<vbox>
-  <text value="Seek" style="font-weight: bold; font-size: x-large;"/>
-  <text value="&version; 1.0"/>
-  <separator class="thin"/>
-  <text value="&createdBy;" style="font-weight: bold;"/>
-  <text value="David Huynh"/>
-  <separator class="thin"/>
-      <text value="&homepage;" style="font-weight: bold;"/>
-    <text value="http://simile.mit.edu/keeper-finder/"
-          class="url"
-        onclick="window.open('http://simile.mit.edu/keeper-finder/'); window.close();"/>
-  <separator class="thin"/>
-</vbox>
-</groupbox>
+<dialog title="&about; Seek" 
+    orient="vertical" 
+    autostretch="always" 
+    onload="sizeToContent()" 
+    buttons="accept" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    
+    <html:div style="padding: 0px 30px;">
+        <html:div style="text-align: center; padding: 2em 0;">
+            <html:img src="chrome://seek/skin/images/seek.png" />
+        </html:div>
+        
+        <html:div style="text-align: center;">
+            by David Huynh
+        </html:div>
+        <html:div style="text-align: center;">
+            <html:a href="http://simile.mit.edu/seek/">http://simile.mit.edu/seek/</html:a>
+        </html:div>
+        
+        <html:div style="text-align: center; padding: 2em 0;">
+            Copyright (c) 2008 MIT Simile. All rights reserved.
+        </html:div>
+    </html:div>
+    
+    <separator class="groove" />
 </dialog>

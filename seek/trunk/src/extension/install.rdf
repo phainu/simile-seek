@@ -10,7 +10,6 @@
     <em:homepageURL>http://simile.mit.edu/seek/</em:homepageURL>
     <em:updateURL>http://simile.mit.edu/seek/update.rdf</em:updateURL>
     <em:aboutURL>chrome://seek/content/about.xul</em:aboutURL>
-    <em:optionsURL>chrome://seek/content/options.xul</em:optionsURL>
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
