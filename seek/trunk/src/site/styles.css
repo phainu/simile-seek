@@ -22,3 +22,8 @@ table {
     font-size: 200%;
     text-align: center;
 }
+
+#main-table {
+    clear: both;
+    margin-top: 2em;
+}
