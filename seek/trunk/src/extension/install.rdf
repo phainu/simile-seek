@@ -8,7 +8,7 @@
     <em:creator>David Huynh</em:creator>
     <em:description>Seek, and you will find the email you want.</em:description>
     <em:homepageURL>http://simile.mit.edu/seek/</em:homepageURL>
-    <em:updateURL>http://simile.mit.edu/seek/update.rdf</em:updateURL>
+    <em:updateURL>http://simile.mit.edu/seek/updates.rdf</em:updateURL>
     <em:aboutURL>chrome://seek/content/about.xul</em:aboutURL>
     <em:targetApplication>
       <Description>
