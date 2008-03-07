@@ -233,6 +233,10 @@ Seek.Indexer._addIfNotEmpty = function(item, name, value) {
 };
 
 Seek.Indexer._addEntityList = function(item, name, value, map) {
+    if (typeof value != "string") {
+        return;
+    }
+    
     var entities = [];
     
     var start = 0;
