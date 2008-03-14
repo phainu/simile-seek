@@ -59,6 +59,13 @@ Seek.ThreadTreeView.prototype.getCellText = function(row, column) {
         
     case "priorityCol" :
         return Seek.Indexer.getPriority(msgHdr);
+        
+    case "sio_inoutCol":
+        return this._isOutgoing(msgHdr) ? "out" : "in";
+        
+    case "sio_inoutaddressCol" :
+        return this._getCorrespondents(msgHdr);
+    
     /*
     case "threadCol" :
     case "attachmentCol" :
@@ -100,6 +107,9 @@ Seek.ThreadTreeView.prototype.getCellProperties = function(row, col, props) {
         (this._settings.showThreads || this._settings.showNewMessages) && 
         !this.getRecordForRow(row).isMatch) {
         props.AppendElement(this._atomService.getAtom("kf-nonmatch"));
+    }
+    if (columnId == "sio_inoutCol") {
+        props.AppendElement(this._atomService.getAtom(this._isOutgoing(msgHdr) ? "out" : "in"));
     }
 };
 
@@ -391,6 +401,24 @@ Seek.ThreadTreeView.prototype._decodeMessageHeaders = function(s) {
         }
     }
     return names.value;
+};
+
+Seek.ThreadTreeView.prototype._isOutgoing = function(msgHdr) {
+    try {
+        var messageURI = this.msgFolder.generateMessageURI(msgHdr.messageKey);
+        if (sioData[messageURI] === undefined) {
+            sio_getMsgInfo(messageURI, hdr);
+        }
+        return sioData[messageURI] == 'out';
+    } catch (e) {
+        return false;
+    }
+};
+
+Seek.ThreadTreeView.prototype._getCorrespondents = function(msgHdr) {
+    return this._isOutgoing(msgHdr) ?
+        this._decodeMessageHeaders(msgHdr.mime2DecodedRecipients).join(", ") :
+        this._decodeMessageHeaders(msgHdr.mime2DecodedAuthor).join(", ");
 };
 
 Seek.ThreadTreeView.prototype._setReadByIndex = function(index, read) {

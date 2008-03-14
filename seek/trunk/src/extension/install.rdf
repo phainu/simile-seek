@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>seek@simile.mit.edu</em:id>
     <em:name>Seek</em:name>
-    <em:version>1.0.0</em:version>
+    <em:version>1.0.1</em:version>
     <em:creator>David Huynh</em:creator>
     <em:description>Seek, and you will find the email you want.</em:description>
     <em:homepageURL>http://simile.mit.edu/seek/</em:homepageURL>

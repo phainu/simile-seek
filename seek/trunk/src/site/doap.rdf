@@ -21,8 +21,8 @@
 	<!-- currently supported versions -->
 	<release>
 		<Version>
-			<created>2008-03-05</created>
-			<revision>1.0</revision>
+			<created>2008-03-13</created>
+			<revision>1.0.1</revision>
 		</Version>
 	</release>
 

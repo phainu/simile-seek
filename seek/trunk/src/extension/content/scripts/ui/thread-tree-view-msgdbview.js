@@ -283,10 +283,10 @@ Seek.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices
         return;
     }
     
+    var sfp;
     if (command == nsMsgViewCommandType.junk || command == nsMsgViewCommandType.unjunk) {
-        // There's supposedly some preparation to be done here
-        alert("Not yet implemented");
-        return;
+        var server = this.msgFolder.server;
+        sfp = server.spamFilterPlugin.QueryInterface(Components.interfaces.nsIJunkMailPlugin);
     }
     
     var imapUids = []; //Components.classes["@mozilla.org/supports-array;1"].createInstance(Components.interfaces.nsISupportsArray);
@@ -327,10 +327,16 @@ Seek.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices
             this._setFlaggedByIndex(index, false);
             break;
             
+        case nsMsgViewCommandType.junk:
+            this._setAsJunkByIndex(sfp, index, Components.interfaces.nsIJunkMailPlugin.JUNK);
+            break;
+            
+        case nsMsgViewCommandType.unjunk:
+            this._setAsJunkByIndex(sfp, index, Components.interfaces.nsIJunkMailPlugin.GOOD);
+            break;
+            
         /*
         case nsMsgViewCommandType.markThreadRead:
-        case nsMsgViewCommandType.junk:
-        case nsMsgViewCommandType.unjunk:
         case nsMsgViewCommandType.undeleteMsg:
         */
         }
@@ -393,7 +399,6 @@ Seek.ThreadTreeView.prototype._applyCommandToIndices = function(command, indices
 };
 
 Seek.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indices, deleteStorage) {
-    /*
     var headers = Components.classes["@mozilla.org/supports-array;1"].
         createInstance(Components.interfaces.nsISupportsArray);
         
@@ -401,8 +406,34 @@ Seek.ThreadTreeView.prototype._deleteMessages = function(msgWindow, indices, del
         headers.AppendElement(this.getMessageHeader(this.getMsgKeyForRow(indices[i])));
     }
     this.msgFolder.deleteMessages(headers, msgWindow, deleteStorage, false, null, true);
-    */
-    alert("Not implemented yet");
+};
+
+Seek.ThreadTreeView.prototype._setAsJunkByIndex = function(sfp, index, classification) {
+    var msgHdr = this.getMsgHdrForRow(index);
+    var junkScore = Seek.ThreadTreeView.getJunkScore(msgHdr);
+    var oldOriginStr = msgHdr.getStringProperty("junkscoreorigin");
+    var oldUserClassification;
+    
+    if (oldOriginStr.charAt(0) != "u") {
+        oldUserClassification = Components.interfaces.nsIJunkMailPlugin.UNCLASSIFIED;
+    } else {
+        if (oldOriginStr.length == 0) {
+            oldUserClassification = Components.interfaces.nsIJunkMailPlugin.UNCLASSIFIED;
+        } else if (junkScore > 50) {
+            oldUserClassification = Components.interfaces.nsIJunkMailPlugin.JUNK;
+        } else {
+            oldUserClassification = Components.interfaces.nsIJunkMailPlugin.GOOD;
+        }
+    }
+    
+    var msgUri = this.msgFolder.generateMessageURI(msgHdr.messageKey);
+    
+    sfp.setMessageClassification(msgUri, oldUserClassification, classification, msgWindow, null);
+    
+    msgHdr.setStringProperty("junkscoreorigin", "user");
+    msgHdr.setStringProperty("junkscore", classification == Components.interfaces.nsIJunkMailPlugin.JUNK ? "100" : "0");
+    
+    this._noteChange(index, 1, Components.interfaces.nsMsgViewNotificationCode.changed);
 };
 
 Seek.ThreadTreeView.prototype._noteChange = function(firstLineChanged, numChanged, changeType) {
