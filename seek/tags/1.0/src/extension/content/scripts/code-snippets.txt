@@ -1,0 +1,116 @@
+var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                     .getService(Components.interfaces.nsIProperties)
+                     .get("ProfD", Components.interfaces.nsIFile);
+file.append("foo.sqlite");
+
+var storageService = Components.classes["@mozilla.org/storage/service;1"]
+                        .getService(Components.interfaces.mozIStorageService);
+var mDBConn = storageService.openDatabase(file);
+Seek.log(mDBConn);
+
+
+    /*
+    var filterService = Components.classes["@mozilla.org/messenger/services/filters;1"].
+        getService(Components.interfaces.nsIMsgFilterService);
+        
+    var folders = Components.classes["@mozilla.org/supports-array;1"].
+        createInstance(Components.interfaces.nsISupportsArray);
+    folders.AppendElement(Seek._selectedFolder);
+    
+    var tempFilterList = filterService.getTempFilterList(Seek._selectedFolder);
+    tempFilterList.insertFilterAt(0, new Seek.MsgFilter(tempFilterList, items));
+    
+    Seek.log("here0");
+    filterService.applyFiltersToFolders(tempFilterList, folders, msgWindow);
+    
+    Seek.log("here1");
+    */
+    
+
+Seek.MsgFilter = function(filterList, items) {
+    this.filterList = filterList;
+    this._items = items;
+    this.wrappedJSObject = this;
+};
+
+Seek.MsgFilter.prototype = {
+    QueryInterface: function(iid) {
+        if (iid.equals(Components.interfaces.nsIMsgFilter) ||
+            iid.equals(Components.interfaces.nsISupports)) {
+            return this;
+        }
+        throw Components.interfaces.NS_ERROR_NOINTERFACE;
+    },
+    
+    //filterType:             null,
+    get filterType() { Seek.log("filterType"); return null },
+    temporary:              false,
+    enabled:                true,
+    filterName:             "seek",
+    filterDesc:             "Seek faceted browsing filter",
+    unparsedBuffer:         "",
+    unparseable:            false,
+    
+    AddTerm:                function(attrib, op, value, and, arbitraryHeader) {Seek.log("AddTerm");},
+    GetTerm:                function(termIndex) { Seek.log("GetTerm"); return null; },
+    appendTerm:             function(term) { Seek.log("appendTerm"); },
+    createTerm:             function() { Seek.log("createTerm"); return null; },
+    //searchTerms:            null,
+    get searchTerms() { Seek.log("searchTerms"); return null },
+    //scope:                  null,
+    get scope() { Seek.log("scope"); return null },
+    
+    MatchHdr: function(msgHdr, folder, db, headers, headerSize) { Seek.log("MatchHdr"); return this._items.contains(msgHdr.messageId); },
+    logRuleHit: function(aFilterAction, aHeader) { Seek.log("logRuleHit"); },
+    
+    createAction:           function() { Seek.log("createAction"); return null; },
+    getActionAt:            function(index) { Seek.log("getActionAt"); return null; },
+    appendAction:           function(action) { Seek.log("appendAction"); },
+    clearActionList:        function() {Seek.log("clearActionList");},
+    getSortedActionList:    function(actionList) {Seek.log("getSortedActionList");},
+    //actionList:             null
+    get actionList() { Seek.log("actionList"); return null }
+};
+
+
+
+Seek._reconfigureThreadPaneNatively = function() {
+    var collection = Seek._collection;
+    var items = Seek._collection.getRestrictedItems()
+    
+    initializeSearchBar();
+    RerootThreadPane();
+    
+    gSearchSession.clearScopes();
+    
+    var searchTerms = gSearchSession.searchTerms;
+    var searchTermsArray = searchTerms.QueryInterface(Components.interfaces.nsISupportsArray);
+    searchTermsArray.Clear();
+    
+    var termsArray = Components.classes["@mozilla.org/supports-array;1"].
+        createInstance(Components.interfaces.nsISupportsArray);
+        
+    var facets = collection.getFacets();
+    for (var i = 0; i < facets.length; i++) {
+        var facet = facets[i];
+        if ("getSearchTerm" in facet) {
+            termsArray.AppendElement(facet.getSearchTerm());
+        }
+    }
+        
+    var ioService = Components.classes["@mozilla.org/network/io-service;1"].
+        getService(Components.interfaces.nsIIOService);
+        
+    gSearchSession.addScopeTerm(
+        getScopeToUse(termsArray, Seek._selectedFolder, ioService.offline), 
+        Seek._selectedFolder
+    );
+    
+    for (var i = 0; i < termsArray.Count(); i++) {
+        gSearchSession.appendTerm(termsArray.GetElementAt(i).QueryInterface(Components.interfaces.nsIMsgSearchTerm));
+    }
+
+    gDBView.searchSession = gSearchSession;
+    gSearchSession.search(msgWindow);
+};
+

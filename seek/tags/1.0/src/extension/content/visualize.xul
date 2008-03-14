@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://seek/skin/styles/visualize.css" type="text/css"?>
+<?xml-stylesheet href="chrome://seek/skin/styles/visualize-html.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://seek/locale/visualize.dtd">
+<window
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    id="seek-visualize-dialog"
+    orient="vertical"
+    title="&seek.visualizeWindow.title;"
+    onload="SeekVisualizeWindow.onLoad();"
+    width="900"
+    height="700"
+    persist="width height screenX screenY sizemode"
+    >
+    <script src="scripts/visualize-window.js" />
+
+    <hbox>
+        <textbox id="seek-visualizeWindow-url" flex="1" 
+            value="chrome://seek/content/visualize.html" />
+            
+        <button label="&seek.visualizeWindow.browseButton.label;" 
+            oncommand="SeekVisualizeWindow.browse()" />
+    </hbox>
+    <browser id="seek-visualizeWindow-browser" flex="1" />
+</window>

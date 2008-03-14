@@ -1,0 +1,28 @@
+<!--+
+    |
+    |           +=======================================+
+    |           |           Seek Build System           |
+    |           +=======================================+
+    |
+    +-->
+
+<project default="xpi" basedir="." name="Seek">
+
+    <target name="init">
+        <!-- Set the timestamps -->
+        <tstamp/>
+    
+        <property environment="env" />
+    
+        <!-- Allow users a chance to override without editing the main file -->
+        <property file="${user.home}/${name}.build.properties"/>
+        <property file="local.build.properties"/>
+    
+        <!-- Get the build properties from an external file -->
+        <property file="build.properties"/>
+    </target>
+
+    <target name="xpi" depends="init" description="Create the XPI extension">
+        <zip zipfile="${dist.target}/${dist.name}.xpi" basedir="${src.extension}" includes="**"/>
+    </target>
+</project>

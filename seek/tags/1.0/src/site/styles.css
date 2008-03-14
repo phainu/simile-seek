@@ -1,0 +1,29 @@
+@import url("http://simile.mit.edu/styles/default.css");
+
+body {
+    margin-bottom: 20em;
+}
+
+table {
+    font-size: 100%;
+}
+
+#blurb {
+    font-size: 150%;
+    width: 30em;
+    font-style: italic;
+}
+
+#sidebar {
+    width: 180px;
+}
+
+.section-heading {
+    font-size: 200%;
+    text-align: center;
+}
+
+#main-table {
+    clear: both;
+    margin-top: 2em;
+}

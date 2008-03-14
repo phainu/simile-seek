@@ -1,0 +1,159 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+treechildren::-moz-tree-cell-text(kf-nonmatch) {
+    color: #888888;
+}
+
+label.seekPane-link {
+    color:              blue;
+    text-decoration:    underline;
+    cursor:             pointer;
+}
+
+textbox.seekPane-hintedTextbox-empty {
+    color:  #aaa;
+}
+
+#seekPane-browsingLayer checkbox {
+    margin: 0;
+}
+
+#seek-toolbar-button
+{
+  list-style-image: url("chrome://seek/skin/images/toolbar-button.png");
+  -moz-image-region: rect(0px 24px 24px 0px);
+}
+#seek-toolbar-button:hover
+{
+  -moz-image-region: rect(24px 24px 48px  0px);
+}
+[iconsize="small"] #seek-toolbar-button
+{
+  -moz-image-region: rect( 0px 40px 16px 24px);
+}
+[iconsize="small"] #seek-toolbar-button:hover
+{
+  -moz-image-region: rect(24px 40px 40px 24px);
+}
+
+#seekStatusPane {
+    background:     #FFFFF0 url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
+    padding:        3px;
+    margin-bottom:  5px;
+}
+
+#seekPane-deck {
+}
+
+#seek-mainSplitter {
+    border-top: none;
+}
+
+#seekPane-startIndexingLayer {
+    background: url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
+}
+#seekPane-indexingLayer {
+    background: url("chrome://seek/skin/images/drop-shadow-bottom-up.png") bottom repeat-x;
+}
+
+#seekPane-browsingLayer-facetContainer {
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+#seekPane-browsingLayer-toolContainer {
+    background: url("chrome://seek/skin/images/drop-shadow.png") right repeat-y;
+    padding:    5px;
+}
+
+#seekPane-browsingLayer-controlPanel {
+    padding:    5px 10px;
+    background: #eee;
+}
+
+tree.seek-facet-valuesContainer {
+    margin: 0;
+    padding: 0;
+    border-top-style: none;
+    border-bottom-style: none;
+    border-left-style: none;
+    border-right-style: none;
+}
+
+splitter.seek-facetContainer-splitter {
+    border-left: none;
+    border-right: none;
+}
+
+.seek-facet-header label {
+    cursor: move;
+    background: url("chrome://seek/skin/images/grip.png") center right no-repeat;
+}
+
+.seek-facet-header-closeButton {
+    background: url("chrome://seek/skin/images/cross.png") center center no-repeat;
+    width:      20px;
+    cursor:     pointer;
+}
+.seek-facet-header-closeButton:hover {
+    background: url("chrome://seek/skin/images/cross_over.png") center center no-repeat;
+    border: none;
+}
+.seek-facet-header-closeButton:active {
+    background: url("chrome://seek/skin/images/cross_pressed.png") center center no-repeat;
+}
+
+#seekPane-browsingLayer-textSearch-pastEntry-remove {
+    background: url("chrome://seek/skin/images/cross.png") center center no-repeat;
+    width:      16px;
+    height:     16px;
+    cursor:     pointer;
+}
+
+#seekPane-browsingLayer-count-number {
+    font-size:  200%;
+    margin:     0px;
+}
+
+#seekPane-browsingLayer-count-message {
+    color:      #888;
+    margin:     0px;
+}
+
+#seekPane-browsingLayer-textSearch-pastEntry-remove:hover {
+    background: url("chrome://seek/skin/images/cross_over.png") center center no-repeat;
+    cursor:     pointer;
+}
+
+#seekPane-browsingLayer-textSearch-pastEntry-remove:active {
+    background: url("chrome://seek/skin/images/cross_pressed.png") center center no-repeat;
+    cursor:     pointer;
+}
+
+.seekPane-group {
+    background:     #ddd;
+    margin-bottom:  7px;
+    padding:        3px;
+}
+
+.seekPane-groupLabel {
+    font-weight: bold;
+}
+
+.seekPane-toolButton {
+    margin: 1px;
+    cursor: pointer;
+}
+.seekPane-toolButton:hover {
+}
+
+#seekPane-browsingLayer-addFacet {
+    list-style-image:   url("chrome://seek/skin/images/plus.png");
+}
+#seekPane-browsingLayer-addFacet:hover {
+    list-style-image:   url("chrome://seek/skin/images/plus_over.png");
+}
+#seekPane-browsingLayer-addFacet:active {
+    list-style-image:   url("chrome://seek/skin/images/plus_pressed.png");
+}
+
