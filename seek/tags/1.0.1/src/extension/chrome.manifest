@@ -1,0 +1,5 @@
+content	seek	content/
+locale	seek	en-US	locale/en-US/
+skin	seek	classic/1.0	skin/classic/
+overlay	chrome://messenger/content/messenger.xul	chrome://seek/content/overlay.xul
+style	chrome://global/content/customizeToolbar.xul	chrome://seek/skin/styles/overlay.css

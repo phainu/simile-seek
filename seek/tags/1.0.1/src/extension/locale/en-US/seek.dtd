@@ -1,0 +1,40 @@
+<!ENTITY seek.theMenuItem.label "Seek">
+<!ENTITY seek.theMenuItem.accesskey "k">
+<!ENTITY seek-theKey "K">
+
+<!ENTITY seek.statusPane.message "Seek is still engaged on this folder.">
+<!ENTITY seek.statusPane.disengageNow.label "Disengage Now">
+<!ENTITY seek.statusPane.showSeek.label "Show Seek">
+
+<!ENTITY seek.cantUseSeekMessage "Sorry, either Seek is not supported on this folder or something in Seek is broken.">
+
+<!ENTITY seek.startIndexingMessage "To use Seek on this folder, we need to index the folder first. This will just take a minute.">
+<!ENTITY seek.startIndexingButton.label "Start Indexing">
+<!ENTITY seek.indexingMessage "Indexing folder...">
+<!ENTITY seek.cancelIndexingButton.label "Cancel">
+
+<!ENTITY seek.addFacetButton.tooltip "Add more facets">
+
+<!ENTITY seek.contentSearch.label "Content Search">
+<!ENTITY seek.contentSearch.all "all">
+<!ENTITY seek.contentSearch.any "any">
+<!ENTITY seek.contentSearch.phrase "phrase">
+
+<!ENTITY seek.alsoInclude.label "Include">
+<!ENTITY seek.alsoInclude.wholeThreads.label "whole threads">
+<!ENTITY seek.alsoInclude.newMessages.label "new messages">
+
+<!ENTITY seek.moreButton.label "More">
+<!ENTITY seek.moreButton.tooltip "More things to do with Seek">
+
+<!ENTITY seek.disengageButton.label "Disengage">
+<!ENTITY seek.disengageButton.tooltip "Disengage Seek from this folder">
+
+<!ENTITY seek.resetFacetLink.label "reset">
+<!ENTITY seek.closeFacetButton.tooltip "Remove this facet">
+
+<!ENTITY seek.morePopup.visualize.label "Visualize">
+<!ENTITY seek.morePopup.export.label "Export">
+<!ENTITY seek.morePopup.export.rdfxml.label "RDF/XML">
+<!ENTITY seek.morePopup.export.tsv.label "Tab-Separated Values">
+<!ENTITY seek.morePopup.export.exhibitJson.label "Exhibit/JSON">

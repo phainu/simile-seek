@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>Seek Visualize</title>
+    <script src="http://static.simile.mit.edu/ajax/api-2.0/simile-ajax-api.js?bundle=false"></script>
+    <script src="http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js?bundle=false&autoCreate=false"></script>
+    <script src="http://static.simile.mit.edu/exhibit/extensions-2.0/time/time-extension.js?bundle=false"></script>
+    <script src="scripts/visualize-utilities.js"></script>
+    <script>
+        function onLoad() {
+            createExhibit();
+            document.getElementById("processing-message").style.display = "none";
+        }
+    </script>
+    <style>
+        body {
+            font-family: Tahoma, Helvetica, Arial, "sans serif";
+            font-size:   8pt;
+        }
+        table { font-size: 100%; }
+        tr, td { vertical-align: top }
+        
+        #processing-message {
+            margin:     1in;
+            font-size:  200%;
+            font-style: italic;
+            text-align: center;
+        }
+    </style>
+</head>
+<body onload="window.setTimeout(onLoad, 200);">
+    <div ex:role="collection" ex:itemTypes="Message"></div>
+    
+    <div id="processing-message">
+        Preparing Exhibit... Please wait.
+    </div>
+    
+    <table width="100%" cellpadding="20" cellspacing="0"><tr>
+        <td width="20%">
+            <div ex:role="facet" ex:expression=".tag" ex:facetLabel="Tag"></div>
+            <div ex:role="facet" ex:expression=".author.domain" ex:facetLabel="From Domain"></div>
+            <div ex:role="facet" ex:expression=".recipient.domain" ex:facetLabel="To/CC Domain"></div>
+        </td>
+        <td>
+            <div ex:role="lens" ex:itemTypes="Message" style="display: none">
+                <table cellspacing="5">
+                    <tr><td>Subject:</td><td><b ex:content=".label"></b></td></tr>
+                    <tr><td>Date:</td><td ex:content=".date"></td></tr>
+                    <tr><td>Date:</td><td ex:content=".date2"></td></tr>
+                    <tr><td>From:</td><td ex:content=".author"></td></tr>
+                    <tr><td>To:</td><td ex:content=".to"></td></tr>
+                    <tr><td>CC:</td><td ex:content=".cc"></td></tr>
+                    <tr><td>Tags:</td><td ex:content=".tag"></td></tr>
+                </table>
+            </div>
+            
+            <div ex:role="view"
+                ex:viewClass="Timeline"
+                ex:start=".date2"
+                ex:colorKey=".tag"
+                ex:topBandUnit="hour"
+                ex:bottomBandUnit="day"
+                ></div>
+        </td>
+    </tr></table>
+</body>
+</html>

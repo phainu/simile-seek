@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="chrome://seek/skin/styles/overlay.css" type="text/css"?>
+<?xml-stylesheet href="chrome://seek/skin/styles/overlay-html.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://seek/locale/seek.dtd">
+<overlay id="seek-overlay" 
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    
+    <script src="scripts/overlay.js"/>
+    <script src="scripts/facet-dnd.js"/>
+    <script src="scripts/indexer.js"/>
+    <script src="scripts/facet-configurations.js"/>
+    
+    <script src="scripts/util/set.js"/>
+    <script src="scripts/util/json.js"/>
+    <script src="scripts/util/listener-queue.js"/>
+    <script src="scripts/util/string.js"/>
+    <script src="scripts/util/date.js"/>
+    <script src="scripts/util/db-change-listener.js"/>
+    <script src="scripts/util/hinted-textbox.js"/>
+    
+    <script src="scripts/data/expression-parser.js"/>
+    <script src="scripts/data/expression.js"/>
+    <script src="scripts/data/function.js"/>
+    <script src="scripts/data/database.js"/>
+    <script src="scripts/data/database-l10n.js"/>
+    <script src="scripts/data/collection.js"/>
+    
+    <script src="scripts/data/exporters/exhibit-json-exporter.js"/>
+    <script src="scripts/data/exporters/tsv-exporter.js"/>
+    <script src="scripts/data/exporters/rdf-xml-exporter.js"/>
+    
+    <script src="scripts/ui/facet-util.js"/>
+    <script src="scripts/ui/list-facet.js"/>
+    <script src="scripts/ui/recency-facet.js"/>
+    
+    <script src="scripts/ui/thread-tree-view.js"/>
+    <script src="scripts/ui/thread-tree-view-data.js"/>
+    <script src="scripts/ui/thread-tree-view-msgdbview.js"/>
+    
+    <stringbundleset id="stringbundleset">
+        <stringbundle id="seek-strings" src="chrome://seek/locale/seek.properties"/>
+    </stringbundleset>
+
+    <menupopup id="taskPopup">
+        <menuitem id="seek-theMenuItem" 
+            label="&seek.theMenuItem.label;" 
+            accesskey="&seek.theMenuItem.accesskey;"
+            oncommand="Seek.onToggleSeek()" 
+            type="checkbox" 
+            checked="false"
+            key="seek-theKey"
+            insertafter="applyFilters"
+            />
+        <menuseparator 
+            insertafter="applyFilters"
+            />
+    </menupopup>
+    
+    <keyset id="mailKeys">
+        <key id="seek-theKey"
+            key="&seek-theKey;"
+            oncommand="Seek.onToggleSeek(event.target)" 
+            modifiers="accel"
+            />
+    </keyset>
+    
+    <popupset>
+        <popup id="seekPane-addFacetPopup" />
+        <popup id="seekPane-morePopup">
+            <menuitem label="&seek.morePopup.visualize.label;"
+                oncommand="Seek.visualize();" />
+                
+            <menu label="&seek.morePopup.export.label;">
+                <menupopup>
+                    <menuitem label="&seek.morePopup.export.exhibitJson.label;"
+                        oncommand="Seek.exportData('exhibit/json');"
+                        />
+                    <menuitem label="&seek.morePopup.export.tsv.label;"
+                        oncommand="Seek.exportData('tsv');"
+                        />
+                    <menuitem label="&seek.morePopup.export.rdfxml.label;"
+                        oncommand="Seek.exportData('rdf/xml');"
+                        />
+                </menupopup>
+            </menu>
+        </popup>
+    </popupset>
+    
+    <window id="messengerWindow">
+        <hbox id="seekStatusPane" insertbefore="mailContentWrapper" hidden="true">
+            <spacer flex="1" />
+            <label value="&seek.statusPane.message;" />
+            <spacer />
+            <label value="&seek.statusPane.disengageNow.label;"
+                class="seekPane-link"
+                onclick="Seek.disengageNow();"
+                />
+            <spacer />
+            <label value="&seek.statusPane.showSeek.label;"
+                class="seekPane-link"
+                onclick="Seek.onToggleSeek();"
+                />
+        </hbox>
+        
+        <deck id="seekPane-deck" insertbefore="mailContentWrapper" hidden="true" height="250" persist="height">
+            <hbox id="seekPane-noSupportLayer">
+                <spacer flex="1" />
+                <vbox style="width: 20em;">
+                    <spacer flex="1" />
+                    <description>&seek.cantUseSeekMessage;</description>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-startIndexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 25em;">
+                    <spacer flex="1" />
+                    <description>&seek.startIndexingMessage;</description>
+                    <hbox>
+                        <button label="&seek.startIndexingButton.label;" oncommand="Seek.onStartIndexingFolder();" />
+                        <spacer flex="1" />
+                    </hbox>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-indexingLayer">
+                <spacer flex="1" />
+                <vbox style="width: 25em;">
+                    <spacer flex="1" />
+                    <label value="&seek.indexingMessage;" />
+                    <progressmeter id="seekPane-indexingLayer-progress" mode="determined" value="0%" />
+                    <hbox>
+                        <label value="" id="seekPane-indexingLayer-remaining" flex="1" />
+                        <button label="&seek.cancelIndexingButton.label;" oncommand="Seek.onCancelIndexing()" />
+                    </hbox>
+                    <spacer flex="1" />
+                </vbox>
+                <spacer flex="1" />
+            </hbox>
+            <hbox id="seekPane-browsingLayer">
+                <scrollbox orient="horizontal" flex="1" style="overflow: auto;" id="seekPane-browsingLayer-facetContainer">
+                </scrollbox>
+                
+                <vbox id="seekPane-browsingLayer-toolContainer">
+                    <image id="seekPane-browsingLayer-addFacet"
+                        class="seekPane-toolButton"
+                        tooltiptext="&seek.addFacetButton.tooltip;" 
+                        popup="seekPane-addFacetPopup" />
+                        
+                    <spacer flex="1" />
+                </vbox>
+                
+                <vbox id="seekPane-browsingLayer-controlPanel">
+                    <hbox>
+                        <label id="seekPane-browsingLayer-count-number" value=" " flex="1" />
+                        <label
+                            class="seekPane-link"
+                            tooltiptext="&seek.disengageButton.tooltip;" 
+                            onclick="Seek.disengage();" value="&seek.disengageButton.label;" 
+                            />
+                    </hbox>
+                    <label id="seekPane-browsingLayer-count-message" value=" " />
+                    
+                    <spacer style="height: 1em;"/>
+                    
+                    <vbox class="seekPane-group">
+                        <radiogroup id="seekPane-browsingLayer-textSearch-mode" orient="horizontal">
+                            <radio id="seekPane-browsingLayer-textSearch-mode-all" value="all" label="&seek.contentSearch.all;" selected="true" />
+                            <radio id="seekPane-browsingLayer-textSearch-mode-any" value="any" label="&seek.contentSearch.any;" />
+                            <radio id="seekPane-browsingLayer-textSearch-mode-phrase" value="phrase" label="&seek.contentSearch.phrase;" />
+                            <spacer flex="1" />
+                        </radiogroup>
+                        <textbox id="seekPane-browsingLayer-textSearch-input" />
+                        <hbox id="seekPane-browsingLayer-textSearch-pastEntry" hidden="true">
+                            <box id="seekPane-browsingLayer-textSearch-pastEntry-remove" />
+                            <description id="seekPane-browsingLayer-textSearch-pastEntry-description" />
+                        </hbox>
+                    </vbox>
+                    
+                    <hbox class="seekPane-group">
+                        <label value="&seek.alsoInclude.label;" class="seekPane-groupLabel" />
+                        <vbox flex="1">
+                            <checkbox label="&seek.alsoInclude.wholeThreads.label;" id="seekPane-browsingLayer-showThreads" oncommand="Seek.toggleShowThreads()" />
+                            <checkbox label="&seek.alsoInclude.newMessages.label;" id="seekPane-browsingLayer-showNewMessages" oncommand="Seek.toggleShowNewMessages()" />
+                        </vbox>
+                    </hbox>
+                    
+                    <spacer flex="1" />
+                    
+                    <hbox>
+                        <spacer flex="1" />
+                        <label value="&seek.moreButton.label;" class="seekPane-link"
+                            tooltiptext="&seek.moreButton.tooltip;"
+                            popup="seekPane-morePopup" />
+                    </hbox>
+                </vbox>
+            </hbox>
+            <box hidden="true">
+                <hbox id="seek-facet-header" class="seek-facet-header">
+                    <box class="seek-facet-header-closeButton" 
+                        tooltiptext="&seek.closeFacetButton.tooltip;" />
+                    <label value="" flex="1" />
+                    <html:div style="display: none;"><html:a href="javascript:{}">&seek.resetFacetLink.label;</html:a></html:div>
+                </hbox>
+                <html:div class="seek-facet-quickFilter" id="seek-facet-quickFilter">
+                    <html:input />
+                </html:div>
+                <tree id="seek-facet-valuesContainer" class="seek-facet-valuesContainer" flex="1" seltype="multiple">
+                    <treecols>
+                        <treecol id="value-column" label="value" flex="1" />
+                        <treecol id="count-column" label="#" flex="0" style="width: 4em; text-align: right;" />
+                    </treecols>
+                    <treechildren />
+                </tree>
+            </box>
+        </deck>
+        <splitter insertbefore="mailContentWrapper" id="seek-mainSplitter" hidden="true" />
+    </window>
+</overlay>

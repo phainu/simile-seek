@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+ xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>seek@simile.mit.edu</em:id>
+    <em:name>Seek</em:name>
+    <em:version>1.0.1</em:version>
+    <em:creator>David Huynh</em:creator>
+    <em:description>Seek, and you will find the email you want.</em:description>
+    <em:homepageURL>http://simile.mit.edu/seek/</em:homepageURL>
+    <em:updateURL>https://simile.mit.edu/seek/updates.rdf</em:updateURL>
+    <em:aboutURL>chrome://seek/content/about.xul</em:aboutURL>
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- thunderbird -->
+        <em:minVersion>2.0.0.1</em:minVersion>
+        <em:maxVersion>2.0.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>
