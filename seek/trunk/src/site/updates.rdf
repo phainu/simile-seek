@@ -5,19 +5,19 @@
 <rdf:Description about="urn:mozilla:extension:seek@simile.mit.edu">
  <em:updates>
   <rdf:Seq>
-    <rdf:li resource="urn:mozilla:extension:seek@simile.mit.edu:1.0.1"/>
+    <rdf:li resource="urn:mozilla:extension:seek@simile.mit.edu:1.0.2"/>
   </rdf:Seq>
  </em:updates>
 </rdf:Description>
 
-<rdf:Description about="urn:mozilla:extension:seek@simile.mit.edu:1.0.1">
- <em:version>1.0.1</em:version>
+<rdf:Description about="urn:mozilla:extension:seek@simile.mit.edu:1.0.2">
+ <em:version>1.0.2</em:version>
  <em:targetApplication>
   <rdf:Description>
    <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
    <em:minVersion>2.0.0.1</em:minVersion>
    <em:maxVersion>2.0.0.*</em:maxVersion>
-   <em:updateLink>http://simile.mit.edu/dist/seek/seek-1.0.1.xpi</em:updateLink>
+   <em:updateLink>http://simile.mit.edu/dist/seek/seek-1.0.2.xpi</em:updateLink>
   </rdf:Description>
  </em:targetApplication>
 </rdf:Description>

@@ -7,7 +7,7 @@ Seek.ThreadTreeView.prototype.addColumnHandler = function(column, msgCustomColum
 };
 
 Seek.ThreadTreeView.prototype.cloneDBView = function(messengerInstance, msgWindow, commandUpdater) {
-    return null;
+    return this.dbView.cloneDBView(messengerInstance, msgWindow, commandUpdater);
 };
 
 Seek.ThreadTreeView.prototype.close = function() {

@@ -144,7 +144,8 @@ Seek.ThreadTreeView.prototype.setSelection = function(selection) {
     selection.clearSelection();
     
     this.selection = selection;
-    gCurrentMessageUri = null;
+    
+    gCurrentMessageUri = this.msgFolder.URI;
     gCurrentFolderUri = null;
 };
 
@@ -191,9 +192,14 @@ Seek.ThreadTreeView.prototype.selectionChanged = function() {
         }
         
         this.msgFolder.lastMessageLoaded = msgKey;
-        
+    }
+    
+    if (this.selection.count >= 1) {
         gCurrentMessageUri = this.URIForFirstSelectedMessage;
         gCurrentFolderUri = this.hdrForFirstSelectedMessage.folder.URI;
+    } else {
+        gCurrentMessageUri = null;
+        gCurrentFolderUri = this.msgFolder.URI;
     }
 };
 
@@ -370,10 +376,12 @@ Seek.ThreadTreeView.prototype._reroot = function() {
     var self = this;
     window.setTimeout(function() {
         var treebox = self.treebox;
-        treebox.columns.getNamedColumn("subjectCol").element.
-            setAttribute("primary", self._settings.showThreads);
-        treebox.invalidateRange(treebox.getFirstVisibleRow(), treebox.getLastVisibleRow());
-    }, 0); 
+        if (treebox) {
+            treebox.columns.getNamedColumn("subjectCol").element.
+                setAttribute("primary", self._settings.showThreads);
+            treebox.invalidateRange(treebox.getFirstVisibleRow(), treebox.getLastVisibleRow());
+        }
+    }, 0);
 };
 
 Seek.ThreadTreeView.prototype._expandAll = function() {
