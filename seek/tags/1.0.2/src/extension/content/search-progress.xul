@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<?xml-stylesheet href="chrome://seek/skin/styles/search-progress.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://seek/locale/search-progress.dtd">
+
+<dialog
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    id="seek-searchProgress-dialog"
+    orient="vertical"
+    title="&seek.searchProgressDialog.title;"
+    onload="SeekSearchProgressDialog.onLoad();"
+    ondialogcancel="SeekSearchProgressDialog.onCancel();"
+    ondialogaccept="SeekSearchProgressDialog.onDone();"
+    buttons="cancel"
+    style="width: 30em; height: 8em;"
+    >
+    <script src="scripts/search-progress-dialog.js" />
+
+    <label id="seek-searchProgressDialog-message" value=" " />
+    <progressmeter id="seek-searchProgressDialog-progress" mode="undetermined" />
+</dialog>
